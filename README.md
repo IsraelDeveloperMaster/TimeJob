@@ -1,2 +1,2 @@
 # TimeJob
- App para apunte de tiempo en la trabajo
+ App para apunte de tiempo en el trabajo
