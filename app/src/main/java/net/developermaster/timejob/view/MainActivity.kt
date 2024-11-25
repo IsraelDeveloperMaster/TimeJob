@@ -26,16 +26,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.snapshots
-import kotlinx.coroutines.flow.map
 import net.developermaster.timejob.core.ComponentsFireBase
 import net.developermaster.timejob.core.ComponentsMainActivity
-import net.developermaster.timejob.model.Model
+import net.developermaster.timejob.model.ModelTimeJob
 import net.developermaster.timejob.view.ui.theme.TimeJobTheme
 
 data class Item(val name: String = "", val description: String = "")
 
 class MainActivity : ComponentActivity() {
+
+
+    val listaResultadoRetornados = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +46,7 @@ class MainActivity : ComponentActivity() {
 
                 //todo esqueleto do app
                 Scaffold()
+
 //                ListItems()
 
 
@@ -86,7 +88,10 @@ class MainActivity : ComponentActivity() {
 
             Home(Modifier.padding(pappdingInterno))//todo chamando a funcao Home com o padding interno
 
-            ListItems()//chamando a funcao ListItems
+//            ListItems()//chamando a funcao ListItems
+
+//            ComponentsFireBase().ListarTodos()
+
         }
     }
 
@@ -99,65 +104,149 @@ class MainActivity : ComponentActivity() {
 
         ) {
 
-            Row {
-                ComponentsMainActivity().ImagemPerfil()
-            }//Row imagem perfil
+            Row{
 
-            Row {
-//                TextoPerfil()
-            }//Row nome perfil
+                ComponentsMainActivity().ImagemPerfil() //Row imagem perfil
 
-//            Espaco()
+            }
 
             LazyColumn {
 
-
                 //todo lista
-                items(2) {
+                items(1) {
+
+//                    ComponentsFireBase().ListarTodos()
 
                     ComponentsFireBase().ListarTodos()
 
-//                    ComponentsFireBase().Listar()
-
-//                    ListItems()
-
                 }
 
-         /*       items(items) { item ->
-                }*/
-
-            }//LazyColumn Caixa de texto
+            }//LazyColumn
         }
     }
 
-    @Composable
+/*    @Composable
     fun ListItems() {
+
         var items by remember { mutableStateOf(emptyList<Item>()) }
 
         // Fetch data from Firestore
         LaunchedEffect(true) {
             val db = FirebaseFirestore.getInstance()
-            db.collection("TimeJob")
-                .orderBy("propinas", Query.Direction.ASCENDING)
-                .get()
+            db.collection("TimeJob").orderBy("fecha", Query.Direction.ASCENDING).get()
                 .addOnSuccessListener { documents ->
+
                     items = documents.map { it.toObject(Item::class.java) }
 
-                    Log.d("firebase", "$items")
-                }
-                .addOnFailureListener { exception ->
+                    Log.d("firebase", "Sucesso Items $items")
+
+                }.addOnFailureListener { exception ->
+
+                    Log.d("firebase", "Erro $exception")
                     // Handle error
                 }
         }
 
-   /*     LazyColumn(
+        LazyColumn(
             modifier = Modifier.padding(16.dp)
         ) {
             items(items) { item ->
                 ItemRow(item)
             }
-        }*/
+        }
     }
+
+    @Composable
+    fun Listar1() {
+
+        var items by remember { mutableStateOf(emptyList<ModelTimeJob>()) }
+
+        // Fetch data from Firestore
+        FirebaseFirestore.getInstance().collection("TimeJob")
+            .orderBy("fecha", Query.Direction.ASCENDING).get()
+
+            .addOnSuccessListener { documents ->
+
+                items = documents.map { itensRetornadosMapeados ->
+
+                    itensRetornadosMapeados.toObject(ModelTimeJob::class.java)
+                }
+
+                Log.d("firebase", "Sucesso Items: $items")
+
+            }.addOnFailureListener { exception ->
+
+                Log.d("firebase", "Erro:  $exception")
+            }
+
+
+        *//*        LazyColumn(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    items(items) { item ->
+                        ItemRowModelTimeJob(item.toString())
+                    }
+                }*//*
+    }
+
+    @Composable
+    fun Listar2() {
+
+        val listaDeDadosRetornadas = FirebaseFirestore.getInstance().collection("TimeJob")
+
+        listaDeDadosRetornadas.addSnapshotListener { dadosRetornados, error ->
+
+            val listaRetornada = dadosRetornados?.documents//todo document
+
+            listaRetornada?.forEach { documents ->
+
+//                listaResultado.isEmpty()
+
+                val dados = documents?.data
+
+                if (dados != null) {
+
+                    val idRetornado = documents.id
+                    val fechaDadosRetornados = dados["fecha"]
+                    val horasTrabajadasadosRetornados = dados["horasTrabalhadas"]
+                    val propinasDadosRetornados = dados["propinas"]
+
+                    listaResultadoRetornados += (" id: $idRetornado \n Fecha: $fechaDadosRetornados \n Propinas: $propinasDadosRetornados \n Horas Trabajadas: $horasTrabajadasadosRetornados \n \n ")
+
+                    Log.d(
+                        "firebase",
+                        " id: $idRetornado \n Fecha: $fechaDadosRetornados \n Propinas: $propinasDadosRetornados \n Horas Trabajadas: $horasTrabajadasadosRetornados \n \n "
+                    )
+
+
+//                    fechaRemember = fechaDadosRetornados.toString()
+//                    horasTrabalhadasRemember = horasTrabajadasadosRetornados.toString()
+//                    propinasRemember = propinasDadosRetornados.toString()
+                }
+            }
+        }
+
+
+        LazyColumn(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            items(listaResultadoRetornados) { item ->
+                ItemRowModelTimeJob(item)
+            }
+        }
+
+    }
+
+    @Composable
+    fun ItemRowModelTimeJob(dataClass: String) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        ) {
+            Text(text = dataClass)
+        }
+    }*/
 
     @Composable
     fun ItemRow(dataClass: Item) {
@@ -171,30 +260,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @Composable
-    fun Listar2() {
-         val db = FirebaseFirestore.getInstance()
-        val items = db.collection("items").snapshots().map { snapshot ->
-            snapshot.documents.map { document ->
-                Item(
-                    document.getString("name") ?: "",document.getString("description") ?: ""
-                )
-            }
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -205,5 +270,4 @@ class MainActivity : ComponentActivity() {
             Home(Modifier.fillMaxSize())
         }
     }
-
 }

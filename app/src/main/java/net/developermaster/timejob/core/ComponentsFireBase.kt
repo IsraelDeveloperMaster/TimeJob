@@ -8,18 +8,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.google.firebase.firestore.FirebaseFirestore
-import net.developermaster.timejob.model.Model
+import net.developermaster.timejob.model.ModelTimeJob
+import net.developermaster.timejob.view.Item
 
 class ComponentsFireBase {
 
@@ -34,7 +37,7 @@ class ComponentsFireBase {
         var horasTrabalhadas by remember { mutableStateOf("") }
         var propinas by remember { mutableStateOf("") }
 
-        val model = Model(
+        val modelTimeJob = ModelTimeJob(
 
             fecha = fecha, horasTrabalhadas = horasTrabalhadas, propinas = propinas
 
@@ -49,8 +52,7 @@ class ComponentsFireBase {
 
         ) {
 
-            OutlinedTextField(
-                value = fecha,
+            OutlinedTextField(value = fecha,
                 onValueChange = { fecha = it },
                 label = { Text("Fecha") },
                 modifier = Modifier.fillMaxWidth()
@@ -58,8 +60,7 @@ class ComponentsFireBase {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            OutlinedTextField(
-                value = horasTrabalhadas,
+            OutlinedTextField(value = horasTrabalhadas,
                 onValueChange = { horasTrabalhadas = it },
                 label = { Text("Horas trabajadas") },
                 modifier = Modifier.fillMaxWidth()
@@ -67,8 +68,7 @@ class ComponentsFireBase {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            OutlinedTextField(
-                value = propinas,
+            OutlinedTextField(value = propinas,
                 onValueChange = { propinas = it },
                 label = { Text("Propinas") },
                 modifier = Modifier.fillMaxWidth()
@@ -80,8 +80,8 @@ class ComponentsFireBase {
 
                 onClick = {
 
-                    FirebaseFirestore.getInstance().collection("TimeJob").document().set(model)
-                        .addOnSuccessListener { sucesso ->
+                    FirebaseFirestore.getInstance().collection("TimeJob").document()
+                        .set(modelTimeJob).addOnSuccessListener { sucesso ->
 
 //                            mensagemToast("Salvo com sucesso")
 
@@ -107,11 +107,15 @@ class ComponentsFireBase {
     @Composable
     fun ListarTodos() {
 
+
+        var itemsRemember = remember { mutableStateListOf<ModelTimeJob>() }
+
+
         var fechaRemember by remember { mutableStateOf("") }
         var horasTrabalhadasRemember by remember { mutableStateOf("") }
         var propinasRemember by remember { mutableStateOf("") }
 
-        val model = Model(
+        val modelTimeJob = ModelTimeJob(
 
             fecha = fechaRemember,
             horasTrabalhadas = horasTrabalhadasRemember,
@@ -128,8 +132,7 @@ class ComponentsFireBase {
 
         ) {
 
-            OutlinedTextField(
-                value = fechaRemember,
+            OutlinedTextField(value = fechaRemember,
                 onValueChange = { fechaRemember = it },
                 label = { Text("Fecha") },
                 modifier = Modifier.fillMaxWidth()
@@ -137,8 +140,7 @@ class ComponentsFireBase {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            OutlinedTextField(
-                value = horasTrabalhadasRemember,
+            OutlinedTextField(value = horasTrabalhadasRemember,
                 onValueChange = { horasTrabalhadasRemember = it },
                 label = { Text("Horas trabajadas") },
                 modifier = Modifier.fillMaxWidth()
@@ -146,8 +148,7 @@ class ComponentsFireBase {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            OutlinedTextField(
-                value = propinasRemember,
+            OutlinedTextField(value = propinasRemember,
                 onValueChange = { propinasRemember = it },
                 label = { Text("Propinas") },
                 modifier = Modifier.fillMaxWidth()
@@ -155,8 +156,7 @@ class ComponentsFireBase {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-          Button(
-              shape = (),
+            Button(
 
                 onClick = {
 
@@ -181,12 +181,19 @@ class ComponentsFireBase {
                                 val horasTrabajadasadosRetornados = dados["horasTrabalhadas"]
                                 val propinasDadosRetornados = dados["propinas"]
 
-                                listaResultadoRetornados += (" id: $idRetornado \n Fecha: $fechaDadosRetornados \n Propinas: $propinasDadosRetornados \n Horas Trabajadas: $horasTrabajadasadosRetornados \n \n ")
+                                listaResultadoRetornados += (" Fecha: $fechaDadosRetornados \n Horas Trabajadas: $horasTrabajadasadosRetornados \n Propinas: $propinasDadosRetornados \n \n ")
 
-                                Log.d("firebase", " id: $idRetornado \n Fecha: $fechaDadosRetornados \n Propinas: $propinasDadosRetornados \n Horas Trabajadas: $horasTrabajadasadosRetornados \n \n ")
+                                Log.d(
+                                    "firebase",
+                                    " id: $idRetornado \n Fecha: $fechaDadosRetornados \n Horas Trabajadas: $horasTrabajadasadosRetornados \n Propinas: $propinasDadosRetornados \n \n "
+                                )
 
 
                                 fechaResultado = fechaDadosRetornados.toString()
+
+                                fechaRemember = fechaDadosRetornados.toString()
+                                horasTrabalhadasRemember = horasTrabajadasadosRetornados.toString()
+                                propinasRemember = propinasDadosRetornados.toString()
 
                             }
                         }
@@ -199,30 +206,30 @@ class ComponentsFireBase {
             ) {
 
                 Text("Listar")
-
-                Text(listaResultadoRetornados.toString())
             }
 
+            Spacer(modifier = Modifier.height(16.dp))
 
+//                        itemsRemember.add(ModelTimeJob(fecha = item.toString()))
+
+                   listaResultadoRetornados.forEach { item ->
+
+                       Text("$item") //Texto que será exibido na tela
+
+                   }
+
+//            Text("Resultado: $fechaResultado")
         }
     }
 
     @Composable
-    fun Listar() {
+    fun ListaResultadoRetornadosTela() {
 
-        Column(
+        listaResultadoRetornados.forEach { item ->
 
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center
-
-        ) {
-
-            listaResultadoRetornados.forEach { lista ->
-
-                Text(lista)
-            }
+            Text("Resultado: $item")
         }
     }
 }
+
+
