@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -20,9 +21,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.developermaster.timejob.core.ComponentsActivityAdicionar
+import net.developermaster.timejob.core.ComponentsFireBase
 import net.developermaster.timejob.view.ui.theme.TimeJobTheme
 
 class ActivityAdicionar : ComponentActivity() {
@@ -36,8 +39,9 @@ class ActivityAdicionar : ComponentActivity() {
             TimeJobTheme {
 
                 HomeAdicionar(
-                    Modifier.fillMaxSize()
-                    /*.background(Color.Blue)*/
+                    Modifier
+                        .fillMaxSize()
+                        .background(Color.LightGray)
                 )//todo chamando a funcao Home com o padding interno
             }
         }
@@ -57,6 +61,8 @@ class ActivityAdicionar : ComponentActivity() {
                 Spacer(modifier = Modifier.height(30.dp))
 
                 ComponentsActivityAdicionar().TextoCabecalhoActivityAdicionar()
+
+                ComponentsFireBase().Salvar()
 
                 Salvar()
 
@@ -121,8 +127,7 @@ class ActivityAdicionar : ComponentActivity() {
 
                     val data = hashMapOf(
                         "text" to text
-                    )
-                    /*firestore.collection("texts").add(data)
+                    )/*firestore.collection("texts").add(data)
                         .addOnSuccessListener { documentReference ->
                             println("DocumentSnapshot added with ID: ${documentReference.id}")
                         }

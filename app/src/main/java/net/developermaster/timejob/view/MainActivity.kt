@@ -14,15 +14,17 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import net.developermaster.timejob.core.ComponentScaffold
-import net.developermaster.timejob.core.Perfil
+import net.developermaster.timejob.core.ComponentsFireBase
+import net.developermaster.timejob.core.ComponentsMainActivity
 import net.developermaster.timejob.view.ui.theme.TimeJobTheme
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+
             TimeJobTheme {
 
                 //todo esqueleto do app
@@ -44,14 +46,13 @@ class MainActivity : ComponentActivity() {
 
             bottomBar = {
 
-
-                ComponentScaffold().BottomBar()
+                ComponentsMainActivity().BottomBar()
 
             },
 
             floatingActionButton = {
 
-                ComponentScaffold().Fab()
+                ComponentsMainActivity().Fab()
             },
 
             snackbarHost = {
@@ -79,25 +80,28 @@ class MainActivity : ComponentActivity() {
         ) {
 
             Row {
-                Perfil().ImagemPerfil()
-            }//Row imagem perfil
 
-            Row {
-//                TextoPerfil()
-            }//Row nome perfil
+                ComponentsMainActivity().ImagemPerfil() //Row imagem perfil
 
-//            Espaco()
+            }
 
             LazyColumn {
-                //todo lista
-                item {
 
-//                    Salvar()
-//                    SalvarNoFirestore()
+                //todo lista
+                items(1) {
+
+                    ComponentsFireBase().ListarTodos()
 
                 }
-            }//LazyColumn Caixa de texto
+
+            }//LazyColumn
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+//        ComponentsFireBase().listaResultadoRetornados
     }
 
     @Preview(showBackground = true)
@@ -108,3 +112,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
