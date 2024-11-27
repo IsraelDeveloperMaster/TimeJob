@@ -60,7 +60,7 @@ class ComponentsFireBase {
             horaEntrada = horaEntradaRemember,
             horaSalida = horaSalidaRemember,
             totalHora = totalHoraRemember,
-            propinas = propinasRemember
+            propinas = propinasRemember,
         )
 
         Column(
@@ -119,11 +119,11 @@ class ComponentsFireBase {
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                value = horaRemember,
-                onValueChange = {  },
+                value = totalHoraRemember,
+                onValueChange = { totalHoraRemember = it },
                 label = { Text("Total de Hora hoy") },
                 modifier = Modifier.fillMaxWidth(),
-                readOnly = false
+                readOnly = true
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -164,7 +164,7 @@ class ComponentsFireBase {
                             Log.d("firebase", "Erro : ${erro.message}")
                         }
 
-                    NavHostController(context).navigate("MainActivity")
+//                    NavHostController(context).navigate("MainActivity")
 
 //                    Toast.makeText(context, "Salvo con Suceso", Toast.LENGTH_SHORT).show()
                 },
@@ -199,8 +199,8 @@ class ComponentsFireBase {
                 onValueChange = { propinasRemember = it },
                 label = { Text("                                Resultados Semanales") },
                 modifier = Modifier.fillMaxWidth(),
-
-                )
+                readOnly = true
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -249,7 +249,6 @@ class ComponentsFireBase {
                     onValueChange = { },
                     label = { Text("") },
                     modifier = Modifier.fillMaxWidth(),
-
                     trailingIcon = {
                         Icon(
 
@@ -269,7 +268,7 @@ class ComponentsFireBase {
                             tint = Color.Blue,// cor azul da borda
                         )
                     },
-
+                    readOnly = true,
                     )
             }
         }
