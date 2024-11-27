@@ -31,12 +31,14 @@ import androidx.compose.ui.unit.dp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import net.developermaster.timejob.model.ModelTimeJob
+import java.time.Duration
+import java.time.LocalTime
 
 class ComponentsFireBase {
 
     val listaResultadoRetornados = mutableListOf<String>()
 
-    var calculoHora = "123"
+//    var calculoHora = "123"
 
     val hashMap = hashMapOf("text" to "Texto salvo automaticamente")
 
@@ -52,7 +54,6 @@ class ComponentsFireBase {
         var horaEntradaRemember by remember { mutableStateOf("") }
         var horaSalidaRemember by remember { mutableStateOf("") }
         var totalHoraRemember by remember { mutableStateOf("") }
-//        var totalHoraRemember = calculoHora
         var propinasRemember by remember { mutableStateOf("") }
 
         val modelTimeJob = ModelTimeJob(
@@ -118,11 +119,12 @@ class ComponentsFireBase {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            OutlinedTextField(
+            TextField(
                 value = totalHoraRemember,
                 onValueChange = { totalHoraRemember = it },
                 label = { Text("Total de Hora hoy") },
                 modifier = Modifier.fillMaxWidth(),
+                readOnly = true
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -139,20 +141,9 @@ class ComponentsFireBase {
             Button(
 
                 onClick = {
-/*
-                    //Variaveis de tempo
-                    val horaInicio = LocalTime.of(horaRemember.toInt(), minutoRemember.toInt())
-                    val horaFim = LocalTime.of(17, 0)
-                    val duracao = Duration.between(horaInicio, horaFim)
-                    val horas = duracao.toHours()
-                    val minutos = duracao.toMinutes() % 60
-                    val resultadoCalculorHoraFormatado = String.format("%02d:%02d", horas, minutos)
-
-                    //resultado
-                    Log.i("tempo", "Calculo = $resultadoCalculorHoraFormatado")*/
 
 //                    totalHoraRemember += "calculo de horas"
-                    totalHoraRemember += hashMap["text"].toString()
+//                    totalHoraRemember += hashMap["text"].toString()
 
                     FirebaseFirestore.getInstance().collection("TimeJob").document()
                         .set(modelTimeJob).addOnSuccessListener { sucesso ->
@@ -224,12 +215,32 @@ class ComponentsFireBase {
                         val totalHoraRetornados = dados["totalHora"]
                         val propinasDadosRetornados = dados["propinas"]
 
-                        listaResultadoRetornados += (" Fecha: $fechaDadosRetornados \n Hora de Entrada: $horaEntradaRetornados \n Hora de Salida: $horaSalidaRetornados \n Total de Horas Hoy: $totalHoraRetornados \n Propinas: $propinasDadosRetornados")
+//                        val hora = hashMap["horaEntrada"].toString().toInt()
+//                        val minuto = hashMap["horaSalida"].toString().toInt()
+//                        val minuto = horaSalidaRetornados.toString()
+
+//                        val hashMap2 = hashMapOf("horaEntrada" to "")
+
+
+/*                        //Variaveis de tempo
+                        val horaInicio = LocalTime.of(hora, minuto)
+                        val horaFim = LocalTime.of(17, 0)
+                        val duracao = Duration.between(horaInicio, horaFim)
+                        val horas = duracao.toHours()
+                        val minutos = duracao.toMinutes() % 60
+                        val resultadoCalculorHoraFormatado = String.format("%02d:%02d", horas, minutos)
+
+                        //resultado tempo
+                        Log.i("tempo", "Calculo = $resultadoCalculorHoraFormatado")*/
+
+                        listaResultadoRetornados += (" Fecha: $fechaDadosRetornados \n Hora de Entrada: $horaEntradaRetornados \n Hora de Salida: $horaSalidaRetornados \n Total de Horas Hoy: $ \n Propinas: $propinasDadosRetornados")
 
                         Log.d("firebase"," id: $idRetornado \n Fecha: $fechaDadosRetornados \n Horas Trabajadas: $horaSalidaRetornados \n Propinas: $propinasDadosRetornados \n \n "
                         )
 
                         propinasRemember = " "
+
+
 
                     }
                 }
