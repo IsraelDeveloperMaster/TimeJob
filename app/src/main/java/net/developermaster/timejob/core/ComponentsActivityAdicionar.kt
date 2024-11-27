@@ -143,12 +143,12 @@ class ComponentsActivityAdicionar {
 
             Icon(
 
-                imageVector = Icons.Default.Favorite,
-                contentDescription = null,
-                tint = Color.Red
+                imageVector = Icons.Default.Favorite, contentDescription = null, tint = Color.Red
             )
         }
 
 
     }
+
+
 }
