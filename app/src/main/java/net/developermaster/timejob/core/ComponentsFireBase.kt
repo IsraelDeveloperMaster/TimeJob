@@ -28,21 +28,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import net.developermaster.timejob.model.ModelTimeJob
-import java.time.Duration
-import java.time.LocalTime
 
 class ComponentsFireBase {
 
     val listaResultadoRetornados = mutableListOf<String>()
 
+    var calculoHora = "123"
+
+    val hashMap = hashMapOf("text" to "Texto salvo automaticamente")
+
     @Composable
     fun Salvar() {
-
-        var calculoDeHora = ""
 
         //context local
         val context = LocalContext.current
@@ -53,6 +52,7 @@ class ComponentsFireBase {
         var horaEntradaRemember by remember { mutableStateOf("") }
         var horaSalidaRemember by remember { mutableStateOf("") }
         var totalHoraRemember by remember { mutableStateOf("") }
+//        var totalHoraRemember = calculoHora
         var propinasRemember by remember { mutableStateOf("") }
 
         val modelTimeJob = ModelTimeJob(
@@ -123,7 +123,6 @@ class ComponentsFireBase {
                 onValueChange = { totalHoraRemember = it },
                 label = { Text("Total de Hora hoy") },
                 modifier = Modifier.fillMaxWidth(),
-                readOnly = true
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -152,7 +151,8 @@ class ComponentsFireBase {
                     //resultado
                     Log.i("tempo", "Calculo = $resultadoCalculorHoraFormatado")*/
 
-                    totalHoraRemember = "calculo de horas"
+//                    totalHoraRemember += "calculo de horas"
+                    totalHoraRemember += hashMap["text"].toString()
 
                     FirebaseFirestore.getInstance().collection("TimeJob").document()
                         .set(modelTimeJob).addOnSuccessListener { sucesso ->
