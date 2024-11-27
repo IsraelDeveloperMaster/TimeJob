@@ -7,10 +7,13 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -32,14 +35,98 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key.Companion.Home
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
 import net.developermaster.timejob.R
 import net.developermaster.timejob.view.ActivityAdicionar
+import net.developermaster.timejob.view.MainActivity
 
 class ComponentsMainActivity {
+
+    @Composable
+    fun Scaffold() {
+
+        androidx.compose.material3.Scaffold(
+
+            topBar = {
+
+                //                TopBar()
+            },
+
+            bottomBar = {
+
+                BottomBar()
+
+            },
+
+            floatingActionButton = {
+
+                ComponentsMainActivity().Fab()
+            },
+
+            snackbarHost = {
+
+//                TextoExemplo()
+
+            },
+
+//            containerColor = Color.Black,//todo cor preta do container do scaffold
+
+        ) { pappdingInterno ->
+
+
+            Home(modifier = Modifier.padding(pappdingInterno))//.padding(pappdingInterno))//todo chamando a funcao Home com o padding interno
+        }
+    }
+
+    @Composable
+    fun Home(modifier: Modifier) {
+
+        Column(
+            modifier = modifier //todo modificador
+                .fillMaxWidth()//todo largura
+
+        ) {
+
+            Row {
+
+                ComponentsMainActivity().ImagemPerfil() //Row imagem perfil
+
+            }
+
+            LazyColumn {
+
+                //todo lista
+                items(1) { item ->
+
+                    ComponentsFireBase().ListarTodos()
+                }
+            }//LazyColumn
+        }
+    }
+
+    @Composable
+    fun ImagemPerfil() {
+
+        Image(modifier = Modifier
+            .clickable {
+//                mensagemToast("Clicado na imagem")
+            }
+            .size(60.dp) //todo tamanho da imagem
+            .clip(CircleShape)
+            .border(2.dp, Color.Black, CircleShape)
+            .background(Color.White),
+
+            painter = painterResource(R.drawable.vtcgestion), //todo imagem
+            contentDescription = null, //todo conteudo da imagem
+            contentScale = ContentScale.Crop)
+    }
 
     @Composable
     fun BottomBar() {
@@ -98,9 +185,8 @@ class ComponentsMainActivity {
             Toast.makeText(context, "Clicou no botão", Toast.LENGTH_SHORT).show()
 
             //todo ação ao clicar no botão
-            val intent = Intent(context, ActivityAdicionar::class.java)
-            context.startActivity(intent)
-
+            NavHostController(context).navigate("ActivityAdicionar")
+            
         }) {
 
             Icon(
@@ -150,23 +236,6 @@ class ComponentsMainActivity {
                     tint = Color.Blue//todo cor azul da borda
                 )
             })
-    }
-
-    @Composable
-    fun ImagemPerfil() {
-
-        Image(modifier = Modifier
-            .clickable {
-//                mensagemToast("Clicado na imagem")
-            }
-            .size(60.dp) //todo tamanho da imagem
-            .clip(CircleShape)
-            .border(2.dp, Color.Black, CircleShape)
-            .background(Color.White),
-
-            painter = painterResource(R.drawable.vtcgestion), //todo imagem
-            contentDescription = null, //todo conteudo da imagem
-            contentScale = ContentScale.Crop)
     }
 
 }
