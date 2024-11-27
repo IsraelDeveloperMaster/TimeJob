@@ -32,8 +32,7 @@ class ActivityAdicionar : ComponentActivity() {
         setContent {
             TimeJobTheme {
 
-                ComponentsActivityAdicionar().HomeAdicionar( Modifier .fillMaxSize() .background(Color.LightGray)
-                )
+                ComponentsActivityAdicionar().HomeAdicionar( Modifier .fillMaxSize() .background(Color.LightGray) )
             }
         }
     }

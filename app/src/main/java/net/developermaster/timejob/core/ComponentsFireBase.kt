@@ -38,10 +38,6 @@ class ComponentsFireBase {
 
     val listaResultadoRetornados = mutableListOf<String>()
 
-//    var calculoHora = "123"
-
-    val hashMap = hashMapOf("text" to "Texto salvo automaticamente")
-
     @Composable
     fun Salvar() {
 
@@ -49,91 +45,104 @@ class ComponentsFireBase {
         val context = LocalContext.current
 
         var fechaRemember by remember { mutableStateOf("") }
-        var horaRemember by remember { mutableStateOf("") }
-        var minutoRemember by remember { mutableStateOf("") }
+
         var horaEntradaRemember by remember { mutableStateOf("") }
+        var minutoEntradaRemember by remember { mutableStateOf("0") }
+
         var horaSalidaRemember by remember { mutableStateOf("") }
-        var totalHoraRemember by remember { mutableStateOf("") }
+        var minutoSalidaRemember by remember { mutableStateOf("0") }
+
         var propinasRemember by remember { mutableStateOf("") }
 
         val modelTimeJob = ModelTimeJob(
             fecha = fechaRemember,
             horaEntrada = horaEntradaRemember,
+            minutoEntrada = minutoEntradaRemember,
             horaSalida = horaSalidaRemember,
-            totalHora = totalHoraRemember,
+            minutoSalida = minutoSalidaRemember,
             propinas = propinasRemember,
         )
 
         Column(
 
-            modifier = Modifier.fillMaxSize() .padding(8.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
             verticalArrangement = Arrangement.Center
 
         ) {
 
+            //fecha
+            OutlinedTextField(
+                modifier = Modifier.width(290.dp).padding(start = 89.dp),
+                value = fechaRemember,
+                onValueChange = { fechaRemember = it },
+                label = { Text("Fecha") },
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            //row hora entrada
             Row(
+
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
+
             ) {
 
                 OutlinedTextField(
                     modifier = Modifier.width(100.dp),
-                    value = horaRemember,
-                    onValueChange = { horaRemember = it },
+                    value = horaEntradaRemember,
+                    onValueChange = { horaEntradaRemember = it },
                     label = { Text("Hora") },
 
-                )
-
-
+                    )
                 OutlinedTextField(
-                    modifier = Modifier.width(100.dp).padding(start = 8.dp),
-                    value = minutoRemember,
-                    onValueChange = { minutoRemember = it },
+                    modifier = Modifier
+                        .width(100.dp)
+                        .padding(start = 8.dp),
+                    value = minutoEntradaRemember,
+                    onValueChange = { minutoEntradaRemember = it },
                     label = { Text("Minuto") },
                 )
 
             }
 
-            OutlinedTextField(
-                value = fechaRemember,
-                onValueChange = { fechaRemember = it },
-                label = { Text("Fecha") },
-                modifier = Modifier.fillMaxWidth()
-            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            //row hora saida
+            Row(
+
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
+
+            ) {
+
+                OutlinedTextField(
+                    modifier = Modifier.width(100.dp),
+                    value = horaSalidaRemember,
+                    onValueChange = { horaSalidaRemember = it },
+                    label = { Text("Hora") },
+
+
+                    )
+                OutlinedTextField(
+                    modifier = Modifier
+                        .width(100.dp)
+                        .padding(start = 8.dp),
+                    value = minutoSalidaRemember,
+                    onValueChange = { minutoSalidaRemember = it },
+                    label = { Text("Minuto") },
+                )
+
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                value = horaEntradaRemember,
-                onValueChange = { horaEntradaRemember = it },
-                label = { Text("Hora de Entrada") },
-                modifier = Modifier.fillMaxWidth(),
-            )
+                modifier = Modifier.width(290.dp).padding(start = 89.dp),
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            OutlinedTextField(
-                value = horaSalidaRemember,
-                onValueChange = { horaSalidaRemember = it },
-                label = { Text("Hora de Salida") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            TextField(
-                value = totalHoraRemember,
-                onValueChange = { totalHoraRemember = it },
-                label = { Text("Total de Hora hoy") },
-                modifier = Modifier.fillMaxWidth(),
-                readOnly = true
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            OutlinedTextField(
                 value = propinasRemember,
                 onValueChange = { propinasRemember = it },
                 label = { Text("Propinas") },
-                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -141,9 +150,6 @@ class ComponentsFireBase {
             Button(
 
                 onClick = {
-
-//                    totalHoraRemember += "calculo de horas"
-//                    totalHoraRemember += hashMap["text"].toString()
 
                     FirebaseFirestore.getInstance().collection("TimeJob").document()
                         .set(modelTimeJob).addOnSuccessListener { sucesso ->
@@ -211,36 +217,30 @@ class ComponentsFireBase {
                         val idRetornado = documents.id
                         val fechaDadosRetornados = dados["fecha"]
                         val horaEntradaRetornados = dados["horaEntrada"]
+                        val minutoEntradaRetornados = dados["minutoEntrada"]
                         val horaSalidaRetornados = dados["horaSalida"]
-                        val totalHoraRetornados = dados["totalHora"]
+                        val minutoSalidaRetornados = dados["minutoSalida"]
                         val propinasDadosRetornados = dados["propinas"]
 
-//                        val hora = hashMap["horaEntrada"].toString().toInt()
-//                        val minuto = hashMap["horaSalida"].toString().toInt()
-//                        val minuto = horaSalidaRetornados.toString()
-
-//                        val hashMap2 = hashMapOf("horaEntrada" to "")
-
-
-/*                        //Variaveis de tempo
-                        val horaInicio = LocalTime.of(hora, minuto)
-                        val horaFim = LocalTime.of(17, 0)
-                        val duracao = Duration.between(horaInicio, horaFim)
+                        //calculo tempo
+                        val horaEntradaTime = LocalTime.of(horaEntradaRetornados.toString().toInt(), minutoEntradaRetornados.toString().toInt())
+                        val horaSalidaTime = LocalTime.of(horaSalidaRetornados.toString().toInt(),minutoSalidaRetornados.toString().toInt())
+                        val duracao = Duration.between(horaEntradaTime, horaSalidaTime)
                         val horas = duracao.toHours()
                         val minutos = duracao.toMinutes() % 60
                         val resultadoCalculorHoraFormatado = String.format("%02d:%02d", horas, minutos)
 
                         //resultado tempo
-                        Log.i("tempo", "Calculo = $resultadoCalculorHoraFormatado")*/
+                        Log.i("tempo", "Calculo = $resultadoCalculorHoraFormatado")
 
-                        listaResultadoRetornados += (" Fecha: $fechaDadosRetornados \n Hora de Entrada: $horaEntradaRetornados \n Hora de Salida: $horaSalidaRetornados \n Total de Horas Hoy: $ \n Propinas: $propinasDadosRetornados")
+                        listaResultadoRetornados += (" Fecha: $fechaDadosRetornados \n Hora de Entrada: $horaEntradaRetornados \n Hora de Salida: $horaSalidaRetornados \n Total de Horas Hoy: $resultadoCalculorHoraFormatado \n Propinas: $propinasDadosRetornados")
 
-                        Log.d("firebase"," id: $idRetornado \n Fecha: $fechaDadosRetornados \n Horas Trabajadas: $horaSalidaRetornados \n Propinas: $propinasDadosRetornados \n \n "
+                        Log.d(
+                            "firebase",
+                            " id: $idRetornado \n Fecha: $fechaDadosRetornados \n Horas Trabajadas: $horaSalidaRetornados \n Propinas: $propinasDadosRetornados \n \n "
                         )
 
                         propinasRemember = " "
-
-
 
                     }
                 }
@@ -269,18 +269,16 @@ class ComponentsFireBase {
                                 .width(50.dp)
 
                                 .clickable {
-                                    Toast
-                                        .makeText(
-                                            context, "Clicou no icone", Toast.LENGTH_SHORT
-                                        )
-                                        .show()
+                                    Toast.makeText(
+                                        context, "Clicou no icone", Toast.LENGTH_SHORT
+                                    ).show()
                                 },//clickable
 
                             tint = Color.Blue,// cor azul da borda
                         )
                     },
                     readOnly = true,
-                    )
+                )
             }
         }
     }
