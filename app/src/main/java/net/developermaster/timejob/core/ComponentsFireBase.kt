@@ -1,13 +1,11 @@
 package net.developermaster.timejob.core
 
-import android.app.Activity
-import android.content.Intent
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,13 +28,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavHostController
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import net.developermaster.timejob.R
 import net.developermaster.timejob.model.ModelTimeJob
-import net.developermaster.timejob.view.ActivityAdicionar
 import java.time.Duration
 import java.time.LocalTime
 
@@ -47,35 +42,58 @@ class ComponentsFireBase {
     @Composable
     fun Salvar() {
 
+        var calculoDeHora = ""
+
         //context local
         val context = LocalContext.current
 
-        var fecha by remember { mutableStateOf("") }
-        var horaEntrada by remember { mutableStateOf("") }
-        var horaSalida by remember { mutableStateOf("") }
-        var totalHora by remember { mutableStateOf("") }
-        var propinas by remember { mutableStateOf("") }
+        var fechaRemember by remember { mutableStateOf("") }
+        var horaRemember by remember { mutableStateOf("") }
+        var minutoRemember by remember { mutableStateOf("") }
+        var horaEntradaRemember by remember { mutableStateOf("") }
+        var horaSalidaRemember by remember { mutableStateOf("") }
+        var totalHoraRemember by remember { mutableStateOf("") }
+        var propinasRemember by remember { mutableStateOf("") }
 
         val modelTimeJob = ModelTimeJob(
-            fecha = fecha,
-            horaEntrada = horaEntrada,
-            horaSalida = horaSalida,
-            totalHora = totalHora,
-            propinas = propinas
+            fecha = fechaRemember,
+            horaEntrada = horaEntradaRemember,
+            horaSalida = horaSalidaRemember,
+            totalHora = totalHoraRemember,
+            propinas = propinasRemember
         )
 
         Column(
 
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxSize() .padding(8.dp),
             verticalArrangement = Arrangement.Center
 
         ) {
 
+            Row(
+            ) {
+
+                OutlinedTextField(
+                    modifier = Modifier.width(100.dp),
+                    value = horaRemember,
+                    onValueChange = { horaRemember = it },
+                    label = { Text("Hora") },
+
+                )
+
+
+                OutlinedTextField(
+                    modifier = Modifier.width(100.dp).padding(start = 8.dp),
+                    value = minutoRemember,
+                    onValueChange = { minutoRemember = it },
+                    label = { Text("Minuto") },
+                )
+
+            }
+
             OutlinedTextField(
-                value = fecha,
-                onValueChange = { fecha = it },
+                value = fechaRemember,
+                onValueChange = { fechaRemember = it },
                 label = { Text("Fecha") },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -83,17 +101,17 @@ class ComponentsFireBase {
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                value = horaEntrada,
-                onValueChange = { horaEntrada = it },
+                value = horaEntradaRemember,
+                onValueChange = { horaEntradaRemember = it },
                 label = { Text("Hora de Entrada") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                value = horaSalida,
-                onValueChange = { horaSalida = it },
+                value = horaSalidaRemember,
+                onValueChange = { horaSalidaRemember = it },
                 label = { Text("Hora de Salida") },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -101,17 +119,18 @@ class ComponentsFireBase {
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                value = totalHora,
-                onValueChange = { totalHora = it },
+                value = horaRemember,
+                onValueChange = {  },
                 label = { Text("Total de Hora hoy") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                readOnly = false
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                value = propinas,
-                onValueChange = { propinas = it },
+                value = propinasRemember,
+                onValueChange = { propinasRemember = it },
                 label = { Text("Propinas") },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -121,42 +140,33 @@ class ComponentsFireBase {
             Button(
 
                 onClick = {
+/*
+                    //Variaveis de tempo
+                    val horaInicio = LocalTime.of(horaRemember.toInt(), minutoRemember.toInt())
+                    val horaFim = LocalTime.of(17, 0)
+                    val duracao = Duration.between(horaInicio, horaFim)
+                    val horas = duracao.toHours()
+                    val minutos = duracao.toMinutes() % 60
+                    val resultadoCalculorHoraFormatado = String.format("%02d:%02d", horas, minutos)
+
+                    //resultado
+                    Log.i("tempo", "Calculo = $resultadoCalculorHoraFormatado")*/
+
+                    totalHoraRemember = "calculo de horas"
 
                     FirebaseFirestore.getInstance().collection("TimeJob").document()
                         .set(modelTimeJob).addOnSuccessListener { sucesso ->
-
-//                            mensagemToast("Salvo com sucesso")
 
                             Log.d("firebase", "Salvo com sucesso")
 
                         }.addOnFailureListener { erro ->
 
-//                            mensagemToast("Salvo com sucesso ${erro.message}")//
-
                             Log.d("firebase", "Erro : ${erro.message}")
                         }
-
-
-                    //Variaveis de tempo
-                    val horaInicio = LocalTime.of(horaEntrada.toInt(), horaSalida.toInt())
-                    val horaFim = LocalTime.of(16, 0)
-                    val duracao = Duration.between(horaInicio, horaFim)
-                    val horas = duracao.toHours()
-                    val minutos = duracao.toMinutes() % 60
-                    val resultadoFormatado = String.format("%02d:%02d", horas, minutos)
-
-                    //resultado
-                    Log.i("tempo", "Calculo = $resultadoFormatado")
-
-
-
-
 
                     NavHostController(context).navigate("MainActivity")
 
 //                    Toast.makeText(context, "Salvo con Suceso", Toast.LENGTH_SHORT).show()
-
-
                 },
 
                 modifier = Modifier.fillMaxWidth()

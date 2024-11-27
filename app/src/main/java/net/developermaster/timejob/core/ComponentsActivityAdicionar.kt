@@ -31,19 +31,11 @@ class ComponentsActivityAdicionar {
     @Composable
     fun HomeAdicionar(modifier: Modifier) {
 
-        Column(
-
-            modifier = modifier // modificador
-
-                .fillMaxWidth().padding()// largura
+        Column( modifier = modifier.fillMaxWidth().padding()
 
         ) {
 
             ComponentsFireBase().Salvar()
-
-            Spacer(modifier = Modifier.height(100.dp))
-
         }
     }
-
 }
