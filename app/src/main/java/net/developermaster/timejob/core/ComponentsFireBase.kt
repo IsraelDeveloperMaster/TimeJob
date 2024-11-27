@@ -27,7 +27,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import net.developermaster.timejob.model.ModelTimeJob
@@ -161,7 +163,7 @@ class ComponentsFireBase {
                             Log.d("firebase", "Erro : ${erro.message}")
                         }
 
-//                    NavHostController(context).navigate("MainActivity")
+                    NavHostController(context).navigate("MainActivity")
 
 //                    Toast.makeText(context, "Salvo con Suceso", Toast.LENGTH_SHORT).show()
                 },
@@ -233,7 +235,7 @@ class ComponentsFireBase {
                         //resultado tempo
                         Log.i("tempo", "Calculo = $resultadoCalculorHoraFormatado")
 
-                        listaResultadoRetornados += (" Fecha: $fechaDadosRetornados \n Hora de Entrada: $horaEntradaRetornados \n Hora de Salida: $horaSalidaRetornados \n Total de Horas Hoy: $resultadoCalculorHoraFormatado \n Propinas: $propinasDadosRetornados")
+                        listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nHora de Entrada: $horaEntradaRetornados \nHora de Salida: $horaSalidaRetornados \nTotal de Horas: $resultadoCalculorHoraFormatado \nPropinas: $propinasDadosRetornados")
 
                         Log.d(
                             "firebase",
@@ -257,6 +259,7 @@ class ComponentsFireBase {
                 OutlinedTextField(
 
                     value = lista,
+                    textStyle = TextStyle(color = Color.Red),
                     onValueChange = { },
                     label = { Text("") },
                     modifier = Modifier.fillMaxWidth(),
