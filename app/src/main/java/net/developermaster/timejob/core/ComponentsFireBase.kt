@@ -42,7 +42,6 @@ import java.time.LocalTime
 
 class ComponentsFireBase {
 
-
     val listaResultadoRetornados = mutableListOf<String>()
 
     @Composable
@@ -137,7 +136,8 @@ class ComponentsFireBase {
                             Log.d("firebase", "Erro : ${erro.message}")
                         }
 
-                    /*//Variaveis de tempo
+
+                    //Variaveis de tempo
                     val horaInicio = LocalTime.of(horaEntrada.toInt(), horaSalida.toInt())
                     val horaFim = LocalTime.of(16, 0)
                     val duracao = Duration.between(horaInicio, horaFim)
@@ -146,12 +146,16 @@ class ComponentsFireBase {
                     val resultadoFormatado = String.format("%02d:%02d", horas, minutos)
 
                     //resultado
-                    Log.i("tempo", "Calculo = $resultadoFormatado")*/
+                    Log.i("tempo", "Calculo = $resultadoFormatado")
+
 
 
 
 
                     NavHostController(context).navigate("MainActivity")
+
+//                    Toast.makeText(context, "Salvo con Suceso", Toast.LENGTH_SHORT).show()
+
 
                 },
 
@@ -210,11 +214,9 @@ class ComponentsFireBase {
                         val totalHoraRetornados = dados["totalHora"]
                         val propinasDadosRetornados = dados["propinas"]
 
-                        listaResultadoRetornados += (" Fecha: $fechaDadosRetornados \n Hora de Entrada: $horaEntradaRetornados \n  Hora de Salida: $horaSalidaRetornados \n Total de Horas Hoy: $totalHoraRetornados \n  Propinas: $propinasDadosRetornados ")
+                        listaResultadoRetornados += (" Fecha: $fechaDadosRetornados \n Hora de Entrada: $horaEntradaRetornados \n Hora de Salida: $horaSalidaRetornados \n Total de Horas Hoy: $totalHoraRetornados \n Propinas: $propinasDadosRetornados")
 
-                        Log.d(
-                            "firebase",
-                            " id: $idRetornado \n Fecha: $fechaDadosRetornados \n Horas Trabajadas: $horaSalidaRetornados \n Propinas: $propinasDadosRetornados \n \n "
+                        Log.d("firebase"," id: $idRetornado \n Fecha: $fechaDadosRetornados \n Horas Trabajadas: $horaSalidaRetornados \n Propinas: $propinasDadosRetornados \n \n "
                         )
 
                         propinasRemember = " "

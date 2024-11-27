@@ -182,11 +182,13 @@ class ComponentsMainActivity {
 
         FloatingActionButton(onClick = {
 
-            Toast.makeText(context, "Clicou no botão", Toast.LENGTH_SHORT).show()
+            //ação ao clicar no botão
+            val intent = Intent(context, ActivityAdicionar::class.java)
+            context.startActivity(intent)
 
-            //todo ação ao clicar no botão
-            NavHostController(context).navigate("ActivityAdicionar")
-            
+            //navigation compose 2.4.0
+//            NavHostController(context).navigate("ActivityAdicionar")
+
         }) {
 
             Icon(
