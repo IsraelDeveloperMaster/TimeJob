@@ -13,6 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.Button
@@ -77,7 +80,9 @@ class ComponentsFireBase {
 
             //fecha
             OutlinedTextField(
-                modifier = Modifier.width(290.dp).padding(start = 89.dp),
+                modifier = Modifier
+                    .width(290.dp)
+                    .padding(start = 89.dp),
                 value = fechaRemember,
                 onValueChange = { fechaRemember = it },
                 label = { Text("Fecha") },
@@ -141,7 +146,9 @@ class ComponentsFireBase {
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                modifier = Modifier.width(290.dp).padding(start = 89.dp),
+                modifier = Modifier
+                    .width(290.dp)
+                    .padding(start = 89.dp),
 
                 value = propinasRemember,
                 onValueChange = { propinasRemember = it },
@@ -226,12 +233,19 @@ class ComponentsFireBase {
                         val propinasDadosRetornados = dados["propinas"]
 
                         //calculo tempo
-                        val horaEntradaTime = LocalTime.of(horaEntradaRetornados.toString().toInt(), minutoEntradaRetornados.toString().toInt())
-                        val horaSalidaTime = LocalTime.of(horaSalidaRetornados.toString().toInt(),minutoSalidaRetornados.toString().toInt())
+                        val horaEntradaTime = LocalTime.of(
+                            horaEntradaRetornados.toString().toInt(),
+                            minutoEntradaRetornados.toString().toInt()
+                        )
+                        val horaSalidaTime = LocalTime.of(
+                            horaSalidaRetornados.toString().toInt(),
+                            minutoSalidaRetornados.toString().toInt()
+                        )
                         val duracao = Duration.between(horaEntradaTime, horaSalidaTime)
                         val horas = duracao.toHours()
                         val minutos = duracao.toMinutes() % 60
-                        val resultadoCalculorHoraFormatado = String.format("%02d:%02d", horas, minutos)
+                        val resultadoCalculorHoraFormatado =
+                            String.format("%02d:%02d", horas, minutos)
 
                         //resultado tempo
                         Log.i("tempo", "Calculo = $resultadoCalculorHoraFormatado")
@@ -290,18 +304,22 @@ class ComponentsFireBase {
     @Composable
     fun ListarRelatorio() {
 
+        val context = LocalContext.current
+
         var propinasRemember by remember { mutableStateOf("") }
+        var dataInicioRemember by remember { mutableStateOf("") }
+        var dataFimRemember by remember { mutableStateOf("") }
+
+
+        Spacer(modifier = Modifier.height(30.dp))
 
         Column(
             modifier = Modifier
-                .background(Color.LightGray)
+//                .background(Color.LightGray)
                 .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center
+                .padding(16.dp), verticalArrangement = Arrangement.Center
 
         ) {
-
-            Spacer(modifier = Modifier.height(16.dp))
 
             TextField(
                 enabled = false,
@@ -309,63 +327,114 @@ class ComponentsFireBase {
                 onValueChange = { propinasRemember = it },
                 label = { Text(" ") },
                 modifier = Modifier.fillMaxWidth(),
+                readOnly = true
             )
+        }
 
-            Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-            val listaDeDadosRetornadas = FirebaseFirestore.getInstance().collection("TimeJob")
-                .whereGreaterThanOrEqualTo("fecha" , "1")
-                .whereLessThanOrEqualTo("fecha" , "4")
+        //row hora entrada
+        Row(
 
-            listaDeDadosRetornadas.addSnapshotListener { dadosRetornados, error ->
+            modifier = Modifier.fillMaxWidth(),
+//                .background(Color.LightGray),
+            horizontalArrangement = Arrangement.Center
 
-                val listaRetornada = dadosRetornados?.documents//todo document
+        ) {
 
-                listaRetornada?.forEach { documents ->
+            OutlinedTextField(
+                modifier = Modifier.width(150.dp),
+                value = dataInicioRemember,
+                onValueChange = { dataInicioRemember = it },
+                label = { Text("Fecha Inicial") },
 
-                    val dados = documents?.data
+                )
+            OutlinedTextField(
+                modifier = Modifier
+                    .width(150.dp)
+                    .padding(start = 8.dp),
+                value = dataFimRemember,
+                onValueChange = { dataFimRemember = it },
+                label = { Text("Fecha Final") },
+            )
+        }
 
-                    if (dados != null) {
+        Button(
+            onClick = {
 
-                        val idRetornado = documents.id
-                        val fechaDadosRetornados = dados["fecha"]
-                        val horaEntradaRetornados = dados["horaEntrada"]
-                        val minutoEntradaRetornados = dados["minutoEntrada"]
-                        val horaSalidaRetornados = dados["horaSalida"]
-                        val minutoSalidaRetornados = dados["minutoSalida"]
-                        val propinasDadosRetornados = dados["propinas"]
+                val listaDeDadosRetornadas = FirebaseFirestore.getInstance().collection("TimeJob")
+                    .whereGreaterThanOrEqualTo("fecha", dataInicioRemember)
+                    .whereLessThanOrEqualTo("fecha", dataFimRemember)
 
-                        //calculo tempo
-                        val horaEntradaTime = LocalTime.of(horaEntradaRetornados.toString().toInt(), minutoEntradaRetornados.toString().toInt())
-                        val horaSalidaTime = LocalTime.of(horaSalidaRetornados.toString().toInt(),minutoSalidaRetornados.toString().toInt())
-                        val duracao = Duration.between(horaEntradaTime, horaSalidaTime)
-                        val horas = duracao.toHours()
-                        val minutos = duracao.toMinutes() % 60
-                        val resultadoCalculorHoraFormatado = String.format("%02d:%02d", horas, minutos)
+                listaDeDadosRetornadas.addSnapshotListener { dadosRetornados, error ->
 
-                        //resultado tempo
-                        Log.i("tempo", "Calculo = $resultadoCalculorHoraFormatado")
+                    val listaRetornada = dadosRetornados?.documents//todo document
 
-                        listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nHora de Entrada: $horaEntradaRetornados \nHora de Salida: $horaSalidaRetornados \nTotal de Horas: $resultadoCalculorHoraFormatado \nPropinas: $propinasDadosRetornados")
+                    listaRetornada?.forEach { documents ->
 
-                        Log.d(
-                            "firebase",
-                            " id: $idRetornado \n Fecha: $fechaDadosRetornados \n Horas Trabajadas: $horaSalidaRetornados \n Propinas: $propinasDadosRetornados \n \n "
-                        )
+                        val dados = documents?.data
 
-                        propinasRemember = " "
+                        if (dados != null) {
 
+                            val idRetornado = documents.id
+                            val fechaDadosRetornados = dados["fecha"]
+                            val horaEntradaRetornados = dados["horaEntrada"]
+                            val minutoEntradaRetornados = dados["minutoEntrada"]
+                            val horaSalidaRetornados = dados["horaSalida"]
+                            val minutoSalidaRetornados = dados["minutoSalida"]
+                            val propinasDadosRetornados = dados["propinas"]
+
+                            //calculo tempo
+                            val horaEntradaTime = LocalTime.of(
+                                horaEntradaRetornados.toString().toInt(),
+                                minutoEntradaRetornados.toString().toInt()
+                            )
+                            val horaSalidaTime = LocalTime.of(
+                                horaSalidaRetornados.toString().toInt(),
+                                minutoSalidaRetornados.toString().toInt()
+                            )
+                            val duracao = Duration.between(horaEntradaTime, horaSalidaTime)
+                            val horas = duracao.toHours()
+                            val minutos = duracao.toMinutes() % 60
+                            val resultadoCalculorHoraFormatado =
+                                String.format("%02d:%02d", horas, minutos)
+
+                            //resultado tempo
+                            Log.i("tempo", "Calculo = $resultadoCalculorHoraFormatado")
+
+                            listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nHora de Entrada: $horaEntradaRetornados \nHora de Salida: $horaSalidaRetornados \nTotal de Horas: $resultadoCalculorHoraFormatado \nPropinas: $propinasDadosRetornados")
+
+                            Log.d(
+                                "firebase",
+                                " id: $idRetornado \n Fecha: $fechaDadosRetornados \n Horas Trabajadas: $horaSalidaRetornados \n Propinas: $propinasDadosRetornados \n \n "
+                            )
+
+                            propinasRemember = " "
+                        }
                     }
                 }
-            }
+
+            },
+
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+
+        ) {
+            Text("Pesquisar")
+        }
+
+        Column(
+            modifier = Modifier
+//                .background(Color.LightGray)
+                .fillMaxSize()
+                .padding(16.dp), verticalArrangement = Arrangement.Center
+
+        ) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-//                        itemsRemember.add(ModelTimeJob(fecha = item.toString()))
-
             listaResultadoRetornados.forEach { lista ->
-
-                val context = LocalContext.current
 
                 OutlinedTextField(
 
@@ -376,18 +445,15 @@ class ComponentsFireBase {
                     modifier = Modifier.fillMaxWidth(),
                     trailingIcon = {
                         Icon(
-
                             imageVector = Icons.Default.Create,//icone
                             contentDescription = null,
                             modifier = Modifier
                                 .width(50.dp)
-
                                 .clickable {
                                     Toast.makeText(
                                         context, "Clicou no icone", Toast.LENGTH_SHORT
                                     ).show()
                                 },//clickable
-
                             tint = Color.Blue,// cor azul da borda
                         )
                     },

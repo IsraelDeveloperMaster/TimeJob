@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import net.developermaster.timejob.core.ComponentsActivitys
-import net.developermaster.timejob.core.ComponentsFireBase
 import net.developermaster.timejob.view.ui.theme.TimeJobTheme
 
 class ActivityRelatorio : ComponentActivity() {
@@ -19,8 +18,7 @@ class ActivityRelatorio : ComponentActivity() {
         setContent {
             TimeJobTheme {
 
-                ComponentsFireBase().ListarRelatorio()
-            }
+                ComponentsActivitys().HomeActivityRelatorio( Modifier .fillMaxSize())            }
         }
     }
 }
