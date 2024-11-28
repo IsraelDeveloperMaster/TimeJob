@@ -2,6 +2,7 @@ package net.developermaster.timejob.core
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -205,6 +206,116 @@ class ComponentsFireBase {
 
             val listaDeDadosRetornadas = FirebaseFirestore.getInstance().collection("TimeJob")
                 .orderBy("fecha", Query.Direction.DESCENDING)
+
+            listaDeDadosRetornadas.addSnapshotListener { dadosRetornados, error ->
+
+                val listaRetornada = dadosRetornados?.documents//todo document
+
+                listaRetornada?.forEach { documents ->
+
+                    val dados = documents?.data
+
+                    if (dados != null) {
+
+                        val idRetornado = documents.id
+                        val fechaDadosRetornados = dados["fecha"]
+                        val horaEntradaRetornados = dados["horaEntrada"]
+                        val minutoEntradaRetornados = dados["minutoEntrada"]
+                        val horaSalidaRetornados = dados["horaSalida"]
+                        val minutoSalidaRetornados = dados["minutoSalida"]
+                        val propinasDadosRetornados = dados["propinas"]
+
+                        //calculo tempo
+                        val horaEntradaTime = LocalTime.of(horaEntradaRetornados.toString().toInt(), minutoEntradaRetornados.toString().toInt())
+                        val horaSalidaTime = LocalTime.of(horaSalidaRetornados.toString().toInt(),minutoSalidaRetornados.toString().toInt())
+                        val duracao = Duration.between(horaEntradaTime, horaSalidaTime)
+                        val horas = duracao.toHours()
+                        val minutos = duracao.toMinutes() % 60
+                        val resultadoCalculorHoraFormatado = String.format("%02d:%02d", horas, minutos)
+
+                        //resultado tempo
+                        Log.i("tempo", "Calculo = $resultadoCalculorHoraFormatado")
+
+                        listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nHora de Entrada: $horaEntradaRetornados \nHora de Salida: $horaSalidaRetornados \nTotal de Horas: $resultadoCalculorHoraFormatado \nPropinas: $propinasDadosRetornados")
+
+                        Log.d(
+                            "firebase",
+                            " id: $idRetornado \n Fecha: $fechaDadosRetornados \n Horas Trabajadas: $horaSalidaRetornados \n Propinas: $propinasDadosRetornados \n \n "
+                        )
+
+                        propinasRemember = " "
+
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+//                        itemsRemember.add(ModelTimeJob(fecha = item.toString()))
+
+            listaResultadoRetornados.forEach { lista ->
+
+                val context = LocalContext.current
+
+                OutlinedTextField(
+
+                    value = lista,
+                    textStyle = TextStyle(color = Color.Red),
+                    onValueChange = { },
+                    label = { Text("") },
+                    modifier = Modifier.fillMaxWidth(),
+                    trailingIcon = {
+                        Icon(
+
+                            imageVector = Icons.Default.Create,//icone
+                            contentDescription = null,
+                            modifier = Modifier
+                                .width(50.dp)
+
+                                .clickable {
+                                    Toast.makeText(
+                                        context, "Clicou no icone", Toast.LENGTH_SHORT
+                                    ).show()
+                                },//clickable
+
+                            tint = Color.Blue,// cor azul da borda
+                        )
+                    },
+                    readOnly = true,
+                )
+            }
+        }
+    }
+
+    @Composable
+    fun ListarRelatorio() {
+
+        var propinasRemember by remember { mutableStateOf("") }
+
+        Column(
+            modifier = Modifier
+                .background(Color.LightGray)
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center
+
+        ) {
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            TextField(
+                enabled = false,
+                value = propinasRemember,
+                onValueChange = { propinasRemember = it },
+                label = { Text(" ") },
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            val listaDeDadosRetornadas = FirebaseFirestore.getInstance().collection("TimeJob")
+                .whereGreaterThanOrEqualTo("fecha" , "1")
+                .whereLessThanOrEqualTo("fecha" , "4")
 
             listaDeDadosRetornadas.addSnapshotListener { dadosRetornados, error ->
 

@@ -12,15 +12,14 @@ import net.developermaster.timejob.core.ComponentsActivitys
 import net.developermaster.timejob.core.ComponentsFireBase
 import net.developermaster.timejob.view.ui.theme.TimeJobTheme
 
-class ActivityAdicionar : ComponentActivity() {
-
+class ActivityRelatorio : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             TimeJobTheme {
 
-                ComponentsFireBase().Salvar()
+                ComponentsFireBase().ListarRelatorio()
             }
         }
     }

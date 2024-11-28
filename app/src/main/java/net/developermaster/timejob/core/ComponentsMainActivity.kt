@@ -45,6 +45,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import net.developermaster.timejob.R
 import net.developermaster.timejob.view.ActivityAdicionar
+import net.developermaster.timejob.view.ActivityRelatorio
 import net.developermaster.timejob.view.MainActivity
 
 class ComponentsMainActivity {
@@ -131,6 +132,8 @@ class ComponentsMainActivity {
     @Composable
     fun BottomBar() {
 
+        val context = LocalContext.current
+
         BottomAppBar(
             containerColor = Color.Gray,
 
@@ -144,8 +147,9 @@ class ComponentsMainActivity {
                     .padding(start = 10.dp)
                     .clickable {
 
-                        //toast
-
+                        //ação clicar no botão Home
+                        val intent = Intent(context, ActivityRelatorio::class.java)
+                        context.startActivity(intent)
                     },//todo clique
             )
             Icon(
@@ -182,7 +186,7 @@ class ComponentsMainActivity {
 
         FloatingActionButton(onClick = {
 
-            //ação ao clicar no botão
+            //ação clicar no botão Fab
             val intent = Intent(context, ActivityAdicionar::class.java)
             context.startActivity(intent)
 
