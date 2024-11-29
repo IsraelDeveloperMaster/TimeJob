@@ -1,11 +1,12 @@
 package net.developermaster.timejob.view
 
+import DatePickerExample
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import net.developermaster.timejob.core.ComponentsFireBase
-import net.developermaster.timejob.core.DatePickerExample
+import net.developermaster.timejob.core.SimpleDatePicker
 import net.developermaster.timejob.view.ui.theme.TimeJobTheme
 
 class ActivityAdicionar : ComponentActivity() {
@@ -15,7 +16,11 @@ class ActivityAdicionar : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TimeJobTheme {
-                ComponentsFireBase().Salvar()
+//                ComponentsFireBase().Salvar()
+
+                SimpleDatePicker()
+
+//                DatePickerExample()
             }
         }
     }

@@ -28,9 +28,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,7 +51,9 @@ import androidx.navigation.NavHostController
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import net.developermaster.timejob.model.ModelTimeJob
+import java.time.Clock
 import java.time.Duration
+import java.time.LocalDate
 import java.time.LocalTime
 import java.util.Date
 
@@ -57,11 +61,15 @@ class ComponentsFireBase {
 
     val listaResultadoRetornados = mutableListOf<String>()
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun Salvar() {
 
         //context local
         val context = LocalContext.current
+
+        val datePickerState = rememberDatePickerState()
+        val selectedDateMillis = datePickerState.selectedDateMillis
 
         var fechaRemember by remember { mutableStateOf("") }
 
@@ -72,6 +80,16 @@ class ComponentsFireBase {
         var minutoSalidaRemember by remember { mutableStateOf("0") }
 
         var propinasRemember by remember { mutableStateOf("") }
+
+        val formattedDate = remember(selectedDateMillis) {
+            if (selectedDateMillis != null) {
+                val calendar = Calendar.getInstance().apply { timeInMillis = selectedDateMillis }
+                "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}"
+            } else {
+
+                "Selecione uma data"
+            }
+        }
 
         val modelTimeJob = ModelTimeJob(
             fecha = fechaRemember,
@@ -91,13 +109,14 @@ class ComponentsFireBase {
 
         ) {
 
-            Text(modifier = Modifier
-                .padding(start = 100.dp, top = 16.dp) ,//todo padding top
+            Text(
+                modifier = Modifier.padding(start = 100.dp, top = 16.dp),//todo padding top
                 color = Color.Black,//todo cor negro
                 fontSize = 18.sp,//todo tamanho da fonte
                 fontFamily = FontFamily.SansSerif,//todo tipo de fonte
                 textAlign = TextAlign.Center,//todo alinhamento do texto
-                text = "Salvar informacion")
+                text = "Salvar informacion"
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -118,8 +137,7 @@ class ComponentsFireBase {
 
 
                         val datePickerDialog = DatePickerDialog(
-                            context,
-                            { _: DatePicker, year: Int, month: Int, day: Int ->
+                            context, { _: DatePicker, year: Int, month: Int, day: Int ->
                                 fechaRemember = "$day/$month/$year"
                             }, year, month, day
                         )
@@ -142,32 +160,39 @@ class ComponentsFireBase {
 
                             .clickable {
 
-                                val year: Int
-                                val month: Int
-                                val day: Int
+                                val dia: Int
+                                val mes: Int
+                                val ano: Int
 
-                                val calendar = Calendar.getInstance()
-                                year = calendar.get(Calendar.YEAR)
-                                month = calendar.get(Calendar.MONTH)
-                                day = calendar.get(Calendar.DAY_OF_MONTH)
-                                calendar.time = Date()
+/*                                var dataAtual = LocalDate.now(Clock.systemDefaultZone())
+                                val dia = dataAtual.dayOfMonth
+                                val mes = dataAtual.monthValue
+                                val ano = dataAtual.year*/
+
+
+                                val dataAtual = Calendar.getInstance()
+                                dia = dataAtual.get(Calendar.DAY_OF_MONTH)
+                                mes = dataAtual.get(Calendar.MONTH)
+                                ano = dataAtual.get(Calendar.YEAR)
+                                dataAtual.time = Date()
 
 
                                 val datePickerDialog = DatePickerDialog(
-                                    context,
-                                    { _: DatePicker, year: Int, month: Int, day: Int ->
-                                        fechaRemember = "$day/$month/$year"
-                                    }, year, month, day
+                                    context, { _: DatePicker, ano: Int, mes: Int, dia: Int ->
+                                        fechaRemember = "$dia/$mes/$ano"
+                                    }, ano, mes, dia
                                 )
 
-                                datePickerDialog.show()                            },//clickable
+                                datePickerDialog.show()
+
+                            },//clickable
 
                         tint = Color.Blue,// cor azul da borda
                     )
                 },
                 readOnly = true,
 
-            )
+                )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -181,8 +206,7 @@ class ComponentsFireBase {
                 OutlinedTextField(
                     modifier = Modifier
                         .width(100.dp)
-                        .clickable {
-                        },
+                        .clickable {},
                     value = horaEntradaRemember,
                     onValueChange = { horaEntradaRemember = it },
                     label = { Text("Hora") },
@@ -202,8 +226,7 @@ class ComponentsFireBase {
                                     calendar.time = Date()
 
                                     val timePickerDialog = TimePickerDialog(
-                                        context,
-                                        { _, hourOfDay, minute ->
+                                        context, { _, hourOfDay, minute ->
                                             horaEntradaRemember = "$hourOfDay"
                                             minutoEntradaRemember = "$minute"
                                         }, mHour, mMinute, true
@@ -211,7 +234,7 @@ class ComponentsFireBase {
 
                                     timePickerDialog.show()
 
-                                           },//clickable
+                                },//clickable
 
                             tint = Color.Blue,// cor azul da borda
                         )
@@ -428,13 +451,14 @@ class ComponentsFireBase {
 
             propinasRemember
 
-            Text(modifier = Modifier
-                .padding(start = 16.dp, top = 16.dp) ,//todo padding top
+            Text(
+                modifier = Modifier.padding(start = 16.dp, top = 16.dp),//todo padding top
                 color = Color.Black,//todo cor negro
                 fontSize = 18.sp,//todo tamanho da fonte
                 fontFamily = FontFamily.SansSerif,//todo tipo de fonte
                 textAlign = TextAlign.Center,//todo alinhamento do texto
-                text = "Relatorio")
+                text = "Relatorio"
+            )
         }
 
 
@@ -452,27 +476,26 @@ class ComponentsFireBase {
                     .width(200.dp)
                     .clickable {
 
-                    val year: Int
-                    val month: Int
-                    val day: Int
+                        val year: Int
+                        val month: Int
+                        val day: Int
 
-                    val calendar = Calendar.getInstance()
-                    year = calendar.get(Calendar.YEAR)
-                    month = calendar.get(Calendar.MONTH)
-                    day = calendar.get(Calendar.DAY_OF_MONTH)
-                    calendar.time = Date()
+                        val calendar = Calendar.getInstance()
+                        year = calendar.get(Calendar.YEAR)
+                        month = calendar.get(Calendar.MONTH)
+                        day = calendar.get(Calendar.DAY_OF_MONTH)
+                        calendar.time = Date()
 
 
-                    val datePickerDialog = DatePickerDialog(
-                        context,
-                        { _: DatePicker, year: Int, month: Int, day: Int ->
-                            dataInicioRemember = "$day/$month/$year"
-                        }, year, month, day
-                    )
+                        val datePickerDialog = DatePickerDialog(
+                            context, { _: DatePicker, year: Int, month: Int, day: Int ->
+                                dataInicioRemember = "$day/$month/$year"
+                            }, year, month, day
+                        )
 
-                    datePickerDialog.show()
+                        datePickerDialog.show()
 
-                },
+                    },
                 value = dataInicioRemember,
                 onValueChange = { dataInicioRemember = it },
                 label = { Text("Fecha Inicial") },
@@ -498,14 +521,13 @@ class ComponentsFireBase {
 
 
                                 val datePickerDialog = DatePickerDialog(
-                                    context,
-                                    { _: DatePicker, year: Int, month: Int, day: Int ->
+                                    context, { _: DatePicker, year: Int, month: Int, day: Int ->
                                         dataInicioRemember = "$day/$month/$year"
                                     }, year, month, day
                                 )
 
                                 datePickerDialog.show()
-                                       },//clickable
+                            },//clickable
 
                         tint = Color.Blue,// cor azul da borda
                     )
@@ -531,8 +553,7 @@ class ComponentsFireBase {
 
 
                         val datePickerDialog = DatePickerDialog(
-                            context,
-                            { _: DatePicker, year: Int, month: Int, day: Int ->
+                            context, { _: DatePicker, year: Int, month: Int, day: Int ->
                                 dataFimRemember = "$day/$month/$year"
                             }, year, month, day
                         )
@@ -566,13 +587,13 @@ class ComponentsFireBase {
 
 
                                 val datePickerDialog = DatePickerDialog(
-                                    context,
-                                    { _: DatePicker, year: Int, month: Int, day: Int ->
+                                    context, { _: DatePicker, year: Int, month: Int, day: Int ->
                                         dataFimRemember = "$day/$month/$year"
                                     }, year, month, day
                                 )
 
-                                datePickerDialog.show()                            },//clickable
+                                datePickerDialog.show()
+                            },//clickable
 
                         tint = Color.Blue,// cor azul da borda
                     )
@@ -706,8 +727,7 @@ class ComponentsFireBase {
         }
 
         val datePickerDialog = DatePickerDialog(
-            context,
-            { _: DatePicker, year: Int, month: Int, day: Int ->
+            context, { _: DatePicker, year: Int, month: Int, day: Int ->
                 date.value = "$day/$month/$year"
             }, year, month, day
         )

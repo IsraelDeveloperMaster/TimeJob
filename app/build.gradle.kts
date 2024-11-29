@@ -80,4 +80,7 @@ dependencies {
     // navigation
     implementation(libs.androidx.navigation.runtime.ktx)
 
+    implementation(libs.material3)
+    implementation(libs.ui)
+
 }
