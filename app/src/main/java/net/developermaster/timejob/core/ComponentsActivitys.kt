@@ -18,7 +18,10 @@ class ComponentsActivitys {
     @Composable
     fun HomeActivityAdicionar(modifier: Modifier) {
 
-        Column( modifier = modifier.fillMaxWidth().padding()
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding()
 
         ) {
 

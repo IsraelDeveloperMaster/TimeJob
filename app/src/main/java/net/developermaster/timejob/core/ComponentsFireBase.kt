@@ -1,8 +1,13 @@
 package net.developermaster.timejob.core
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
+import android.icu.util.Calendar
 import android.util.Log
+import android.widget.DatePicker
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,33 +17,41 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import net.developermaster.timejob.model.ModelTimeJob
 import java.time.Duration
 import java.time.LocalTime
+import java.util.Date
 
 class ComponentsFireBase {
 
@@ -78,14 +91,82 @@ class ComponentsFireBase {
 
         ) {
 
+            Text(modifier = Modifier
+                .padding(start = 100.dp, top = 16.dp) ,//todo padding top
+                color = Color.Black,//todo cor negro
+                fontSize = 18.sp,//todo tamanho da fonte
+                fontFamily = FontFamily.SansSerif,//todo tipo de fonte
+                textAlign = TextAlign.Center,//todo alinhamento do texto
+                text = "Salvar informacion")
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             //fecha
             OutlinedTextField(
                 modifier = Modifier
+                    .clickable {
+
+                        val year: Int
+                        val month: Int
+                        val day: Int
+
+                        val calendar = Calendar.getInstance()
+                        year = calendar.get(Calendar.YEAR)
+                        month = calendar.get(Calendar.MONTH)
+                        day = calendar.get(Calendar.DAY_OF_MONTH)
+                        calendar.time = Date()
+
+
+                        val datePickerDialog = DatePickerDialog(
+                            context,
+                            { _: DatePicker, year: Int, month: Int, day: Int ->
+                                fechaRemember = "$day/$month/$year"
+                            }, year, month, day
+                        )
+
+                        datePickerDialog.show()
+
+                    }
                     .width(290.dp)
                     .padding(start = 89.dp),
                 value = fechaRemember,
                 onValueChange = { fechaRemember = it },
                 label = { Text("Fecha") },
+                trailingIcon = {
+                    Icon(
+
+                        imageVector = Icons.Default.DateRange,//icone
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(50.dp)
+
+                            .clickable {
+
+                                val year: Int
+                                val month: Int
+                                val day: Int
+
+                                val calendar = Calendar.getInstance()
+                                year = calendar.get(Calendar.YEAR)
+                                month = calendar.get(Calendar.MONTH)
+                                day = calendar.get(Calendar.DAY_OF_MONTH)
+                                calendar.time = Date()
+
+
+                                val datePickerDialog = DatePickerDialog(
+                                    context,
+                                    { _: DatePicker, year: Int, month: Int, day: Int ->
+                                        fechaRemember = "$day/$month/$year"
+                                    }, year, month, day
+                                )
+
+                                datePickerDialog.show()                            },//clickable
+
+                        tint = Color.Blue,// cor azul da borda
+                    )
+                },
+                readOnly = true,
+
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -98,10 +179,45 @@ class ComponentsFireBase {
             ) {
 
                 OutlinedTextField(
-                    modifier = Modifier.width(100.dp),
+                    modifier = Modifier
+                        .width(100.dp)
+                        .clickable {
+                        },
                     value = horaEntradaRemember,
                     onValueChange = { horaEntradaRemember = it },
                     label = { Text("Hora") },
+                    trailingIcon = {
+                        Icon(
+
+                            imageVector = Icons.Default.DateRange,//icone
+                            contentDescription = null,
+                            modifier = Modifier
+                                .width(50.dp)
+
+                                .clickable {
+
+                                    val calendar = Calendar.getInstance()
+                                    val mHour = calendar[Calendar.HOUR_OF_DAY]
+                                    val mMinute = calendar[Calendar.MINUTE]
+                                    calendar.time = Date()
+
+                                    val timePickerDialog = TimePickerDialog(
+                                        context,
+                                        { _, hourOfDay, minute ->
+                                            horaEntradaRemember = "$hourOfDay"
+                                            minutoEntradaRemember = "$minute"
+                                        }, mHour, mMinute, true
+                                    )
+
+                                    timePickerDialog.show()
+
+                                           },//clickable
+
+                            tint = Color.Blue,// cor azul da borda
+                        )
+                    },
+                    readOnly = true,
+
 
                     )
                 OutlinedTextField(
@@ -198,18 +314,7 @@ class ComponentsFireBase {
 
         ) {
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            TextField(
-                enabled = false,
-                value = propinasRemember,
-                onValueChange = { propinasRemember = it },
-                label = { Text("                                Resultados Semanales") },
-                modifier = Modifier.fillMaxWidth(),
-                readOnly = true
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
+            propinasRemember
 
             val listaDeDadosRetornadas = FirebaseFirestore.getInstance().collection("TimeJob")
                 .orderBy("fecha", Query.Direction.DESCENDING)
@@ -321,41 +426,158 @@ class ComponentsFireBase {
 
         ) {
 
-            TextField(
-                enabled = false,
-                value = propinasRemember,
-                onValueChange = { propinasRemember = it },
-                label = { Text(" ") },
-                modifier = Modifier.fillMaxWidth(),
-                readOnly = true
-            )
+            propinasRemember
+
+            Text(modifier = Modifier
+                .padding(start = 16.dp, top = 16.dp) ,//todo padding top
+                color = Color.Black,//todo cor negro
+                fontSize = 18.sp,//todo tamanho da fonte
+                fontFamily = FontFamily.SansSerif,//todo tipo de fonte
+                textAlign = TextAlign.Center,//todo alinhamento do texto
+                text = "Relatorio")
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
 
         //row hora entrada
         Row(
 
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier,
 //                .background(Color.LightGray),
             horizontalArrangement = Arrangement.Center
 
         ) {
 
             OutlinedTextField(
-                modifier = Modifier.width(150.dp),
+                modifier = Modifier
+                    .width(200.dp)
+                    .clickable {
+
+                    val year: Int
+                    val month: Int
+                    val day: Int
+
+                    val calendar = Calendar.getInstance()
+                    year = calendar.get(Calendar.YEAR)
+                    month = calendar.get(Calendar.MONTH)
+                    day = calendar.get(Calendar.DAY_OF_MONTH)
+                    calendar.time = Date()
+
+
+                    val datePickerDialog = DatePickerDialog(
+                        context,
+                        { _: DatePicker, year: Int, month: Int, day: Int ->
+                            dataInicioRemember = "$day/$month/$year"
+                        }, year, month, day
+                    )
+
+                    datePickerDialog.show()
+
+                },
                 value = dataInicioRemember,
                 onValueChange = { dataInicioRemember = it },
                 label = { Text("Fecha Inicial") },
+                trailingIcon = {
+                    Icon(
+
+                        imageVector = Icons.Default.DateRange,//icone
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(50.dp)
+
+                            .clickable {
+
+                                val year: Int
+                                val month: Int
+                                val day: Int
+
+                                val calendar = Calendar.getInstance()
+                                year = calendar.get(Calendar.YEAR)
+                                month = calendar.get(Calendar.MONTH)
+                                day = calendar.get(Calendar.DAY_OF_MONTH)
+                                calendar.time = Date()
+
+
+                                val datePickerDialog = DatePickerDialog(
+                                    context,
+                                    { _: DatePicker, year: Int, month: Int, day: Int ->
+                                        dataInicioRemember = "$day/$month/$year"
+                                    }, year, month, day
+                                )
+
+                                datePickerDialog.show()
+                                       },//clickable
+
+                        tint = Color.Blue,// cor azul da borda
+                    )
+                },
+                readOnly = true,
 
                 )
+
             OutlinedTextField(
                 modifier = Modifier
-                    .width(150.dp)
+                    .width(200.dp)
+                    .clickable {
+
+                        val year: Int
+                        val month: Int
+                        val day: Int
+
+                        val calendar = Calendar.getInstance()
+                        year = calendar.get(Calendar.YEAR)
+                        month = calendar.get(Calendar.MONTH)
+                        day = calendar.get(Calendar.DAY_OF_MONTH)
+                        calendar.time = Date()
+
+
+                        val datePickerDialog = DatePickerDialog(
+                            context,
+                            { _: DatePicker, year: Int, month: Int, day: Int ->
+                                dataFimRemember = "$day/$month/$year"
+                            }, year, month, day
+                        )
+
+                        datePickerDialog.show()
+
+                    }
                     .padding(start = 8.dp),
                 value = dataFimRemember,
                 onValueChange = { dataFimRemember = it },
                 label = { Text("Fecha Final") },
+                trailingIcon = {
+                    Icon(
+
+                        imageVector = Icons.Default.DateRange,//icone
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(50.dp)
+
+                            .clickable {
+
+                                val year: Int
+                                val month: Int
+                                val day: Int
+
+                                val calendar = Calendar.getInstance()
+                                year = calendar.get(Calendar.YEAR)
+                                month = calendar.get(Calendar.MONTH)
+                                day = calendar.get(Calendar.DAY_OF_MONTH)
+                                calendar.time = Date()
+
+
+                                val datePickerDialog = DatePickerDialog(
+                                    context,
+                                    { _: DatePicker, year: Int, month: Int, day: Int ->
+                                        dataFimRemember = "$day/$month/$year"
+                                    }, year, month, day
+                                )
+
+                                datePickerDialog.show()                            },//clickable
+
+                        tint = Color.Blue,// cor azul da borda
+                    )
+                },
+                readOnly = true,
             )
         }
 
@@ -460,6 +682,49 @@ class ComponentsFireBase {
                     readOnly = true,
                 )
             }
+        }
+    }
+
+
+    @Composable
+    fun ComponentsFecha() {
+
+        val context = LocalContext.current
+
+        val year: Int
+        val month: Int
+        val day: Int
+
+        val calendar = Calendar.getInstance()
+        year = calendar.get(Calendar.YEAR)
+        month = calendar.get(Calendar.MONTH)
+        day = calendar.get(Calendar.DAY_OF_MONTH)
+        calendar.time = Date()
+
+        val date = remember {
+            mutableStateOf("")
+        }
+
+        val datePickerDialog = DatePickerDialog(
+            context,
+            { _: DatePicker, year: Int, month: Int, day: Int ->
+                date.value = "$day/$month/$year"
+            }, year, month, day
+        )
+
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = "Selected Date : ${date.value}")
+            Spacer(modifier = Modifier.size(16.dp))
+
+            Button(onClick = { datePickerDialog.show() }) {
+                Text(text = "Show Date Picker")
+            }
+
+            Text(text = "Selected Date : ${date.value}")
         }
     }
 }

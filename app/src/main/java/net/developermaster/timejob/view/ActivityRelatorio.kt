@@ -18,7 +18,8 @@ class ActivityRelatorio : ComponentActivity() {
         setContent {
             TimeJobTheme {
 
-                ComponentsActivitys().HomeActivityRelatorio( Modifier .fillMaxSize())            }
+                ComponentsActivitys().HomeActivityRelatorio(Modifier.fillMaxSize())
+            }
         }
     }
 }

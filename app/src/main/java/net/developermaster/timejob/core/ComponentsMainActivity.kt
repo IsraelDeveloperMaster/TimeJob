@@ -98,7 +98,6 @@ class ComponentsMainActivity {
             Row {
 
                 ComponentsMainActivity().ImagemPerfil() //Row imagem perfil
-
             }
 
             LazyColumn {
@@ -116,6 +115,7 @@ class ComponentsMainActivity {
     fun ImagemPerfil() {
 
         Image(modifier = Modifier
+            .padding(start = 16.dp, top = 16.dp)
             .clickable {
 //                mensagemToast("Clicado na imagem")
             }
