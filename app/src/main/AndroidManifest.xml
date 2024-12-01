@@ -13,6 +13,11 @@
         android:theme="@style/Theme.TimeJob"
         tools:targetApi="31">
         <activity
+            android:name=".view.ActivityRelatorio"
+            android:exported="false"
+            android:label="@string/title_activity_relatorio"
+            android:theme="@style/Theme.TimeJob" />
+        <activity
             android:name=".view.ActivityAdicionar"
             android:exported="false"
             android:label="@string/title_activity_adicionar"

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+//    alias(libs.plugins.kotlin.compose)
 
     // Add the Google services Gradle plugin
     //todo fireBase
@@ -34,11 +35,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
     buildFeatures {
         compose = true
@@ -75,4 +76,11 @@ dependencies {
     implementation(libs.firebase.firestore.ktx)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
+
+    // navigation
+    implementation(libs.androidx.navigation.runtime.ktx)
+
+    implementation(libs.material3)
+    implementation(libs.ui)
+
 }
