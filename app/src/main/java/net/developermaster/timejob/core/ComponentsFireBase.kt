@@ -55,7 +55,8 @@ class ComponentsFireBase {
     val listaResultadoRetornados = mutableListOf<String>()
     val totalPropinas = mutableListOf<String>()
     var totalHorasForEach = mutableListOf<String>()
-    var totalHorasListar = ""
+    var variavelTotalHorasListar = ""
+    var totalHorasSomaIndex = ""
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -692,12 +693,14 @@ class ComponentsFireBase {
 
                             listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nHora de Entrada: $horaEntradaRetornados : $minutoEntradaRetornados \nHora de Salida: $horaSalidaRetornados : $minutoSalidaRetornados \nTotal de Horas: $resultadoCalculorHoraFormatado \nPropinas: $propinasDadosRetornados")
 
-/*                            Log.d(
-                                "firebase",
-                                " id: $idRetornado \n Fecha: $fechaDadosRetornados \n Horas Trabajadas: $horaSalidaRetornados \n Propinas: $propinasDadosRetornados \n \n "
-                            )*/
+                            /*                            Log.d(
+                                                            "firebase",
+                                                            " id: $idRetornado \n Fecha: $fechaDadosRetornados \n Horas Trabajadas: $horaSalidaRetornados \n Propinas: $propinasDadosRetornados \n \n "
+                                                        )*/
 
-                            Log.d("firebase", "total hora relatorio: $resultadoCalculorHoraFormatado")
+                            Log.d(
+                                "firebase", "total hora relatorio: $resultadoCalculorHoraFormatado"
+                            )
 
                             propinasRemember = " "
                         }
@@ -723,15 +726,25 @@ class ComponentsFireBase {
 
             totalHorasForEach.forEach { totalHorasForEach ->
 
-                totalHorasListar = totalHorasForEach + totalHorasForEach
+                variavelTotalHorasListar = totalHorasForEach
 
-                Log.d("firebase", "totalHorasForEach: $totalHorasListar")
+                var totalHorasForEachMapIndex1 = totalHorasForEach[1]
+
+                totalHorasSomaIndex += totalHorasForEachMapIndex1.toString()
+
+                Log.d("totalHoras", "totalHorasForEachMapIndex1: $totalHorasForEachMapIndex1")
+                Log.d("totalHoras", "variavelTotalHoraListarDentroDoForEach: $variavelTotalHorasListar")
+                Log.d("totalHoras", "totalHorasSomaIndexDentroDoForEach: $totalHorasSomaIndex")
 
             }
 
-            val calculoTotalHoras = totalHorasListar + totalHorasForEach
+            val SomaIndex =  totalHorasSomaIndex +
 
-            Log.d("firebase", "calculoTotalHoras: $calculoTotalHoras")
+            Log.d("totalHoras", "totalHorasForEach: $totalHorasForEach")
+            Log.d("totalHoras", "variavelTotalHoraListarForaDoForEach: $variavelTotalHorasListar")
+            Log.d("totalHoras", "totalHorasSomaIndexForaDoForEach: $totalHorasSomaIndex")
+
+
 
 
 ///////////////////////////////////////////////////////////////////
@@ -765,12 +778,12 @@ class ComponentsFireBase {
 
         //row resultado
         Row(
-            modifier = Modifier,horizontalArrangement = Arrangement.Center//.background(Color.LightGray),
+            modifier = Modifier,
+            horizontalArrangement = Arrangement.Center//.background(Color.LightGray),
         ) {
 
             OutlinedTextField(
-                modifier = Modifier
-                    .width(220.dp),
+                modifier = Modifier.width(220.dp),
                 value = "€ 50",
 //                value = "€ 50",
                 onValueChange = { " " },
@@ -780,8 +793,7 @@ class ComponentsFireBase {
 
                         imageVector = Icons.Default.Favorite,//icone
                         contentDescription = null,
-                        modifier = Modifier
-                            .width(50.dp),
+                        modifier = Modifier.width(50.dp),
                         tint = Color.Blue,// cor azul da borda
                     )
                 },
@@ -802,8 +814,7 @@ class ComponentsFireBase {
 
                         imageVector = Icons.Default.Notifications,//icone
                         contentDescription = null,
-                        modifier = Modifier
-                            .width(50.dp),
+                        modifier = Modifier.width(50.dp),
 
 
                         tint = Color.Blue,// cor azul da borda
