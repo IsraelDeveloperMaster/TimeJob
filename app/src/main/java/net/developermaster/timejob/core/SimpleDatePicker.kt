@@ -61,7 +61,14 @@ fun SimpleDatePicker() {
         Spacer(modifier = Modifier.height(30.dp))
 
 
-        DatePicker(state = datePickerState)
+//        DatePicker(datePickerState)
+/*
+        OnDateSetListener { datePicker, i, i2, i3 ->
+
+            formattedDate = "$i3/${i2 + 1}/$i"
+            fechaRemember = formattedDate
+
+        }*/
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -73,8 +80,8 @@ fun SimpleDatePicker() {
                 }
                 .width(290.dp)
                 .padding(start = 89.dp),
-            value = fechaRemember,
-            onValueChange = { fechaRemember },
+            value = formattedDate,
+            onValueChange = { formattedDate },
             label = { Text("Fecha") },
             trailingIcon = {
                 Icon(
@@ -86,15 +93,19 @@ fun SimpleDatePicker() {
 
                         .clickable {
 
+
+
+                            /*
+
                             val dia: Int
                             var mes: Int
                             val ano: Int
 
-/*                            var dataAtual = LocalDate.now(Clock.systemDefaultZone())
+*//*                            var dataAtual = LocalDate.now(Clock.systemDefaultZone())
                             val dia = dataAtual.dayOfMonth
                             val mes = dataAtual.monthValue
                             val ano = dataAtual.year
-                            val mes2 = mes + dataAtual.*/
+                            val mes2 = mes + dataAtual.*//*
 
 
                             val dataAtual = android.icu.util.Calendar.getInstance()
@@ -107,12 +118,14 @@ fun SimpleDatePicker() {
 
 
                             val datePickerDialog = DatePickerDialog(
-                                context, { _: DatePicker, ano: Int, mes2: Int, dia: Int ->
-                                    fechaRemember = "$dia/$mes2/$ano"
-                                }, ano, mes2, dia
+                                context, { _: DatePicker, ano: Int, mes: Int, dia: Int ->
+                                    fechaRemember = "$dia/$mes/$ano"
+                                }, ano, mes, dia
                             )
 
                             datePickerDialog.show()
+
+                            */
 
                         },//clickable
 

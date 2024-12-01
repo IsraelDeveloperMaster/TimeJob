@@ -6,8 +6,6 @@ import android.icu.util.Calendar
 import android.util.Log
 import android.widget.DatePicker
 import android.widget.Toast
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,14 +17,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -51,15 +46,16 @@ import androidx.navigation.NavHostController
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import net.developermaster.timejob.model.ModelTimeJob
-import java.time.Clock
 import java.time.Duration
-import java.time.LocalDate
 import java.time.LocalTime
 import java.util.Date
 
 class ComponentsFireBase {
 
     val listaResultadoRetornados = mutableListOf<String>()
+    val totalPropinas = mutableListOf<String>()
+    var totalHorasForEach = mutableListOf<String>()
+    var totalHorasListar = ""
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -74,17 +70,21 @@ class ComponentsFireBase {
         var fechaRemember by remember { mutableStateOf("") }
 
         var horaEntradaRemember by remember { mutableStateOf("") }
-        var minutoEntradaRemember by remember { mutableStateOf("0") }
+        var minutoEntradaRemember by remember { mutableStateOf("") }
 
         var horaSalidaRemember by remember { mutableStateOf("") }
-        var minutoSalidaRemember by remember { mutableStateOf("0") }
+        var minutoSalidaRemember by remember { mutableStateOf("") }
 
         var propinasRemember by remember { mutableStateOf("") }
 
         val formattedDate = remember(selectedDateMillis) {
             if (selectedDateMillis != null) {
                 val calendar = Calendar.getInstance().apply { timeInMillis = selectedDateMillis }
-                "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}"
+                "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${
+                    calendar.get(
+                        Calendar.YEAR
+                    )
+                }"
             } else {
 
                 "Selecione uma data"
@@ -145,8 +145,8 @@ class ComponentsFireBase {
                         datePickerDialog.show()
 
                     }
-                    .width(290.dp)
-                    .padding(start = 89.dp),
+                    .width(300.dp)
+                    .padding(start = 80.dp),
                 value = fechaRemember,
                 onValueChange = { fechaRemember = it },
                 label = { Text("Fecha") },
@@ -164,10 +164,10 @@ class ComponentsFireBase {
                                 val mes: Int
                                 val ano: Int
 
-/*                                var dataAtual = LocalDate.now(Clock.systemDefaultZone())
-                                val dia = dataAtual.dayOfMonth
-                                val mes = dataAtual.monthValue
-                                val ano = dataAtual.year*/
+                                /*                                var dataAtual = LocalDate.now(Clock.systemDefaultZone())
+                                                                val dia = dataAtual.dayOfMonth
+                                                                val mes = dataAtual.monthValue
+                                                                val ano = dataAtual.year*/
 
 
                                 val dataAtual = Calendar.getInstance()
@@ -194,18 +194,22 @@ class ComponentsFireBase {
 
                 )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(30.dp))
+
 
             //row hora entrada
+            Text(
+                modifier = Modifier.padding(start = 80.dp), text = "Hora de Entrada"
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+
             Row(
-
                 modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
-
             ) {
 
                 OutlinedTextField(
                     modifier = Modifier
-                        .width(100.dp)
+                        .width(120.dp)
                         .clickable {},
                     value = horaEntradaRemember,
                     onValueChange = { horaEntradaRemember = it },
@@ -254,21 +258,52 @@ class ComponentsFireBase {
 
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
             //row hora saida
+            Text(
+                modifier = Modifier.padding(start = 80.dp), text = "Hora de Salida"
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+
             Row(
-
                 modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
-
             ) {
-
                 OutlinedTextField(
-                    modifier = Modifier.width(100.dp),
+                    modifier = Modifier.width(120.dp),
                     value = horaSalidaRemember,
                     onValueChange = { horaSalidaRemember = it },
                     label = { Text("Hora") },
+                    trailingIcon = {
+                        Icon(
 
+                            imageVector = Icons.Default.DateRange,//icone
+                            contentDescription = null,
+                            modifier = Modifier
+                                .width(50.dp)
+
+                                .clickable {
+
+                                    val calendar = Calendar.getInstance()
+                                    val mHour = calendar[Calendar.HOUR_OF_DAY]
+                                    val mMinute = calendar[Calendar.MINUTE]
+                                    calendar.time = Date()
+
+                                    val timePickerDialog = TimePickerDialog(
+                                        context, { _, hourOfDay, minute ->
+                                            horaSalidaRemember = "$hourOfDay"
+                                            minutoSalidaRemember = "$minute"
+                                        }, mHour, mMinute, true
+                                    )
+
+                                    timePickerDialog.show()
+
+                                },//clickable
+
+                            tint = Color.Blue,// cor azul da borda
+                        )
+                    },
+                    readOnly = true,
 
                     )
                 OutlinedTextField(
@@ -282,12 +317,17 @@ class ComponentsFireBase {
 
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(30.dp))
+
+            Text(
+                modifier = Modifier.padding(start = 80.dp), text = "Hora de Entrada"
+            )
+            Spacer(modifier = Modifier.width(8.dp))
 
             OutlinedTextField(
                 modifier = Modifier
-                    .width(290.dp)
-                    .padding(start = 89.dp),
+                    .width(220.dp)
+                    .padding(start = 80.dp),
 
                 value = propinasRemember,
                 onValueChange = { propinasRemember = it },
@@ -378,12 +418,13 @@ class ComponentsFireBase {
                         //resultado tempo
                         Log.i("tempo", "Calculo = $resultadoCalculorHoraFormatado")
 
-                        listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nHora de Entrada: $horaEntradaRetornados \nHora de Salida: $horaSalidaRetornados \nTotal de Horas: $resultadoCalculorHoraFormatado \nPropinas: $propinasDadosRetornados")
+                        listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nHora de Entrada: $horaEntradaRetornados : $minutoEntradaRetornados \nHora de Salida: $horaSalidaRetornados : $minutoSalidaRetornados \nTotal de Horas: $resultadoCalculorHoraFormatado \nPropinas: $propinasDadosRetornados")
 
                         Log.d(
                             "firebase",
                             " id: $idRetornado \n Fecha: $fechaDadosRetornados \n Horas Trabajadas: $horaSalidaRetornados \n Propinas: $propinasDadosRetornados \n \n "
                         )
+
 
                         propinasRemember = " "
 
@@ -464,7 +505,6 @@ class ComponentsFireBase {
 
         //row hora entrada
         Row(
-
             modifier = Modifier,
 //                .background(Color.LightGray),
             horizontalArrangement = Arrangement.Center
@@ -603,6 +643,9 @@ class ComponentsFireBase {
         }
 
         Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             onClick = {
 
                 val listaDeDadosRetornadas = FirebaseFirestore.getInstance().collection("TimeJob")
@@ -642,28 +685,27 @@ class ComponentsFireBase {
                             val resultadoCalculorHoraFormatado =
                                 String.format("%02d:%02d", horas, minutos)
 
+                            totalHorasForEach += (resultadoCalculorHoraFormatado)
+
                             //resultado tempo
                             Log.i("tempo", "Calculo = $resultadoCalculorHoraFormatado")
 
-                            listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nHora de Entrada: $horaEntradaRetornados \nHora de Salida: $horaSalidaRetornados \nTotal de Horas: $resultadoCalculorHoraFormatado \nPropinas: $propinasDadosRetornados")
+                            listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nHora de Entrada: $horaEntradaRetornados : $minutoEntradaRetornados \nHora de Salida: $horaSalidaRetornados : $minutoSalidaRetornados \nTotal de Horas: $resultadoCalculorHoraFormatado \nPropinas: $propinasDadosRetornados")
 
-                            Log.d(
+/*                            Log.d(
                                 "firebase",
                                 " id: $idRetornado \n Fecha: $fechaDadosRetornados \n Horas Trabajadas: $horaSalidaRetornados \n Propinas: $propinasDadosRetornados \n \n "
-                            )
+                            )*/
+
+                            Log.d("firebase", "total hora relatorio: $resultadoCalculorHoraFormatado")
 
                             propinasRemember = " "
                         }
                     }
                 }
-
             },
 
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-
-        ) {
+            ) {
             Text("Pesquisar")
         }
 
@@ -677,10 +719,26 @@ class ComponentsFireBase {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+///////////////////////////////////////////////////////////////////
+
+            totalHorasForEach.forEach { totalHorasForEach ->
+
+                totalHorasListar = totalHorasForEach + totalHorasForEach
+
+                Log.d("firebase", "totalHorasForEach: $totalHorasListar")
+
+            }
+
+            val calculoTotalHoras = totalHorasListar + totalHorasForEach
+
+            Log.d("firebase", "calculoTotalHoras: $calculoTotalHoras")
+
+
+///////////////////////////////////////////////////////////////////
+
             listaResultadoRetornados.forEach { lista ->
 
                 OutlinedTextField(
-
                     value = lista,
                     textStyle = TextStyle(color = Color.Red),
                     onValueChange = { },
@@ -704,6 +762,57 @@ class ComponentsFireBase {
                 )
             }
         }
+
+        //row resultado
+        Row(
+            modifier = Modifier,horizontalArrangement = Arrangement.Center//.background(Color.LightGray),
+        ) {
+
+            OutlinedTextField(
+                modifier = Modifier
+                    .width(220.dp),
+                value = "€ 50",
+//                value = "€ 50",
+                onValueChange = { " " },
+                label = { Text("Total de Propinas") },
+                leadingIcon = {
+                    Icon(
+
+                        imageVector = Icons.Default.Favorite,//icone
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(50.dp),
+                        tint = Color.Blue,// cor azul da borda
+                    )
+                },
+                readOnly = true,
+
+                )
+
+            OutlinedTextField(
+                modifier = Modifier
+                    .width(220.dp)
+                    .padding(start = 8.dp),
+//                value = "$totalHorasListar",
+                value = "12:00H",
+                onValueChange = { "" },
+                label = { Text("Total de Horas") },
+                leadingIcon = {
+                    Icon(
+
+                        imageVector = Icons.Default.Notifications,//icone
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(50.dp),
+
+
+                        tint = Color.Blue,// cor azul da borda
+                    )
+                },
+                readOnly = true,
+            )
+        }
+
     }
 
 

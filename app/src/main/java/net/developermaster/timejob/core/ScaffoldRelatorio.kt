@@ -49,7 +49,7 @@ import net.developermaster.timejob.view.ActivityAdicionar
 import net.developermaster.timejob.view.ActivityRelatorio
 import net.developermaster.timejob.view.MainActivity
 
-class ComponentsMainActivity {
+class ScaffoldRelatorio {
 
     @Composable
     fun Scaffold() {
@@ -69,7 +69,7 @@ class ComponentsMainActivity {
 
             floatingActionButton = {
 
-                ComponentsMainActivity().Fab()
+                ScaffoldRelatorio().Fab()
             },
 
             snackbarHost = {
@@ -98,7 +98,7 @@ class ComponentsMainActivity {
 
             Row {
 
-                ComponentsMainActivity().ImagemPerfil() //Row imagem perfil
+                ScaffoldRelatorio().ImagemPerfil() //Row imagem perfil
             }
 
             LazyColumn {
@@ -148,7 +148,7 @@ class ComponentsMainActivity {
                     .padding(start = 30.dp)
                     .clickable {
 
-                        //ação clicar
+                        //ação clicar no botão Home
                         val intent = Intent(context, MainActivity::class.java)
                         context.startActivity(intent)
                     },//todo clique
@@ -161,7 +161,7 @@ class ComponentsMainActivity {
                     .padding(start = 130.dp)
                     .clickable {
 
-                        //ação clicar
+                        //ação clicar no botão Home
                         val intent = Intent(context, ActivityRelatorio::class.java)
                         context.startActivity(intent)
 
@@ -175,9 +175,8 @@ class ComponentsMainActivity {
                     .padding(start = 130.dp)
                     .clickable {
 
-                        //ação clicar
-                        val intent = Intent(context, ActivityAdicionar::class.java)
-                        context.startActivity(intent)
+                        //toast
+
                     },//todo clique
             )
         }
