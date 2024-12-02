@@ -17,6 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.rememberDatePickerState
@@ -36,12 +37,16 @@ import java.util.*
 @Composable
 fun SimpleDatePicker() {
 
+    var calendario = Unit
+
     var fechaRemember by remember { mutableStateOf("") }
 
     val datePickerState = rememberDatePickerState()
+
     val selectedDateMillis = datePickerState.selectedDateMillis
 
-    var formattedDate = remember(selectedDateMillis) {
+    val formattedDate = remember(selectedDateMillis) {
+
         if (selectedDateMillis != null) {
             val calendar = Calendar.getInstance().apply { timeInMillis = selectedDateMillis }
             "${calendar.get(Calendar.DAY_OF_MONTH) + 1}/${calendar.get(Calendar.MONTH) + 1}/${
@@ -60,15 +65,10 @@ fun SimpleDatePicker() {
 
         Spacer(modifier = Modifier.height(30.dp))
 
+        calendario = DatePicker(datePickerState)
+
 
 //        DatePicker(datePickerState)
-/*
-        OnDateSetListener { datePicker, i, i2, i3 ->
-
-            formattedDate = "$i3/${i2 + 1}/$i"
-            fechaRemember = formattedDate
-
-        }*/
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -91,41 +91,10 @@ fun SimpleDatePicker() {
                     modifier = Modifier
                         .width(50.dp)
 
-                        .clickable {
+                        .clickable() {
 
+                            calendario
 
-
-                            /*
-
-                            val dia: Int
-                            var mes: Int
-                            val ano: Int
-
-*//*                            var dataAtual = LocalDate.now(Clock.systemDefaultZone())
-                            val dia = dataAtual.dayOfMonth
-                            val mes = dataAtual.monthValue
-                            val ano = dataAtual.year
-                            val mes2 = mes + dataAtual.*//*
-
-
-                            val dataAtual = android.icu.util.Calendar.getInstance()
-                            dia = dataAtual.get(android.icu.util.Calendar.DAY_OF_MONTH)
-                            mes = dataAtual.get(android.icu.util.Calendar.MONTH)
-                            ano = dataAtual.get(android.icu.util.Calendar.YEAR)
-                            dataAtual.time = Date()
-
-                            val mes2 = mes + dataAtual.get(Calendar.MONTH.plus(2)) + 2 + 6 / 60
-
-
-                            val datePickerDialog = DatePickerDialog(
-                                context, { _: DatePicker, ano: Int, mes: Int, dia: Int ->
-                                    fechaRemember = "$dia/$mes/$ano"
-                                }, ano, mes, dia
-                            )
-
-                            datePickerDialog.show()
-
-                            */
 
                         },//clickable
 

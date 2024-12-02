@@ -16,9 +16,9 @@ class ActivityAdicionar : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TimeJobTheme {
-                ComponentsFireBase().Salvar()
+//                ComponentsFireBase().Salvar()
 
-//                SimpleDatePicker()
+                SimpleDatePicker()
 
 //                DatePickerExample()
             }

@@ -1,49 +1,39 @@
 package net.developermaster.timejob.core
 
-import android.app.Application
 import android.content.Intent
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Snackbar
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.Key.Companion.Home
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.cancel
+import androidx.compose.ui.unit.sp
 import net.developermaster.timejob.R
 import net.developermaster.timejob.view.ActivityAdicionar
 import net.developermaster.timejob.view.ActivityRelatorio
@@ -52,9 +42,9 @@ import net.developermaster.timejob.view.MainActivity
 class ComponentsMainActivity {
 
     @Composable
-    fun Scaffold() {
+    fun ScaffoldFuncion() {
 
-        androidx.compose.material3.Scaffold(
+        Scaffold(
 
             topBar = {
 
@@ -99,12 +89,14 @@ class ComponentsMainActivity {
             Row {
 
                 ComponentsMainActivity().ImagemPerfil() //Row imagem perfil
+
+                ComponentsMainActivity().TextoTitulo() //todo texto titulo
             }
 
             LazyColumn {
 
                 //todo lista
-                items(1) { item ->
+                items(1) {
 
                     ComponentsFireBase().ListarTodos()
                 }
@@ -128,6 +120,33 @@ class ComponentsMainActivity {
             painter = painterResource(R.drawable.timejob), //todo imagem
             contentDescription = null, //todo conteudo da imagem
             contentScale = ContentScale.Crop)
+    }
+
+    @Composable
+    fun TextoTitulo() {
+        Text(
+            modifier = Modifier
+                .padding(top = 30.dp, start = 8.dp), //todo padding top) ,//todo padding top
+//                .border(2.dp, Color.Yellow, CutCornerShape(20)),//todo borda amarela circular
+
+            text = "Time Job",//todo texto
+            color = Color.Blue,//todo cor vermelha
+            fontSize = 25.sp,//todo tamanho da fonte
+            fontFamily = FontFamily.SansSerif,//todo tipo de fonte
+        )
+
+    }
+
+    @Composable
+    fun Box() {
+        Box(Modifier.background(color = Color.Gray)) {
+            Box(
+                Modifier
+                    .padding(start = 20.dp, top = 30.dp, end = 20.dp, bottom = 30.dp)
+                    .size(50.dp)
+                    .background(Color.Blue)
+            )
+        }
     }
 
     @Composable
@@ -203,49 +222,6 @@ class ComponentsMainActivity {
                 imageVector = Icons.Filled.Add, contentDescription = "Localized description"
             )
         }
-    }
-
-    @Composable
-    fun CaixaDeTextoOutLineTextField() {
-
-        var texto by remember { mutableStateOf("") }
-
-        OutlinedTextField( //todo caixa de texto com borda
-
-            modifier = Modifier
-                .background(Color.White)
-                .fillMaxWidth()
-                .padding(all = 8.dp),
-
-            value = texto,//todo valor do texto
-
-            onValueChange = { textoDigitado ->
-
-                texto = textoDigitado//todo valor do texto digitado na variavel texto
-
-
-            },
-
-            label = {
-
-                Text(text = "Caixa de texto") //todo texto do label
-            },
-
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.ThumbUp,//todo icone
-                    contentDescription = null, modifier = Modifier.width(50.dp),//todo largura
-                    tint = Color.Blue//todo cor azul da borda
-                )
-            },
-
-            trailingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Favorite,//todo icone
-                    contentDescription = null, modifier = Modifier.width(50.dp),//todo largura
-                    tint = Color.Blue//todo cor azul da borda
-                )
-            })
     }
 
 }

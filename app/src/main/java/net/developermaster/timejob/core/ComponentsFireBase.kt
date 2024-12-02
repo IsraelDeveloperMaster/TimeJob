@@ -1,13 +1,16 @@
 package net.developermaster.timejob.core
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.icu.util.Calendar
 import android.util.Log
 import android.widget.DatePicker
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,9 +25,11 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
@@ -35,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
@@ -51,21 +57,12 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 import kotlin.time.toJavaDuration
 
+@Suppress("NAME_SHADOWING", "UNUSED_EXPRESSION")
 class ComponentsFireBase {
 
-    val listaResultadoRetornados = mutableListOf<String>()
-    val totalPropinas = mutableListOf<String>()
-
-
-    var variavelGlobalTotalHorasForEach = mutableListOf<String>()
-    var variavelGlobalTotalHorasForEach2 = mutableListOf<Long>()
-    var variavelGlobalTotalHorasListar = 0
-    var variavelGlobalTotalHorasSomaIndex = mutableListOf<Int>()
-    var variavelGlobalHora = listOf<Long>()
-
-    var variavelGlobalSomaHora = Duration.ZERO
-
-
+    private val listaResultadoRetornados = mutableListOf<String>()
+//    val totalPropinas = mutableListOf<String>()
+private var variavelGlobalSomaHora = Duration.ZERO
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -350,7 +347,7 @@ class ComponentsFireBase {
                 onClick = {
 
                     FirebaseFirestore.getInstance().collection("TimeJob").document()
-                        .set(modelTimeJob).addOnSuccessListener { sucesso ->
+                        .set(modelTimeJob).addOnSuccessListener {
 
                             Log.d("firebase", "Salvo com sucesso")
 
@@ -373,6 +370,7 @@ class ComponentsFireBase {
         }
     }
 
+    @SuppressLint("DefaultLocale")
     @Composable
     fun ListarTodos() {
 
@@ -394,7 +392,7 @@ class ComponentsFireBase {
             val listaDeDadosRetornadas = FirebaseFirestore.getInstance().collection("TimeJob")
                 .orderBy("fecha", Query.Direction.DESCENDING)
 
-            listaDeDadosRetornadas.addSnapshotListener { dadosRetornados, error ->
+            listaDeDadosRetornadas.addSnapshotListener { dadosRetornados, _ ->
 
                 val listaRetornada = dadosRetornados?.documents//todo document
 
@@ -404,7 +402,7 @@ class ComponentsFireBase {
 
                     if (dados != null) {
 
-                        val idRetornado = documents.id
+//                        val idRetornado = documents.id
                         val fechaDadosRetornados = dados["fecha"]
                         val horaEntradaRetornados = dados["horaEntrada"]
                         val minutoEntradaRetornados = dados["minutoEntrada"]
@@ -439,38 +437,47 @@ class ComponentsFireBase {
 
                 val context = LocalContext.current
 
-                OutlinedTextField(
+                Card(
+                    modifier = Modifier
+                    .background(Color.LightGray)
+                        .padding(8.dp)) {
 
-                    value = lista,
-                    textStyle = TextStyle(color = Color.Red),
-                    onValueChange = { },
-                    label = { Text("") },
-                    modifier = Modifier.fillMaxWidth(),
-                    trailingIcon = {
-                        Icon(
+                    OutlinedTextField(
 
-                            imageVector = Icons.Default.Create,//icone
-                            contentDescription = null,
-                            modifier = Modifier
-                                .width(50.dp)
+                        value = lista,
+                        textStyle = TextStyle(color = Color.Black),
+                        onValueChange = { },
+                        label = { Text("") },
+                        modifier = Modifier.fillMaxWidth(),
+                        trailingIcon = {
+                            Icon(
 
-                                .clickable {
-                                    Toast
-                                        .makeText(
-                                            context, "Clicou no icone", Toast.LENGTH_SHORT
-                                        )
-                                        .show()
-                                },//clickable
+                                imageVector = Icons.Default.Create,//icone
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .width(50.dp)
 
-                            tint = Color.Blue,// cor azul da borda
+                                    .clickable {
+                                        Toast
+                                            .makeText(
+                                                context, "Clicou no icone", Toast.LENGTH_SHORT
+                                            )
+                                            .show()
+                                    },//clickable
+
+                                tint = Color.Blue,// cor azul da borda
+                            )
+                        },
+                        readOnly = true,
+
                         )
-                    },
-                    readOnly = true,
-                )
+                }
+
             }
         }
     }
 
+    @SuppressLint("DefaultLocale")
     @Composable
     fun ListarRelatorio() {
 
@@ -650,7 +657,7 @@ class ComponentsFireBase {
                     .whereGreaterThanOrEqualTo("fecha", dataInicioRemember)
                     .whereLessThanOrEqualTo("fecha", dataFimRemember)
 
-                listaDeDadosRetornadas.addSnapshotListener { dadosRetornados, error ->
+                listaDeDadosRetornadas.addSnapshotListener { dadosRetornados, _ ->
 
                     val listaRetornada = dadosRetornados?.documents//todo document
 
@@ -660,7 +667,7 @@ class ComponentsFireBase {
 
                         if (dados != null) {
 
-                            val idRetornado = documents.id
+//                            val idRetornado = documents.id
                             val fechaDadosRetornados = dados["fecha"]
                             val horaEntradaRetornados = dados["horaEntrada"]
                             val minutoEntradaRetornados = dados["minutoEntrada"]
@@ -685,7 +692,7 @@ class ComponentsFireBase {
                             horas.toDuration(DurationUnit.HOURS)
                             minutos.toDuration(DurationUnit.MINUTES)
 
-                            var totalHoras = horas.toDuration(DurationUnit.HOURS) + minutos.toDuration(DurationUnit.MINUTES)
+                            val totalHoras = horas.toDuration(DurationUnit.HOURS) + minutos.toDuration(DurationUnit.MINUTES)
 
                             variavelGlobalSomaHora += horas.toDuration(DurationUnit.HOURS).toJavaDuration() + minutos.toDuration(DurationUnit.MINUTES).toJavaDuration()
 
@@ -753,7 +760,7 @@ class ComponentsFireBase {
                 modifier = Modifier.width(220.dp),
                 value = "€ 50",
 //                value = "€ 50",
-                onValueChange = { " " },
+                onValueChange = {  },
                 label = { Text("Total de Propinas") },
                 leadingIcon = {
                     Icon(
@@ -774,7 +781,7 @@ class ComponentsFireBase {
                     .padding(start = 8.dp),
 //                value = "$totalHorasListar",
                 value = variavelGlobalSomaHora.toString(),
-                onValueChange = { "" },
+                onValueChange = { },
                 label = { Text("Total de Horas") },
                 leadingIcon = {
                     Icon(
