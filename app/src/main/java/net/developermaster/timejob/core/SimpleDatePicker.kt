@@ -37,7 +37,7 @@ import java.util.*
 @Composable
 fun SimpleDatePicker() {
 
-    var calendario = Unit
+    var calendario = ""
 
     var fechaRemember by remember { mutableStateOf("") }
 
@@ -45,7 +45,7 @@ fun SimpleDatePicker() {
 
     val selectedDateMillis = datePickerState.selectedDateMillis
 
-    val formattedDate = remember(selectedDateMillis) {
+    var formattedDate = remember(selectedDateMillis) {
 
         if (selectedDateMillis != null) {
             val calendar = Calendar.getInstance().apply { timeInMillis = selectedDateMillis }
@@ -65,10 +65,10 @@ fun SimpleDatePicker() {
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        calendario = DatePicker(datePickerState)
+//        calendario = DatePicker(datePickerState)
 
 
-//        DatePicker(datePickerState)
+        DatePicker(datePickerState)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -80,8 +80,8 @@ fun SimpleDatePicker() {
                 }
                 .width(290.dp)
                 .padding(start = 89.dp),
-            value = formattedDate,
-            onValueChange = { formattedDate },
+            value = fechaRemember,
+            onValueChange = { fechaRemember = it },
             label = { Text("Fecha") },
             trailingIcon = {
                 Icon(
@@ -91,10 +91,44 @@ fun SimpleDatePicker() {
                     modifier = Modifier
                         .width(50.dp)
 
-                        .clickable() {
+                        .clickable {
 
-                            calendario
+                            val year: Int
+                            val month: Int
+                            val day: Int
 
+                            val calendar = android.icu.util.Calendar.getInstance()
+                            year = calendar.get(android.icu.util.Calendar.YEAR)
+                            month = calendar.get(android.icu.util.Calendar.MONTH)
+                            day = calendar.get(android.icu.util.Calendar.DAY_OF_MONTH)
+                            calendar.time = Date()
+
+                            /*                   if (selectedDateMillis != null) {
+                                                           al calendar = Calendar.getInstance().apply { timeInMillis = selectedDateMillis }
+                                                           "${calendar.get(Calendar.DAY_OF_MONTH) + 1}/${calendar.get(Calendar.MONTH) + 1}/${
+                                                               calendar.get(
+                                                                   Calendar.YEAR
+                                                               )
+                                                           }"
+                                                       }*/
+
+           /*                   fechaRemember = (if (selectedDateMillis != null) {
+                                  val calendar = Calendar.getInstance().apply {
+                                      timeInMillis = selectedDateMillis }
+                                  "${calendar.get(Calendar.DAY_OF_MONTH) + 1}/${calendar.get(Calendar.MONTH) + 1}/${ calendar.get(Calendar.YEAR) }"
+                              } else {
+
+                              }).toString()*/
+
+//                            fechaRemember = dataehora
+//
+                            val datePickerDialog = DatePickerDialog(
+                                context, { _: DatePicker, year: Int, month: Int, day: Int ->
+                                    fechaRemember = "$day/${month + 1}/$year"
+                                }, year, month, day
+                            )
+
+                            datePickerDialog.show()
 
                         },//clickable
 
@@ -104,6 +138,4 @@ fun SimpleDatePicker() {
             readOnly = true,
         )
     }
-
-
 }

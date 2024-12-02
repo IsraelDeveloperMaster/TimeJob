@@ -71,9 +71,6 @@ private var variavelGlobalSomaHora = Duration.ZERO
         //context local
         val context = LocalContext.current
 
-        val datePickerState = rememberDatePickerState()
-        val selectedDateMillis = datePickerState.selectedDateMillis
-
         var fechaRemember by remember { mutableStateOf("") }
 
         var horaEntradaRemember by remember { mutableStateOf("") }
@@ -83,20 +80,6 @@ private var variavelGlobalSomaHora = Duration.ZERO
         var minutoSalidaRemember by remember { mutableStateOf("") }
 
         var propinasRemember by remember { mutableStateOf("") }
-
-        val formattedDate = remember(selectedDateMillis) {
-            if (selectedDateMillis != null) {
-                val calendar = Calendar.getInstance().apply { timeInMillis = selectedDateMillis }
-                "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${
-                    calendar.get(
-                        Calendar.YEAR
-                    )
-                }"
-            } else {
-
-                "Selecione uma data"
-            }
-        }
 
         val modelTimeJob = ModelTimeJob(
             fecha = fechaRemember,
@@ -186,7 +169,7 @@ private var variavelGlobalSomaHora = Duration.ZERO
 
                                 val datePickerDialog = DatePickerDialog(
                                     context, { _: DatePicker, ano: Int, mes: Int, dia: Int ->
-                                        fechaRemember = "$dia/$mes/$ano"
+                                        fechaRemember = "$dia/${mes + 1}/$ano"
                                     }, ano, mes, dia
                                 )
 
