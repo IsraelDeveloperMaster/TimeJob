@@ -10,7 +10,6 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,12 +25,9 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,7 +36,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
@@ -64,7 +59,9 @@ class ComponentsFireBase {
 //    val totalPropinas = mutableListOf<String>()
 private var variavelGlobalSomaHora = Duration.ZERO
 
-    @OptIn(ExperimentalMaterial3Api::class)
+    var variavelGlobalSomaHoraSplit = ""
+
+
     @Composable
     fun Salvar() {
 
@@ -407,11 +404,25 @@ private var variavelGlobalSomaHora = Duration.ZERO
                         val minutos = duracao.toMinutes() % 60
                         val resultadoCalculorHoraFormatado = String.format("%02d:%02d", horas, minutos)
 
+//                        horas.toDuration(DurationUnit.HOURS)
+//                        minutos.toDuration(DurationUnit.MINUTES)
+
+                        val totalHoras = horas + minutos
+
+                        variavelGlobalSomaHora += horas.plus(minutos).toDuration(DurationUnit.MINUTES).toJavaDuration()
+
+                        Log.i("tempo", "totalHoras = $totalHoras")
+
                         listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nHora de Entrada: $horaEntradaRetornados : $minutoEntradaRetornados \nHora de Salida: $horaSalidaRetornados : $minutoSalidaRetornados \nTotal de Horas: $resultadoCalculorHoraFormatado \nPropinas: $propinasDadosRetornados")
 
                         propinasRemember = " "
                     }
                 }
+//                variavelGlobalSomaHoraSplit = variavelGlobalSomaHora.toString().split("P").toString()
+
+
+                Log.i("tempo", "variavel soma hora fora = $variavelGlobalSomaHora")
+
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -422,7 +433,7 @@ private var variavelGlobalSomaHora = Duration.ZERO
 
                 Card(
                     modifier = Modifier
-                    .background(Color.LightGray)
+                        .background(Color.LightGray)
                         .padding(8.dp)) {
 
                     OutlinedTextField(
@@ -443,7 +454,7 @@ private var variavelGlobalSomaHora = Duration.ZERO
                                     .clickable {
                                         Toast
                                             .makeText(
-                                                context, "Clicou no icone", Toast.LENGTH_SHORT
+                                                context, "icone clicado", Toast.LENGTH_SHORT
                                             )
                                             .show()
                                     },//clickable
@@ -517,7 +528,7 @@ private var variavelGlobalSomaHora = Duration.ZERO
 
                         val datePickerDialog = DatePickerDialog(
                             context, { _: DatePicker, year: Int, month: Int, day: Int ->
-                                dataInicioRemember = "$day/$month/$year"
+                                dataInicioRemember = "$day/${month + 1}/$year"
                             }, year, month, day
                         )
 
@@ -550,7 +561,7 @@ private var variavelGlobalSomaHora = Duration.ZERO
 
                                 val datePickerDialog = DatePickerDialog(
                                     context, { _: DatePicker, year: Int, month: Int, day: Int ->
-                                        dataInicioRemember = "$day/$month/$year"
+                                        dataInicioRemember = "$day/${month + 1}/$year"
                                     }, year, month, day
                                 )
 
@@ -616,7 +627,7 @@ private var variavelGlobalSomaHora = Duration.ZERO
 
                                 val datePickerDialog = DatePickerDialog(
                                     context, { _: DatePicker, year: Int, month: Int, day: Int ->
-                                        dataFimRemember = "$day/$month/$year"
+                                        dataFimRemember = "$day/${month + 1}/$year"
                                     }, year, month, day
                                 )
 
@@ -762,7 +773,6 @@ private var variavelGlobalSomaHora = Duration.ZERO
                 modifier = Modifier
                     .width(220.dp)
                     .padding(start = 8.dp),
-//                value = "$totalHorasListar",
                 value = variavelGlobalSomaHora.toString(),
                 onValueChange = { },
                 label = { Text("Total de Horas") },
@@ -778,18 +788,11 @@ private var variavelGlobalSomaHora = Duration.ZERO
                     )
                 },
                 readOnly = true,
+
             )
+/*            val split = variavelGlobalSomaHora.toString().split("0S").first()
+            Log.i("split", "split = $split")*/
+
         }
     }
 }
-
-/*
-//limpar campos
-fecha = ""
-horaEntrada = ""
-horaSalida = ""
-totalHora = ""
-propinas = ""
-
-  */
-

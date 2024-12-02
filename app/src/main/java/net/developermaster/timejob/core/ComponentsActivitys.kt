@@ -24,7 +24,7 @@ class ComponentsActivitys {
     }
 
     @Composable
-    fun HomeActivityRelatorio(modifier: Modifier) {
+    fun HomeActivityRelatorio() {
 
         LazyColumn {
             //todo lista
