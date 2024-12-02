@@ -54,9 +54,14 @@ class ComponentsFireBase {
 
     val listaResultadoRetornados = mutableListOf<String>()
     val totalPropinas = mutableListOf<String>()
-    var totalHorasForEach = mutableListOf<String>()
-    var variavelTotalHorasListar = ""
-    var totalHorasSomaIndex = ""
+
+
+    var variavelGlobalTotalHorasForEach = mutableListOf<String>()
+    var variavelGlobalTotalHorasForEach2 = mutableListOf<Long>()
+    var variavelGlobalTotalHorasListar = 0
+    var variavelGlobalTotalHorasSomaIndex = mutableListOf<Int>()
+    var variavelGlobalHora = listOf<Long>()
+    var variavelGlobalMinuto = 0
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -245,7 +250,6 @@ class ComponentsFireBase {
                         )
                     },
                     readOnly = true,
-
 
                     )
                 OutlinedTextField(
@@ -457,9 +461,11 @@ class ComponentsFireBase {
                                 .width(50.dp)
 
                                 .clickable {
-                                    Toast.makeText(
-                                        context, "Clicou no icone", Toast.LENGTH_SHORT
-                                    ).show()
+                                    Toast
+                                        .makeText(
+                                            context, "Clicou no icone", Toast.LENGTH_SHORT
+                                        )
+                                        .show()
                                 },//clickable
 
                             tint = Color.Blue,// cor azul da borda
@@ -488,7 +494,6 @@ class ComponentsFireBase {
 //                .background(Color.LightGray)
                 .fillMaxSize()
                 .padding(16.dp), verticalArrangement = Arrangement.Center
-
         ) {
 
             propinasRemember
@@ -503,13 +508,11 @@ class ComponentsFireBase {
             )
         }
 
-
         //row hora entrada
         Row(
             modifier = Modifier,
 //                .background(Color.LightGray),
             horizontalArrangement = Arrangement.Center
-
         ) {
 
             OutlinedTextField(
@@ -686,29 +689,37 @@ class ComponentsFireBase {
                             val resultadoCalculorHoraFormatado =
                                 String.format("%02d:%02d", horas, minutos)
 
-                            totalHorasForEach += (resultadoCalculorHoraFormatado)
+
+                            val totalDeHoras = duracao.toHours().toString()
+                            val totalDeMinutos = duracao.toMinutes().toString()
+
+
+//                            variavelGlobalHora = listOf(horasMinutos)
+
+//                            variavelGlobalMinuto = minutos.toInt()
+
+                            variavelGlobalTotalHorasForEach += (resultadoCalculorHoraFormatado)
+
+//                            variavelGlobalTotalHorasForEach2 = horas + minutos
 
                             //resultado tempo
                             Log.i("tempo", "Calculo = $resultadoCalculorHoraFormatado")
 
                             listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nHora de Entrada: $horaEntradaRetornados : $minutoEntradaRetornados \nHora de Salida: $horaSalidaRetornados : $minutoSalidaRetornados \nTotal de Horas: $resultadoCalculorHoraFormatado \nPropinas: $propinasDadosRetornados")
 
-                            /*                            Log.d(
-                                                            "firebase",
-                                                            " id: $idRetornado \n Fecha: $fechaDadosRetornados \n Horas Trabajadas: $horaSalidaRetornados \n Propinas: $propinasDadosRetornados \n \n "
-                                                        )*/
+                            Log.d( "firebase", "$duracao" )
 
                             Log.d(
                                 "firebase", "total hora relatorio: $resultadoCalculorHoraFormatado"
                             )
+
 
                             propinasRemember = " "
                         }
                     }
                 }
             },
-
-            ) {
+        ) {
             Text("Pesquisar")
         }
 
@@ -717,34 +728,45 @@ class ComponentsFireBase {
 //                .background(Color.LightGray)
                 .fillMaxSize()
                 .padding(16.dp), verticalArrangement = Arrangement.Center
-
         ) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
 ///////////////////////////////////////////////////////////////////
+            /*
 
-            totalHorasForEach.forEach { totalHorasForEach ->
+                        var soma = 0
 
-                variavelTotalHorasListar = totalHorasForEach
+                        variavelGlobalHora.forEach { listaForEach ->
 
-                var totalHorasForEachMapIndex1 = totalHorasForEach[1]
+                            variavelGlobalTotalHorasListar = listaForEach.toInt()
 
-                totalHorasSomaIndex += totalHorasForEachMapIndex1.toString()
+                            soma = listaForEach.toInt() + soma
 
-                Log.d("totalHoras", "totalHorasForEachMapIndex1: $totalHorasForEachMapIndex1")
-                Log.d("totalHoras", "variavelTotalHoraListarDentroDoForEach: $variavelTotalHorasListar")
-                Log.d("totalHoras", "totalHorasSomaIndexDentroDoForEach: $totalHorasSomaIndex")
+            //                val totalHorasForEachMapIndex1 = listaForEach[1].toString()
 
-            }
+            //                variavelGlobalTotalHorasSomaIndex += totalHorasForEachMapIndex1.toString()
 
-            val SomaIndex =  totalHorasSomaIndex +
+            //                Log.d("totalHoras", "totalHorasForEachMapIndex1: $totalHorasForEachMapIndex1")
 
-            Log.d("totalHoras", "totalHorasForEach: $totalHorasForEach")
-            Log.d("totalHoras", "variavelTotalHoraListarForaDoForEach: $variavelTotalHorasListar")
-            Log.d("totalHoras", "totalHorasSomaIndexForaDoForEach: $totalHorasSomaIndex")
+            //                Log.d("totalHoras", "totalHorasSomaIndexDentroDoForEach: $variavelGlobalTotalHorasSomaIndex")
 
+            //                Log.d("totalHoras", "variavelGlobalMinutoDentroForEach: $variavelGlobalMinuto")
 
+                            Log.d("totalHoras", "variavelGlobalHora Dentro : $variavelGlobalHora")
+                            Log.d("totalHoras", "Lista ForEach Dentro : $variavelGlobalTotalHorasListar")
+
+                        }
+
+                        Log.d("totalHoras", "totalHorasForEach Fora: $variavelGlobalTotalHorasForEach")
+                        Log.d("totalHoras", "variavelTotalHoraListar Fora: $variavelGlobalTotalHorasListar")
+                        Log.d("totalHoras", "variavelGlobalHora Fora: $variavelGlobalHora")
+                        Log.d("totalHoras", "totalHorasSoma Fora: $soma")
+
+            //            Log.d("totalHoras", "totalHorasSomaIndexForaDoForEach: $variavelGlobalTotalHorasSomaIndex")
+            //            Log.d("totalHoras", "variavelGlobalMinutoForaForEach: $variavelGlobalMinuto")
+            //            val SomaIndex =  variavelGlobalTotalHorasSomaIndex +
+            */
 
 
 ///////////////////////////////////////////////////////////////////
@@ -764,9 +786,11 @@ class ComponentsFireBase {
                             modifier = Modifier
                                 .width(50.dp)
                                 .clickable {
-                                    Toast.makeText(
-                                        context, "Clicou no icone", Toast.LENGTH_SHORT
-                                    ).show()
+                                    Toast
+                                        .makeText(
+                                            context, "Clicou no icone", Toast.LENGTH_SHORT
+                                        )
+                                        .show()
                                 },//clickable
                             tint = Color.Blue,// cor azul da borda
                         )
@@ -824,48 +848,6 @@ class ComponentsFireBase {
             )
         }
 
-    }
-
-
-    @Composable
-    fun ComponentsFecha() {
-
-        val context = LocalContext.current
-
-        val year: Int
-        val month: Int
-        val day: Int
-
-        val calendar = Calendar.getInstance()
-        year = calendar.get(Calendar.YEAR)
-        month = calendar.get(Calendar.MONTH)
-        day = calendar.get(Calendar.DAY_OF_MONTH)
-        calendar.time = Date()
-
-        val date = remember {
-            mutableStateOf("")
-        }
-
-        val datePickerDialog = DatePickerDialog(
-            context, { _: DatePicker, year: Int, month: Int, day: Int ->
-                date.value = "$day/$month/$year"
-            }, year, month, day
-        )
-
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = "Selected Date : ${date.value}")
-            Spacer(modifier = Modifier.size(16.dp))
-
-            Button(onClick = { datePickerDialog.show() }) {
-                Text(text = "Show Date Picker")
-            }
-
-            Text(text = "Selected Date : ${date.value}")
-        }
     }
 }
 
