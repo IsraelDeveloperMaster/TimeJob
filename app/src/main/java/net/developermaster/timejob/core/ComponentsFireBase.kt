@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
@@ -33,7 +32,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -49,6 +47,9 @@ import net.developermaster.timejob.model.ModelTimeJob
 import java.time.Duration
 import java.time.LocalTime
 import java.util.Date
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
+import kotlin.time.toJavaDuration
 
 class ComponentsFireBase {
 
@@ -61,7 +62,10 @@ class ComponentsFireBase {
     var variavelGlobalTotalHorasListar = 0
     var variavelGlobalTotalHorasSomaIndex = mutableListOf<Int>()
     var variavelGlobalHora = listOf<Long>()
-    var variavelGlobalMinuto = 0
+
+    var variavelGlobalSomaHora = Duration.ZERO
+
+
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -374,6 +378,9 @@ class ComponentsFireBase {
 
         var propinasRemember by remember { mutableStateOf("") }
 
+//        var variavelGlobalSomaHora = remember { mutableStateOf(Duration.ZERO) }
+
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -417,29 +424,16 @@ class ComponentsFireBase {
                         val duracao = Duration.between(horaEntradaTime, horaSalidaTime)
                         val horas = duracao.toHours()
                         val minutos = duracao.toMinutes() % 60
-                        val resultadoCalculorHoraFormatado =
-                            String.format("%02d:%02d", horas, minutos)
-
-                        //resultado tempo
-                        Log.i("tempo", "Calculo = $resultadoCalculorHoraFormatado")
+                        val resultadoCalculorHoraFormatado = String.format("%02d:%02d", horas, minutos)
 
                         listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nHora de Entrada: $horaEntradaRetornados : $minutoEntradaRetornados \nHora de Salida: $horaSalidaRetornados : $minutoSalidaRetornados \nTotal de Horas: $resultadoCalculorHoraFormatado \nPropinas: $propinasDadosRetornados")
 
-                        Log.d(
-                            "firebase",
-                            " id: $idRetornado \n Fecha: $fechaDadosRetornados \n Horas Trabajadas: $horaSalidaRetornados \n Propinas: $propinasDadosRetornados \n \n "
-                        )
-
-
                         propinasRemember = " "
-
                     }
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-
-//                        itemsRemember.add(ModelTimeJob(fecha = item.toString()))
 
             listaResultadoRetornados.forEach { lista ->
 
@@ -686,37 +680,25 @@ class ComponentsFireBase {
                             val duracao = Duration.between(horaEntradaTime, horaSalidaTime)
                             val horas = duracao.toHours()
                             val minutos = duracao.toMinutes() % 60
-                            val resultadoCalculorHoraFormatado =
-                                String.format("%02d:%02d", horas, minutos)
+                            val resultadoCalculorHoraFormatado = String.format("%02d:%02d", horas, minutos)
 
+                            horas.toDuration(DurationUnit.HOURS)
+                            minutos.toDuration(DurationUnit.MINUTES)
 
-                            val totalDeHoras = duracao.toHours().toString()
-                            val totalDeMinutos = duracao.toMinutes().toString()
+                            var totalHoras = horas.toDuration(DurationUnit.HOURS) + minutos.toDuration(DurationUnit.MINUTES)
 
+                            variavelGlobalSomaHora += horas.toDuration(DurationUnit.HOURS).toJavaDuration() + minutos.toDuration(DurationUnit.MINUTES).toJavaDuration()
 
-//                            variavelGlobalHora = listOf(horasMinutos)
-
-//                            variavelGlobalMinuto = minutos.toInt()
-
-                            variavelGlobalTotalHorasForEach += (resultadoCalculorHoraFormatado)
-
-//                            variavelGlobalTotalHorasForEach2 = horas + minutos
-
-                            //resultado tempo
-                            Log.i("tempo", "Calculo = $resultadoCalculorHoraFormatado")
+                            Log.i("tempo", "totalHoras = $totalHoras")
 
                             listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nHora de Entrada: $horaEntradaRetornados : $minutoEntradaRetornados \nHora de Salida: $horaSalidaRetornados : $minutoSalidaRetornados \nTotal de Horas: $resultadoCalculorHoraFormatado \nPropinas: $propinasDadosRetornados")
-
-                            Log.d( "firebase", "$duracao" )
-
-                            Log.d(
-                                "firebase", "total hora relatorio: $resultadoCalculorHoraFormatado"
-                            )
-
 
                             propinasRemember = " "
                         }
                     }
+
+                    Log.i("tempo", "variavel soma hora fora = $variavelGlobalSomaHora")
+
                 }
             },
         ) {
@@ -731,45 +713,6 @@ class ComponentsFireBase {
         ) {
 
             Spacer(modifier = Modifier.height(16.dp))
-
-///////////////////////////////////////////////////////////////////
-            /*
-
-                        var soma = 0
-
-                        variavelGlobalHora.forEach { listaForEach ->
-
-                            variavelGlobalTotalHorasListar = listaForEach.toInt()
-
-                            soma = listaForEach.toInt() + soma
-
-            //                val totalHorasForEachMapIndex1 = listaForEach[1].toString()
-
-            //                variavelGlobalTotalHorasSomaIndex += totalHorasForEachMapIndex1.toString()
-
-            //                Log.d("totalHoras", "totalHorasForEachMapIndex1: $totalHorasForEachMapIndex1")
-
-            //                Log.d("totalHoras", "totalHorasSomaIndexDentroDoForEach: $variavelGlobalTotalHorasSomaIndex")
-
-            //                Log.d("totalHoras", "variavelGlobalMinutoDentroForEach: $variavelGlobalMinuto")
-
-                            Log.d("totalHoras", "variavelGlobalHora Dentro : $variavelGlobalHora")
-                            Log.d("totalHoras", "Lista ForEach Dentro : $variavelGlobalTotalHorasListar")
-
-                        }
-
-                        Log.d("totalHoras", "totalHorasForEach Fora: $variavelGlobalTotalHorasForEach")
-                        Log.d("totalHoras", "variavelTotalHoraListar Fora: $variavelGlobalTotalHorasListar")
-                        Log.d("totalHoras", "variavelGlobalHora Fora: $variavelGlobalHora")
-                        Log.d("totalHoras", "totalHorasSoma Fora: $soma")
-
-            //            Log.d("totalHoras", "totalHorasSomaIndexForaDoForEach: $variavelGlobalTotalHorasSomaIndex")
-            //            Log.d("totalHoras", "variavelGlobalMinutoForaForEach: $variavelGlobalMinuto")
-            //            val SomaIndex =  variavelGlobalTotalHorasSomaIndex +
-            */
-
-
-///////////////////////////////////////////////////////////////////
 
             listaResultadoRetornados.forEach { lista ->
 
@@ -830,7 +773,7 @@ class ComponentsFireBase {
                     .width(220.dp)
                     .padding(start = 8.dp),
 //                value = "$totalHorasListar",
-                value = "12:00H",
+                value = variavelGlobalSomaHora.toString(),
                 onValueChange = { "" },
                 label = { Text("Total de Horas") },
                 leadingIcon = {
@@ -847,7 +790,6 @@ class ComponentsFireBase {
                 readOnly = true,
             )
         }
-
     }
 }
 
