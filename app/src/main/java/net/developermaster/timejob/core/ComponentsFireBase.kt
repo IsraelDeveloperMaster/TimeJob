@@ -7,7 +7,6 @@ import android.icu.util.Calendar
 import android.util.Log
 import android.widget.DatePicker
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -56,11 +55,8 @@ import kotlin.time.toJavaDuration
 class ComponentsFireBase {
 
     private val listaResultadoRetornados = mutableListOf<String>()
-//    val totalPropinas = mutableListOf<String>()
-private var variavelGlobalSomaHora = Duration.ZERO
-
-    var variavelGlobalSomaHoraSplit = ""
-
+    private var variavelGlobalSomaHora = Duration.ZERO
+    private var totalPropinas = 0
 
     @Composable
     fun Salvar() {
@@ -356,9 +352,6 @@ private var variavelGlobalSomaHora = Duration.ZERO
 
         var propinasRemember by remember { mutableStateOf("") }
 
-//        var variavelGlobalSomaHora = remember { mutableStateOf(Duration.ZERO) }
-
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -388,7 +381,7 @@ private var variavelGlobalSomaHora = Duration.ZERO
                         val minutoEntradaRetornados = dados["minutoEntrada"]
                         val horaSalidaRetornados = dados["horaSalida"]
                         val minutoSalidaRetornados = dados["minutoSalida"]
-                        val propinasDadosRetornados = dados["propinas"]
+                        var propinasDadosRetornados = dados["propinas"]
 
                         //calculo tempo
                         val horaEntradaTime = LocalTime.of(
@@ -402,27 +395,14 @@ private var variavelGlobalSomaHora = Duration.ZERO
                         val duracao = Duration.between(horaEntradaTime, horaSalidaTime)
                         val horas = duracao.toHours()
                         val minutos = duracao.toMinutes() % 60
-                        val resultadoCalculorHoraFormatado = String.format("%02d:%02d", horas, minutos)
-
-//                        horas.toDuration(DurationUnit.HOURS)
-//                        minutos.toDuration(DurationUnit.MINUTES)
-
-                        val totalHoras = horas + minutos
-
-                        variavelGlobalSomaHora += horas.plus(minutos).toDuration(DurationUnit.MINUTES).toJavaDuration()
-
-                        Log.i("tempo", "totalHoras = $totalHoras")
+                        val resultadoCalculorHoraFormatado =
+                            String.format("%02d:%02d", horas, minutos)
 
                         listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nHora de Entrada: $horaEntradaRetornados : $minutoEntradaRetornados \nHora de Salida: $horaSalidaRetornados : $minutoSalidaRetornados \nTotal de Horas: $resultadoCalculorHoraFormatado \nPropinas: $propinasDadosRetornados")
 
                         propinasRemember = " "
                     }
                 }
-//                variavelGlobalSomaHoraSplit = variavelGlobalSomaHora.toString().split("P").toString()
-
-
-                Log.i("tempo", "variavel soma hora fora = $variavelGlobalSomaHora")
-
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -433,8 +413,9 @@ private var variavelGlobalSomaHora = Duration.ZERO
 
                 Card(
                     modifier = Modifier
-                        .background(Color.LightGray)
-                        .padding(8.dp)) {
+//                        .background(Color.White)
+                        .padding(8.dp)
+                ) {
 
                     OutlinedTextField(
 
@@ -681,25 +662,24 @@ private var variavelGlobalSomaHora = Duration.ZERO
                             val duracao = Duration.between(horaEntradaTime, horaSalidaTime)
                             val horas = duracao.toHours()
                             val minutos = duracao.toMinutes() % 60
-                            val resultadoCalculorHoraFormatado = String.format("%02d:%02d", horas, minutos)
+                            val resultadoCalculorHoraFormatado =
+                                String.format("%02d:%02d", horas, minutos)
 
                             horas.toDuration(DurationUnit.HOURS)
                             minutos.toDuration(DurationUnit.MINUTES)
 
-                            val totalHoras = horas.toDuration(DurationUnit.HOURS) + minutos.toDuration(DurationUnit.MINUTES)
+                            variavelGlobalSomaHora += horas.toDuration(DurationUnit.HOURS)
+                                .toJavaDuration() + minutos.toDuration(DurationUnit.MINUTES)
+                                .toJavaDuration()
 
-                            variavelGlobalSomaHora += horas.toDuration(DurationUnit.HOURS).toJavaDuration() + minutos.toDuration(DurationUnit.MINUTES).toJavaDuration()
-
-                            Log.i("tempo", "totalHoras = $totalHoras")
 
                             listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nHora de Entrada: $horaEntradaRetornados : $minutoEntradaRetornados \nHora de Salida: $horaSalidaRetornados : $minutoSalidaRetornados \nTotal de Horas: $resultadoCalculorHoraFormatado \nPropinas: $propinasDadosRetornados")
 
                             propinasRemember = " "
+
+                            totalPropinas += propinasDadosRetornados.toString().toInt()
                         }
                     }
-
-                    Log.i("tempo", "variavel soma hora fora = $variavelGlobalSomaHora")
-
                 }
             },
         ) {
@@ -751,11 +731,11 @@ private var variavelGlobalSomaHora = Duration.ZERO
         ) {
 
             OutlinedTextField(
-                modifier = Modifier.width(220.dp),
-                value = "€ 50",
+                modifier = Modifier.width(200.dp),
+                value = "€${totalPropinas}",
 //                value = "€ 50",
-                onValueChange = {  },
-                label = { Text("Total de Propinas") },
+                onValueChange = { },
+                label = { Text("Total Propinas") },
                 leadingIcon = {
                     Icon(
 
@@ -771,11 +751,11 @@ private var variavelGlobalSomaHora = Duration.ZERO
 
             OutlinedTextField(
                 modifier = Modifier
-                    .width(220.dp)
+                    .width(200.dp)
                     .padding(start = 8.dp),
-                value = variavelGlobalSomaHora.toString(),
+                value = "${variavelGlobalSomaHora}".split("PT0S").first(),
                 onValueChange = { },
-                label = { Text("Total de Horas") },
+                label = { Text("Total Horas") },
                 leadingIcon = {
                     Icon(
 
@@ -789,9 +769,9 @@ private var variavelGlobalSomaHora = Duration.ZERO
                 },
                 readOnly = true,
 
-            )
-/*            val split = variavelGlobalSomaHora.toString().split("0S").first()
-            Log.i("split", "split = $split")*/
+                )
+            /*            val split = variavelGlobalSomaHora.toString().split("0S").first()
+                        Log.i("split", "split = $split")*/
 
         }
     }
