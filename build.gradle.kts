@@ -6,4 +6,12 @@ plugins {
     // Add the dependency for the Google services Gradle plugin
     //todo fireBase
     id("com.google.gms.google-services") version "4.4.2" apply false
+
+
+    //ksp
+    alias(libs.plugins.ksp) apply false
+
+    // kotlin 2.0
+    alias(libs.plugins.compose.compiler) apply false
+
 }

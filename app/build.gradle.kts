@@ -6,6 +6,13 @@ plugins {
     // Add the Google services Gradle plugin
     //todo fireBase
     id("com.google.gms.google-services")
+
+    //ksp
+    alias(libs.plugins.ksp)
+
+    // kotlin 2.0
+    alias(libs.plugins.compose.compiler)
+
 }
 
 android {
@@ -44,9 +51,13 @@ android {
     buildFeatures {
         compose = true
     }
+
+    /* //forma antiga compose
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
     }
+
+    */
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
