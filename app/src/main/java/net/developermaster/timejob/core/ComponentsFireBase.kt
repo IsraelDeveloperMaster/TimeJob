@@ -7,6 +7,7 @@ import android.icu.util.Calendar
 import android.util.Log
 import android.widget.DatePicker
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -355,7 +356,8 @@ class ComponentsFireBase {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(16.dp)
+                .background(Color.White),
             verticalArrangement = Arrangement.Center
 
         ) {
@@ -398,7 +400,7 @@ class ComponentsFireBase {
                         val resultadoCalculorHoraFormatado =
                             String.format("%02d:%02d", horas, minutos)
 
-                        listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nHora de Entrada: $horaEntradaRetornados : $minutoEntradaRetornados \nHora de Salida: $horaSalidaRetornados : $minutoSalidaRetornados \nTotal de Horas: $resultadoCalculorHoraFormatado \nPropinas: $propinasDadosRetornados")
+                        listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nHora de Entrada: $horaEntradaRetornados : $minutoEntradaRetornados \nHora de Salida: $horaSalidaRetornados : $minutoSalidaRetornados \nTotal de Horas: $resultadoCalculorHoraFormatado \nPropinas: €$propinasDadosRetornados")
 
                         propinasRemember = " "
                     }
@@ -420,7 +422,7 @@ class ComponentsFireBase {
                     OutlinedTextField(
 
                         value = lista,
-                        textStyle = TextStyle(color = Color.Black),
+                        textStyle = TextStyle(color = Color.White),
                         onValueChange = { },
                         label = { Text("") },
                         modifier = Modifier.fillMaxWidth(),
@@ -673,7 +675,7 @@ class ComponentsFireBase {
                                 .toJavaDuration()
 
 
-                            listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nHora de Entrada: $horaEntradaRetornados : $minutoEntradaRetornados \nHora de Salida: $horaSalidaRetornados : $minutoSalidaRetornados \nTotal de Horas: $resultadoCalculorHoraFormatado \nPropinas: $propinasDadosRetornados")
+                            listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nHora de Entrada: $horaEntradaRetornados : $minutoEntradaRetornados \nHora de Salida: $horaSalidaRetornados : $minutoSalidaRetornados \nTotal de Horas: $resultadoCalculorHoraFormatado \nPropinas: €$propinasDadosRetornados")
 
                             propinasRemember = " "
 
