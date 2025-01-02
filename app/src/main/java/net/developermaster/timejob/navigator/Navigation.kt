@@ -19,6 +19,7 @@ import net.developermaster.timejob.screens.MainScreen
 import net.developermaster.timejob.screens.Planta2Screen
 import net.developermaster.timejob.screens.PlantaGestionScreen
 import net.developermaster.timejob.model.ModelScreens
+import net.developermaster.timejob.screens.AddScreen
 import net.developermaster.timejob.screens.FireBaseListarTodosScreen
 import net.developermaster.timejob.screens.RelatorioScreen
 import net.developermaster.timejob.screens.PesquisaScreen
@@ -30,11 +31,16 @@ fun NavigationNavController() {
     val navController = rememberNavController()
 
     //controlador de navegação que recebe o navController para a rota inicial
-    NavHost(navController = navController, startDestination = ModelScreens.RelatorioScreenObject.route) {
+    NavHost(navController = navController, startDestination = ModelScreens.FireBaseListarTodosScreenObject.route) {
 
         //rota home
         composable(ModelScreens.HomeScreensObject.route) {
             HomeScreen(navController)
+        }
+
+        //rota addItem
+        composable(ModelScreens.AddScreenObject.route) {
+            AddScreen(navController)
         }
 
         //rota de relatorio
