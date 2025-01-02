@@ -37,15 +37,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import net.developermaster.timejob.R
 import net.developermaster.timejob.view.ActivityAdicionar
 import net.developermaster.timejob.view.ActivityRelatorio
 import net.developermaster.timejob.view.MainActivity
 
-class ScaffoldRelatorio {
+class ScaffoldRelatorio(navcontroller: NavController) {
 
     @Composable
-    fun Scaffold() {
+    fun Scaffold(navcontroller: NavController) {
 
         androidx.compose.material3.Scaffold(
 
@@ -62,7 +63,7 @@ class ScaffoldRelatorio {
 
             floatingActionButton = {
 
-                ScaffoldRelatorio().Fab()
+                ScaffoldRelatorio(navcontroller).Fab()
             },
 
             snackbarHost = {
@@ -76,12 +77,12 @@ class ScaffoldRelatorio {
         ) { pappdingInterno ->
 
 
-            Home(modifier = Modifier.padding(pappdingInterno))//.padding(pappdingInterno))//todo chamando a funcao Home com o padding interno
+            Home(navcontroller = navcontroller, modifier = Modifier.padding(pappdingInterno))//.padding(pappdingInterno))//todo chamando a funcao Home com o padding interno
         }
     }
 
     @Composable
-    fun Home(modifier: Modifier) {
+    fun Home(modifier: Modifier, navcontroller: NavController) {
 
         Column(
             modifier = modifier //todo modificador
@@ -91,7 +92,7 @@ class ScaffoldRelatorio {
 
             Row {
 
-                ScaffoldRelatorio().ImagemPerfil() //Row imagem perfil
+                ScaffoldRelatorio(navcontroller).ImagemPerfil() //Row imagem perfil
             }
 
             LazyColumn {

@@ -403,6 +403,8 @@ class ComponentsFireBase {
                         listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nHora de Entrada: $horaEntradaRetornados : $minutoEntradaRetornados \nHora de Salida: $horaSalidaRetornados : $minutoSalidaRetornados \nTotal de Horas: $resultadoCalculorHoraFormatado \nPropinas: €$propinasDadosRetornados")
 
                         propinasRemember = " "
+
+                        Log.d("firebaseListar", "firebaseListar: $listaResultadoRetornados")
                     }
                 }
             }
