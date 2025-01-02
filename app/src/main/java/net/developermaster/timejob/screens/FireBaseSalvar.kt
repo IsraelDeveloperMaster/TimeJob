@@ -36,170 +36,168 @@ import java.time.Duration
 import java.util.Calendar
 import java.util.Date
 
-private var variavelGlobalSomaHora = Duration.ZERO
-private var totalPropinas = 0
+    @Composable
+    fun FireBaseSalvar() {
 
-@Composable
-fun FireBaseSalvar() {
+        //context local
+        val context = LocalContext.current
 
-    //context local
-    val context = LocalContext.current
-
-    var fechaRemember by remember { mutableStateOf("") }
-    var plantaRemember by remember { mutableStateOf("") }
-    var apartamentoRemember by remember { mutableStateOf("") }
-    val situacaoRemember by remember { mutableStateOf("") }
-    val chicaRemember by remember { mutableStateOf("") }
-    val sabanasRemember by remember { mutableStateOf("") }
-    val comentarioRemember by remember { mutableStateOf("") }
-    val inventarioLimpiezaRemember by remember { mutableStateOf("") }
-
-    //manutencao
-    val mantenimentoRemember by remember { mutableStateOf("") }
-    val fotoRemember by remember { mutableStateOf("") }
-    val comentarioMantenimentoRemember by remember { mutableStateOf("") }
-
-    val modelFireBase = net.developermaster.timejob.model.ModelFireBase(
-
-        fecha = fechaRemember,
-        planta = plantaRemember,
-        apartamento = apartamentoRemember,
-        situacao = situacaoRemember,
-        chica = chicaRemember,
-        sabanas = sabanasRemember,
-        comentario = comentarioRemember,
-        inventarioLimpieza = inventarioLimpiezaRemember,
+        var fechaRemember by remember { mutableStateOf("") }
+        var plantaRemember by remember { mutableStateOf("") }
+        var apartamentoRemember by remember { mutableStateOf("") }
+        val situacaoRemember by remember { mutableStateOf("") }
+        val chicaRemember by remember { mutableStateOf("") }
+        val sabanasRemember by remember { mutableStateOf("") }
+        val comentarioRemember by remember { mutableStateOf("") }
+        val inventarioLimpiezaRemember by remember { mutableStateOf("") }
 
         //manutencao
-        mantenimento = mantenimentoRemember,
-        foto = fotoRemember,
-        comentarioMantenimento = comentarioMantenimentoRemember,
+        val mantenimentoRemember by remember { mutableStateOf("") }
+        val fotoRemember by remember { mutableStateOf("") }
+        val comentarioMantenimentoRemember by remember { mutableStateOf("") }
 
-        )
+        val modelFireBase = net.developermaster.timejob.model.ModelFireBase(
 
-    fun time() {
+            fecha = fechaRemember,
+            planta = plantaRemember,
+            apartamento = apartamentoRemember,
+            situacao = situacaoRemember,
+            chica = chicaRemember,
+            sabanas = sabanasRemember,
+            comentario = comentarioRemember,
+            inventarioLimpieza = inventarioLimpiezaRemember,
 
-        val dia: Int
-        val mes: Int
-        val ano: Int
-
-        val dataAtual = Calendar.getInstance()
-        dia = dataAtual.get(Calendar.DAY_OF_MONTH)
-        mes = dataAtual.get(Calendar.MONTH)
-        ano = dataAtual.get(Calendar.YEAR)
-        dataAtual.time = Date()
-
-        val datePickerDialog = DatePickerDialog(
-            context, { _: DatePicker, ano: Int, mes: Int, dia: Int ->
-                fechaRemember = "$dia/${mes + 1}/$ano"
-            }, ano, mes, dia
-        )
-
-        datePickerDialog.show()
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp), verticalArrangement = Arrangement.Center
-
-    ) {
-
-        Text(
-            modifier = Modifier.padding(start = 100.dp, top = 16.dp),//todo padding top
-            color = Color.Black,//todo cor negro
-            fontSize = 18.sp,//todo tamanho da fonte
-            fontFamily = FontFamily.SansSerif,//todo tipo de fonte
-            textAlign = TextAlign.Center,//todo alinhamento do texto
-            text = "Informacion"
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        //fecha
-        OutlinedTextField(
-            modifier = Modifier
-                .clickable {
-                    time()
-                }
-                .width(300.dp)
-                .padding(start = 80.dp),
-            value = fechaRemember,
-            onValueChange = { fechaRemember = it },
-            label = { Text("Fecha") },
-            trailingIcon = {
-                Icon(
-
-                    imageVector = Icons.Default.DateRange,//icone
-                    contentDescription = null,
-                    modifier = Modifier
-                        .width(50.dp)
-
-                        .clickable {
-                            time()
-                        },//clickable
-                    tint = Color.Blue,// cor azul da borda
-                )
-            },
-            readOnly = true,
+            //manutencao
+            mantenimento = mantenimentoRemember,
+            foto = fotoRemember,
+            comentarioMantenimento = comentarioMantenimentoRemember,
 
             )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        fun time() {
 
-        //planta
-        OutlinedTextField(
-            modifier = Modifier
-                .clickable {
-                    time()
-                }
-                .width(300.dp)
-                .padding(start = 80.dp),
-            value = plantaRemember,
-            onValueChange = { plantaRemember = it },
-            label = { Text("Planta") },
+            val dia: Int
+            val mes: Int
+            val ano: Int
+
+            val dataAtual = Calendar.getInstance()
+            dia = dataAtual.get(Calendar.DAY_OF_MONTH)
+            mes = dataAtual.get(Calendar.MONTH)
+            ano = dataAtual.get(Calendar.YEAR)
+            dataAtual.time = Date()
+
+            val datePickerDialog = DatePickerDialog(
+                context, { _: DatePicker, ano: Int, mes: Int, dia: Int ->
+                    fechaRemember = "$dia/${mes + 1}/$ano"
+                }, ano, mes, dia
             )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            datePickerDialog.show()
+        }
 
-        //apartamento
-        OutlinedTextField(
+        Column(
             modifier = Modifier
-                .clickable {
-                    time()
-                }
-                .width(300.dp)
-                .padding(start = 80.dp),
-            value = apartamentoRemember,
-            onValueChange = { apartamentoRemember = it },
-            label = { Text("Apartamento")},
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-
-            onClick = {
-
-                FirebaseFirestore.getInstance().collection("planta1").document().set(modelFireBase)
-                    .addOnSuccessListener {
-
-                        Log.d("firebase", "Salvo com sucesso")
-
-                    }.addOnFailureListener { erro ->
-
-                        Log.d("firebase", "Erro : ${erro.message}")
-                    }
-
-
-                Toast.makeText(context, "Salvo", Toast.LENGTH_SHORT).show()
-            },
-
-            modifier = Modifier.fillMaxWidth()
+                .fillMaxSize()
+                .padding(8.dp),
+            verticalArrangement = Arrangement.Center
 
         ) {
 
-            Text("Salvar")
+            Text(
+                modifier = Modifier.padding(start = 100.dp, top = 16.dp),//todo padding top
+                color = Color.Black,//todo cor negro
+                fontSize = 18.sp,//todo tamanho da fonte
+                fontFamily = FontFamily.SansSerif,//todo tipo de fonte
+                textAlign = TextAlign.Center,//todo alinhamento do texto
+                text = "Informacion"
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            //fecha
+            OutlinedTextField(
+                modifier = Modifier
+                    .clickable {
+                        time()
+                    }
+                    .width(300.dp)
+                    .padding(start = 80.dp),
+                value = fechaRemember,
+                onValueChange = { fechaRemember = it },
+                label = { Text("Fecha") },
+                trailingIcon = {
+                    Icon(
+
+                        imageVector = Icons.Default.DateRange,//icone
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(50.dp)
+
+                            .clickable {
+                                time()
+                            },//clickable
+                        tint = Color.Blue,// cor azul da borda
+                    )
+                },
+                readOnly = true,
+
+                )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            //planta
+            OutlinedTextField(
+                modifier = Modifier
+                    .clickable {
+                        time()
+                    }
+                    .width(300.dp)
+                    .padding(start = 80.dp),
+                value = plantaRemember,
+                onValueChange = { plantaRemember = it },
+                label = { Text("Planta") },
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            //apartamento
+            OutlinedTextField(
+                modifier = Modifier
+                    .clickable {
+                        time()
+                    }
+                    .width(300.dp)
+                    .padding(start = 80.dp),
+                value = apartamentoRemember,
+                onValueChange = { apartamentoRemember = it },
+                label = { Text("Apartamento") },
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+
+                onClick = {
+
+                    FirebaseFirestore.getInstance().collection("planta1").document()
+                        .set(modelFireBase).addOnSuccessListener {
+
+                            Log.d("firebase", "Salvo com sucesso")
+
+                        }.addOnFailureListener { erro ->
+
+                            Log.d("firebase", "Erro : ${erro.message}")
+                        }
+
+
+                    Toast.makeText(context, "Salvo", Toast.LENGTH_SHORT).show()
+                },
+
+                modifier = Modifier.fillMaxWidth()
+
+            ) {
+
+                Text("Salvar")
+            }
         }
     }
-}

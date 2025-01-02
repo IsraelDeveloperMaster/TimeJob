@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import net.developermaster.timejob.core.ScaffoldRelatorio
 import net.developermaster.timejob.screens.FireBaseSalvar
 import net.developermaster.timejob.screens.HomeLimpiezaScreen
 import net.developermaster.timejob.screens.HomeMantenimientoScreen
@@ -15,11 +16,12 @@ import net.developermaster.timejob.screens.LoginGestionScreen
 import net.developermaster.timejob.screens.LoginLimpiezaScreen
 import net.developermaster.timejob.screens.LoginMantenimientoScreen
 import net.developermaster.timejob.screens.MainScreen
-import net.developermaster.timejob.screens.FireBaseListarTodosScreen
 import net.developermaster.timejob.screens.Planta2Screen
 import net.developermaster.timejob.screens.PlantaGestionScreen
 import net.developermaster.timejob.model.ModelScreens
-import net.developermaster.timejob.screens.ListScreen
+import net.developermaster.timejob.screens.FireBaseListarTodosScreen
+import net.developermaster.timejob.screens.RelatorioScreen
+import net.developermaster.timejob.screens.PesquisaScreen
 
 @Composable
 fun NavigationNavController() {
@@ -28,16 +30,37 @@ fun NavigationNavController() {
     val navController = rememberNavController()
 
     //controlador de navegação que recebe o navController para a rota inicial
-    NavHost(navController = navController, startDestination = ModelScreens.MainScreensObject.route) {
+    NavHost(navController = navController, startDestination = ModelScreens.RelatorioScreenObject.route) {
 
         //rota home
         composable(ModelScreens.HomeScreensObject.route) {
             HomeScreen(navController)
         }
 
+        //rota de relatorio
+        composable(ModelScreens.RelatorioScreenObject.route) {
+            RelatorioScreen(navController)
+        }
+
+        //rota ScaffoldRelatorio
+        composable(ModelScreens.ScaffoldRelatorioScreenObject.route) {
+            ScaffoldRelatorio(navController)
+        }
+
+        //rota de pesquisa
+        composable(ModelScreens.PesquisaScreenObject.route) {
+            PesquisaScreen(navController)
+        }
+
+        //rota de gestion
+
+        composable(ModelScreens.RelatorioScreenObject.route) {
+            RelatorioScreen(navController)
+        }
+
         //rota list
         composable(ModelScreens.ListScreenObject.route) {
-            ListScreen(navController)
+            PesquisaScreen(navController)
         }
 
         //rota gestion
