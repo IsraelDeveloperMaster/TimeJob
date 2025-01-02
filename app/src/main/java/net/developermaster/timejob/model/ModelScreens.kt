@@ -16,6 +16,8 @@ sealed class ModelScreens(val route: String) {
     data object PesquisaScreenObject : ModelScreens("PesquisaScreen")
     data object RelatorioScreenObject : ModelScreens("GestionScreen")
     data object ScaffoldRelatorioScreenObject : ModelScreens("ScaffoldRelatorioScreen")
+    data object AddScreenObject : ModelScreens("AddScreen")
+
 
     //rota de Limpieza
     data object LoginLimpiezaScreenObject : ModelScreens("LoginLimpiezaScreen")

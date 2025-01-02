@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -72,10 +73,10 @@ fun TopBarRelatorioScreen(navcontroller: NavController) {
             modifier = Modifier.padding(start = 120.dp), text = "Relatorio"
         )
     }, actions = {
-//            Text(text = "Ações")
-        Icon(
+
+/*        Icon(
             imageVector = Icons.Default.Menu, contentDescription = "Menu"
-        )
+        )*/
     })
 }
 
@@ -92,15 +93,17 @@ fun RelatorioScreen(navcontroller: NavController) {
         },
 
         bottomBar = {
-            FloatingActionButton(
+/*            FloatingActionButton(
+                elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
                 shape = Shapes().large,
                 modifier = Modifier.padding(start = 300.dp, bottom = 50.dp),
                 containerColor = Color.Blue,
+                contentColor = Color.White,
                 onClick = {
                     Toast.makeText(
                         navcontroller.context, "FloatingActionButton", Toast.LENGTH_SHORT
                     ).show()
-                }) { }
+                }) { }*/
 
         }
 
@@ -343,7 +346,7 @@ fun Relatorio() {
 
         Column(
             modifier = Modifier
-                .padding(top = 100.dp),
+                .padding(top = 1.dp),
         ) {
 
             Spacer(modifier = Modifier.height(16.dp))

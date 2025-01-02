@@ -92,7 +92,11 @@ fun TopBarPlanta1Screen(navcontroller: NavController) {
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "search",
-                modifier = Modifier.clickable { }
+                modifier = Modifier.clickable {
+
+                    navcontroller.navigate(ModelScreens.RelatorioScreenObject.route)
+
+                }
             )
 
             Spacer(modifier = Modifier.width(20.dp))
@@ -100,7 +104,11 @@ fun TopBarPlanta1Screen(navcontroller: NavController) {
             Icon(
                 imageVector = Icons.Default.AddCircle,
                 contentDescription = "add",
-                modifier = Modifier.clickable { }
+                modifier = Modifier.clickable {
+
+                    navcontroller.navigate(ModelScreens.AddScreenObject.route)
+
+                }
             )
         })
 }
