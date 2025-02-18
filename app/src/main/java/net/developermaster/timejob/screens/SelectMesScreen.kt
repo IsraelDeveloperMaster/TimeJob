@@ -1,6 +1,9 @@
 package net.developermaster.timejob.screens
 
+import android.icu.util.Calendar
 import android.util.Log
+import android.widget.DatePicker
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.navigation.NavController
 import androidx.compose.foundation.clickable
@@ -10,8 +13,10 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -19,7 +24,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,90 +43,42 @@ import net.developermaster.timejob.model.ModelTimeJob
 import java.sql.Array
 import java.time.Duration
 import java.time.LocalTime
+import java.util.Date
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 @Composable
 private fun TopBar(paddingValues: PaddingValues, navcontroller: NavController) {
-
-    /*    TopBarHomeLimpiezaScreen(
-            colors = TopAppBarDefaults.largeTopAppBarColors(),
-            modifier = Modifier.padding(10.dp),
-            title = {
-                *//*
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "back",
-                modifier = Modifier.clickable {
-                    navcontroller.popBackStack()
-                })
-            *//*
-
-            Text(modifier = Modifier.padding(start = 100.dp), text = "")
-        },
-        actions = {
-
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "search",
-                modifier = Modifier.clickable {
-
-                    navcontroller.navigate(ModelScreens.RelatorioScreenObject.route)
-
-                    //limpar lista
-                    listaResultadoRetornados.clear()
-
-                })
-
-            Spacer(modifier = Modifier.width(20.dp))
-
-            Icon(
-                imageVector = Icons.Default.AddCircle,
-                contentDescription = "add",
-                modifier = Modifier.clickable {
-
-                    navcontroller.navigate(ModelScreens.AddScreenObject.route)
-
-                    //limpar lista
-                    listaResultadoRetornados.clear()
-
-                })
-        })*/
 }
 
 @Composable
 internal fun SelectMesScreen(navController: NavHostController, mes: String) {
 
-    Scaffold(
+    Scaffold(Modifier.fillMaxSize(), bottomBar = {
+        BottomAppBar(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            actions = {
 
-        Modifier.fillMaxSize(),
+            },
 
-        bottomBar = {
+            floatingActionButton = {
+                //propinas
+                FloatingActionButton(modifier = Modifier.padding(start = 155.dp), onClick = {
+                    navController.navigate(ModelScreens.PropinaScreenObject.route)
+                }) {
+                    Icon(Icons.Filled.Favorite, contentDescription = null)
 
-            BottomAppBar(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                actions = {
+                }
 
-                },
-
-                floatingActionButton = {
-
-                    //eventario
-                    FloatingActionButton(modifier = Modifier.padding(start = 155.dp),
-                        onClick = {}) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.time),
-                            contentDescription = "eventario"
-                        )
-                    }
-
-                    //pesquisa
-                    FloatingActionButton(onClick = { }) {
-                        Icon(Icons.Filled.Search, contentDescription = "pesquisa")
-                    }
-                },
-            )
-        },
+                //pesquisa
+                FloatingActionButton(onClick = {
+                    navController.navigate(ModelScreens.RelatorioScreenObject.route)
+                }) {
+                    Icon(Icons.Filled.Search, contentDescription = null)
+                }
+            },
+        )
+    },
 
         topBar = {
 
@@ -135,15 +94,8 @@ internal fun SelectMesScreen(navController: NavHostController, mes: String) {
         val coroutineScopeRemember = rememberCoroutineScope()
         var isRefreshingRemember by remember { mutableStateOf(false) }
         var modelSwitchRememberPlantas by remember { mutableStateOf<List<ModelTimeJob>>(emptyList()) }
-        var modelSwitchRememberPlantas2 by remember { mutableStateOf<List<ModelTimeJob>>(emptyList()) }
-
         var inicioMesRemember by remember { mutableStateOf("") }
         var fimMesRemember by remember { mutableStateOf("") }
-
-        var dias1 by remember { mutableStateOf("") }
-        var dias2 = Array( 31 ) { "" }
-        var dias3 = ""
-
 
         // Função para simular uma atualização de dados
         fun FuncaoQueAtualizaTela() {
@@ -158,7 +110,9 @@ internal fun SelectMesScreen(navController: NavHostController, mes: String) {
 
                 if (mes == "Enero") {
 
-                    val queryMes = FirebaseFirestore.getInstance().collection("Enero").orderBy("fecha").get().await()
+                    val queryMes =
+                        FirebaseFirestore.getInstance().collection("Enero").orderBy("fecha").get()
+                            .await()
 
                     modelSwitchRememberPlantas = queryMes.documents.map { document ->
 
@@ -178,7 +132,9 @@ internal fun SelectMesScreen(navController: NavHostController, mes: String) {
 
                 if (mes == "Febrero") {
 
-                    val queryMes = FirebaseFirestore.getInstance().collection("Febrero").orderBy("fecha").get().await()
+                    val queryMes =
+                        FirebaseFirestore.getInstance().collection("Febrero").orderBy("fecha").get()
+                            .await()
 
                     modelSwitchRememberPlantas = queryMes.documents.map { document ->
 
@@ -217,91 +173,7 @@ internal fun SelectMesScreen(navController: NavHostController, mes: String) {
 
                     inicioMesRemember = "01/06/2025"
                     fimMesRemember = "31/06/2025"
-
                 }
-
-
-                /*
-                                if (planta == "planta2") {
-
-                                    // Carregar os itens do Firestore planta 2
-                                    val retornoPlanta2 =
-                                        FirebaseFirestore.getInstance().collection("planta-2").get()
-                                            .await().query.orderBy("id").get().await()
-
-                                    modelSwitchRememberPlantas = retornoPlanta2.documents.map { document ->
-
-                                        ModelSwitch(
-
-                                            id = document.id,
-                                            fecha = document.getString("fecha") ?: "",
-                                            funcionaria = document.getString("funcionaria") ?: "",
-                                            apartamentoLimpo = document.getBoolean("apartamentoLimpo") ?: false,
-                                            apartamentoSujo = document.getBoolean("apartamentoSujo") ?: false,
-                                            clienteSaindo = document.getBoolean("clienteSaindo") ?: false,
-                                            clienteEntrando = document.getBoolean("clienteEntrando") ?: false,
-                                            clienteFijo = document.getBoolean("clienteFijo") ?: false,
-                                            trocaSabanas = document.getBoolean("trocaSabanas") ?: false,
-                                            mantenimiento = document.getBoolean("mantenimiento") ?: false,
-                                        )
-                                    }
-                                }
-
-                                if (planta == "planta1") {
-
-                                    // Carregar os itens do Firestore planta 1
-                                    val retornoPlanta1 =
-                                        FirebaseFirestore.getInstance().collection("planta-1").get()
-                                            .await().query.orderBy("id").get().await()
-
-                                    modelSwitchRememberPlantas = retornoPlanta1.documents.map { document ->
-
-                                        ModelSwitch(
-
-                                            id = document.id,
-                                            fecha = document.getString("fecha") ?: "",
-                                            funcionaria = document.getString("funcionaria") ?: "",
-                                            apartamentoLimpo = document.getBoolean("apartamentoLimpo") ?: false,
-                                            apartamentoSujo = document.getBoolean("apartamentoSujo") ?: false,
-                                            clienteSaindo = document.getBoolean("clienteSaindo") ?: false,
-                                            clienteEntrando = document.getBoolean("clienteEntrando") ?: false,
-                                            clienteFijo = document.getBoolean("clienteFijo") ?: false,
-                                            trocaSabanas = document.getBoolean("trocaSabanas") ?: false,
-                                            mantenimiento = document.getBoolean("mantenimiento") ?: false,
-                //                            camas = document.getString("camas")?.toInt() ?: 0,
-                                        )
-                                    }
-                                }
-
-                                if (planta == "planta0") {
-
-                                    // Carregar os itens do Firestore planta 0
-                                    val retornoPlanta0 =
-                                        FirebaseFirestore.getInstance().collection("planta-0").get()
-                                            .await().query.orderBy("id").get().await()
-
-                                    modelSwitchRememberPlantas = retornoPlanta0.documents.map { document ->
-
-                                        ModelSwitch(
-
-                                            id = document.id,
-                                            fecha = document.getString("fecha") ?: "",
-                                            funcionaria = document.getString("funcionaria") ?: "",
-                                            apartamentoLimpo = document.getBoolean("apartamentoLimpo") ?: false,
-                                            apartamentoSujo = document.getBoolean("apartamentoSujo") ?: false,
-                                            clienteSaindo = document.getBoolean("clienteSaindo") ?: false,
-                                            clienteEntrando = document.getBoolean("clienteEntrando") ?: false,
-                                            clienteFijo = document.getBoolean("clienteFijo") ?: false,
-                                            trocaSabanas = document.getBoolean("trocaSabanas") ?: false,
-                                            mantenimiento = document.getBoolean("mantenimiento") ?: false,
-                //                            camas = document.getString("camas")?.toInt() ?: 0,
-                                        )
-                                    }
-                                }
-
-                                */
-
-                //////////////////////////
 
                 isRefreshingRemember = false
             }
@@ -324,7 +196,9 @@ internal fun SelectMesScreen(navController: NavHostController, mes: String) {
 
                     if (mes == "Enero") {
 
-                        val queryMes = FirebaseFirestore.getInstance().collection("Enero").orderBy("fecha").get().await()
+                        val queryMes =
+                            FirebaseFirestore.getInstance().collection("Enero").orderBy("fecha")
+                                .get().await()
 
                         modelSwitchRememberPlantas = queryMes.documents.map { document ->
 
@@ -344,7 +218,9 @@ internal fun SelectMesScreen(navController: NavHostController, mes: String) {
 
                     if (mes == "Febrero") {
 
-                        val queryMes = FirebaseFirestore.getInstance().collection("Febrero").orderBy("fecha").get().await()
+                        val queryMes =
+                            FirebaseFirestore.getInstance().collection("Febrero").orderBy("fecha")
+                                .get().await()
 
                         modelSwitchRememberPlantas = queryMes.documents.map { document ->
 
@@ -385,100 +261,7 @@ internal fun SelectMesScreen(navController: NavHostController, mes: String) {
                         fimMesRemember = "31/06/2025"
 
                     }
-
                 }
-
-                /*
-                if (planta == "planta2") {
-
-                    // Carregar os itens planta 2
-                    LaunchedEffect(Unit) {
-
-                        val querySnapshot =
-                            FirebaseFirestore.getInstance().collection("planta-2").get()
-                                .await().query.orderBy("id").get()
-                                .await()
-
-                        modelSwitchRememberPlantas = querySnapshot.documents.map { document ->
-
-                            ModelSwitch(
-
-                                id = document.id,
-                                fecha = document.getString("fecha") ?: "",
-                                funcionaria = document.getString("funcionaria") ?: "",
-                                apartamentoLimpo = document.getBoolean("apartamentoLimpo") ?: false,
-                                apartamentoSujo = document.getBoolean("apartamentoSujo") ?: false,
-                                clienteSaindo = document.getBoolean("clienteSaindo") ?: false,
-                                clienteEntrando = document.getBoolean("clienteEntrando") ?: false,
-                                clienteFijo = document.getBoolean("clienteFijo") ?: false,
-                                trocaSabanas = document.getBoolean("trocaSabanas") ?: false,
-                                mantenimiento = document.getBoolean("mantenimiento") ?: false,
-                                camas = document.getLong("camas") ?: 0,
-                            )
-                        }
-                    }
-                }
-
-                if (planta == "planta1") {
-
-                    // Carregar os itens planta 1
-                    LaunchedEffect(Unit) {
-
-                        val querySnapshot =
-                            FirebaseFirestore.getInstance().collection("planta-1").get()
-                                .await().query.orderBy("id").get()
-                                .await()
-
-                        modelSwitchRememberPlantas = querySnapshot.documents.map { document ->
-
-                            ModelSwitch(
-
-                                id = document.id,
-                                fecha = document.getString("fecha") ?: "",
-                                funcionaria = document.getString("funcionaria") ?: "",
-                                apartamentoLimpo = document.getBoolean("apartamentoLimpo") ?: false,
-                                apartamentoSujo = document.getBoolean("apartamentoSujo") ?: false,
-                                clienteSaindo = document.getBoolean("clienteSaindo") ?: false,
-                                clienteEntrando = document.getBoolean("clienteEntrando") ?: false,
-                                clienteFijo = document.getBoolean("clienteFijo") ?: false,
-                                trocaSabanas = document.getBoolean("trocaSabanas") ?: false,
-                                mantenimiento = document.getBoolean("mantenimiento") ?: false,
-//                                camas = document.getString("camas")?.toInt() ?: 0,
-                            )
-                        }
-                    }
-                }
-
-                if (planta == "planta0") {
-
-                    // Carregar os itens planta 0
-                    LaunchedEffect(Unit) {
-
-                        val querySnapshot =
-                            FirebaseFirestore.getInstance().collection("planta-0").get()
-                                .await().query.orderBy("id").get()
-                                .await()
-
-                        modelSwitchRememberPlantas = querySnapshot.documents.map { document ->
-
-                            ModelSwitch(
-
-                                id = document.id,
-                                fecha = document.getString("fecha") ?: "",
-                                funcionaria = document.getString("funcionaria") ?: "",
-                                apartamentoLimpo = document.getBoolean("apartamentoLimpo") ?: false,
-                                apartamentoSujo = document.getBoolean("apartamentoSujo") ?: false,
-                                clienteSaindo = document.getBoolean("clienteSaindo") ?: false,
-                                clienteEntrando = document.getBoolean("clienteEntrando") ?: false,
-                                clienteFijo = document.getBoolean("clienteFijo") ?: false,
-                                trocaSabanas = document.getBoolean("trocaSabanas") ?: false,
-                                mantenimiento = document.getBoolean("mantenimiento") ?: false,
-//                                camas = document.getString("camas")?.toInt() ?: 0,
-                            )
-                        }
-                    }
-                }
-                */
 
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2), // ➕ Fixed 3 columns
@@ -499,9 +282,7 @@ internal fun SelectMesScreen(navController: NavHostController, mes: String) {
 
 @Composable
 private fun ItemBox(
-    navController: NavController,
-    modelTimeJob: ModelTimeJob,
-    mes: String
+    navController: NavController, modelTimeJob: ModelTimeJob, mes: String
 
 ) {
 
@@ -511,7 +292,6 @@ private fun ItemBox(
             .fillMaxHeight()
             .padding(8.dp)
             .clip(MaterialTheme.shapes.medium)
-//            .background(MaterialTheme.colorScheme.inversePrimary)
             .background(MaterialTheme.colorScheme.primaryContainer)
             .padding(16.dp),
 
@@ -519,18 +299,14 @@ private fun ItemBox(
 
         //////////////// CALCULO TEMPO ////////////////
 
-        var variavelGlobalSomaHora = Duration.ZERO
-
         //calculo tempo hora entrada
         val horaEntrada = LocalTime.of(
-            modelTimeJob.horaEntrada.toInt(),
-            modelTimeJob.minutoEntrada.toInt()
+            modelTimeJob.horaEntrada.toInt(), modelTimeJob.minutoEntrada.toInt()
         )
 
         //calculo tempo hora saida
         val horaSalida = LocalTime.of(
-            modelTimeJob.horaSalida.toInt(),
-            modelTimeJob.minutoSalida.toInt()
+            modelTimeJob.horaSalida.toInt(), modelTimeJob.minutoSalida.toInt()
         )
 
         val duracao = Duration.between(horaEntrada, horaSalida)
@@ -541,23 +317,14 @@ private fun ItemBox(
         horas.toDuration(DurationUnit.HOURS)
         minutos.toDuration(DurationUnit.MINUTES)
 
-//        val totalHoras = horas.toDuration(DurationUnit.HOURS) + minutos.toDuration(DurationUnit.MINUTES)
-
-
-        /*        variavelGlobalSomaHora += horas.toDuration(DurationUnit.HOURS)
-                    .toJavaDuration() + minutos.toDuration(DurationUnit.MINUTES)
-                    .toJavaDuration()*/
-
-
         //////////////// CALCULO TEMPO ////////////////
-
 
         Text(
             text = "Fecha " + modelTimeJob.fecha,
             modifier = Modifier
                 .padding(start = 8.dp)
                 .fillMaxWidth(),
-            fontSize = 15.sp,
+            fontSize = 13.sp,
             fontFamily = FontFamily.Serif,
             style = MaterialTheme.typography.titleLarge
         )
@@ -566,7 +333,7 @@ private fun ItemBox(
         Text(
             text = "Entrada " + modelTimeJob.horaEntrada + ":" + modelTimeJob.minutoEntrada,
             modifier = Modifier
-                .padding(top = 20.dp, start = 8.dp)
+                .padding(top = 25.dp, start = 8.dp)
                 .fillMaxWidth(),
             fontSize = 15.sp,
             fontFamily = FontFamily.Serif,
@@ -577,7 +344,7 @@ private fun ItemBox(
         Text(
             text = "Salida " + modelTimeJob.horaSalida + ":" + modelTimeJob.minutoSalida,
             modifier = Modifier
-                .padding(top = 40.dp, start = 8.dp)
+                .padding(top = 50.dp, start = 8.dp)
                 .fillMaxWidth(),
             fontSize = 15.sp,
             fontFamily = FontFamily.Serif,
@@ -587,217 +354,604 @@ private fun ItemBox(
         Text(
             text = "Horas " + resultadoCalculorHoraFormatado,
             modifier = Modifier
-                .padding(top = 60.dp, start = 8.dp)
+                .padding(top = 80.dp, start = 8.dp)
                 .fillMaxWidth(),
             fontSize = 15.sp,
             fontFamily = FontFamily.Serif,
             style = MaterialTheme.typography.titleLarge
         )
 
+        //delete
         Icon(
             modifier = Modifier
-                .padding(top = 50.dp, start = 120.dp)
+                .padding(top = 120.dp, start = 16.dp)
                 .clickable {
 
-//                    navController.navigate(ModelScreens.EditScreenObject.route + "/${modelTimeJob.id}"),
-                },
-            imageVector = Icons.Default.Delete,
-            contentDescription = "",
-            tint = Color.Black
+                    navController.navigate(ModelScreens.UpdateScreenObject.route + "/${modelTimeJob.id}")
+
+                }, imageVector = Icons.Default.Delete, contentDescription = "", tint = Color.Black
         )
 
+        //atualizar
         Icon(
             modifier = Modifier
-                .padding(top = 90.dp, start = 120.dp)
+                .padding(top = 120.dp, start = 90.dp)
                 .clickable {
 
-//                    navController.navigate(ModelScreens.EditScreenObject.route + "/${modelTimeJob.id}"),
-                },
-            imageVector = Icons.Default.Edit,
-            contentDescription = "",
-            tint = Color.Black
+                    navController.navigate("updateItem/${modelTimeJob.id}")
+
+                }, imageVector = Icons.Default.Edit, contentDescription = "", tint = Color.Black
         )
     }
 }
 
+@Composable
+fun UpdateItemDetailScreen2(navController: NavController, itemId: String) {
 
-/*
-if (!modelSwitch.apartamentoSujo && !modelSwitch.clienteSaindo && !modelSwitch.mantenimiento && !modelSwitch.trocaSabanas && !modelSwitch.clienteFijo && !modelSwitch.clienteEntrando && modelSwitch.camas == 0L) {
+    var fechaRemember by remember { mutableStateOf("") }
+    var horaEntradaRemember by remember { mutableStateOf("") }
+    var minutoEntradaRemember by remember { mutableStateOf("") }
+    var horaSalidaRemember by remember { mutableStateOf("") }
+    var minutoSalidaRemember by remember { mutableStateOf("") }
+    var propinasRemember by remember { mutableStateOf("") }
 
-    Box(
-        modifier = Modifier
-            .clickable {
+    val firestore = FirebaseFirestore.getInstance()
+    var modelTimeJob by remember { mutableStateOf<ModelTimeJob?>(null) }
 
-                navController.navigate(ModelScreens.SelectScreenOptionsObject.route + "/${modelSwitch.id}")
+    // Carregar o item específico do Firestore
+    LaunchedEffect(itemId) {
+        val document = firestore.collection("Enero").document(itemId).get().await()
 
-            }
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(8.dp)
-            .clip(MaterialTheme.shapes.medium)
-            .background(Color.Green)
-            .padding(16.dp),
-    ) {
+        modelTimeJob = ModelTimeJob(
+            id = document.id,
+            fecha = document.getString("fecha") ?: "",
+            horaEntrada = document.getString("horaEntrada") ?: "",
+            minutoEntrada = document.getString("minutoEntrada") ?: "",
+            horaSalida = document.getString("horaSalida") ?: "",
+            minutoSalida = document.getString("minutoSalida") ?: "",
+            propinas = document.getString("propinas") ?: ""
+        )
 
-        // IDs da planta 0
-        val apPlanta0 = (1..99).map { it.toString() }
-
-        if (modelSwitch.id in apPlanta0) {
-
-            Text(
-                text = "00" + modelSwitch.id,
-                modifier = Modifier
-                    .padding(start = 15.dp)
-                    .fillMaxWidth(),
-                fontSize = 30.sp,
-                fontFamily = FontFamily.Serif,
-                style = MaterialTheme.typography.titleLarge
-            )
-
-        } else {
-
-            Text(
-                text = modelSwitch.id,
-                modifier = Modifier
-                    .padding(start = 15.dp)
-                    .fillMaxWidth(),
-                fontSize = 30.sp,
-                fontFamily = FontFamily.Serif,
-                style = MaterialTheme.typography.titleLarge
-            )
-        }
+        Log.d("UpdateItemDetailScreen", "Item carregado: $modelTimeJob")
     }
 
-} else {
+    val context = LocalContext.current
 
-    Box(
-        modifier = Modifier
-            .clickable {
+    modelTimeJob?.let { modelTimeJobItem ->
 
-//                    navController.navigate(ModelScreens.SelectScreenOptionsObject.route + "/${modelSwitch.id}")
+        fechaRemember = modelTimeJobItem.fecha
+        horaEntradaRemember = modelTimeJobItem.horaEntrada
+        minutoEntradaRemember = modelTimeJobItem.minutoEntrada
+        horaSalidaRemember = modelTimeJobItem.horaSalida
+        minutoSalidaRemember = modelTimeJobItem.minutoSalida
+        propinasRemember = modelTimeJobItem.propinas
 
-            }
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(8.dp)
-            .clip(MaterialTheme.shapes.medium)
-            .background(MaterialTheme.colorScheme.inversePrimary)
-            .padding(16.dp),
-    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
 
-        // IDs da planta 0
-        val apPlanta0 = (1..99).map { it.toString() }
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
 
-        if (modelSwitch.id in apPlanta0) {
-
-            Text(
-                text = "00" + modelSwitch.id,
-                modifier = Modifier
-                    .padding(start = 15.dp)
-                    .fillMaxWidth(),
-                fontSize = 30.sp,
-                fontFamily = FontFamily.Serif,
-                style = MaterialTheme.typography.titleLarge
-            )
-
-        } else {
+            Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = modelSwitch.id,
-                modifier = Modifier
-                    .padding(start = 15.dp)
-                    .fillMaxWidth(),
-                fontSize = 30.sp,
-                fontFamily = FontFamily.Serif,
-                style = MaterialTheme.typography.titleLarge
+                "Atualizar",
+                style = MaterialTheme.typography.headlineMedium,
             )
-        }
 
-        *//*
+            Spacer(modifier = Modifier.height(16.dp))
 
-            if (modelSwitch.apartamentoSujo) {
+            //fecha
+            OutlinedTextField(
+                textStyle = TextStyle(color = Color.Black),
+                modifier = Modifier.width(200.dp),
+                value = fechaRemember,
+                onValueChange = { fechaRemember = it },
+                label = { Text("Fecha") },
+                trailingIcon = {
 
-                Icon(
-                    modifier = Modifier.padding(top = 40.dp),
-                    painter = painterResource(id = R.drawable.sucio),
-                    contentDescription = "",
-                    tint = Color.Black
+                    Icon(
+
+                        imageVector = Icons.Default.DateRange,//icone
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(50.dp)
+
+                            .clickable {
+
+                                val dia: Int
+                                val mes: Int
+                                val ano: Int
+
+                                val dataAtual = Calendar.getInstance()
+                                dia = dataAtual.get(Calendar.DAY_OF_MONTH)
+                                mes = dataAtual.get(Calendar.MONTH)
+                                ano = dataAtual.get(Calendar.YEAR)
+                                dataAtual.time = Date()
+
+
+                                val datePickerDialog = android.app.DatePickerDialog(
+                                    context, { _: DatePicker, ano: Int, mes: Int, dia: Int ->
+                                        fechaRemember = "$dia/${mes + 1}/$ano"
+
+                                        val fechaFormatada =
+                                            String.format("%02d/%02d/%02d", dia, mes + 1, ano)
+
+                                        fechaRemember = fechaFormatada
+
+                                        modelTimeJobItem.fecha = fechaRemember
+
+                                    }, ano, mes, dia
+                                )
+
+                                datePickerDialog.show()
+
+                            },//clickable
+
+                        tint = Color.Blue,// cor azul da borda
+                    )
+                },
+                readOnly = true,
+
                 )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            //hora de entrada
+            OutlinedTextField(
+                textStyle = TextStyle(color = Color.Black),
+                modifier = Modifier
+                    .width(200.dp)
+                    .clickable {},
+                value = "$horaEntradaRemember : $minutoEntradaRemember",
+                onValueChange = { horaEntradaRemember = it },
+                label = { Text("Hora Entrada") },
+                trailingIcon = {
+                    Icon(
+
+                        painter = painterResource(id = R.drawable.time),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(50.dp)
+
+                            .clickable {
+
+                                Relogio(context) { hora, minuto ->
+
+                                    horaEntradaRemember = "$hora"
+                                    minutoEntradaRemember = "$minuto"
+
+                                    val horaFormatado = String.format("%02d", hora)
+                                    horaEntradaRemember = horaFormatado
+
+                                    val minutoFormatado = String.format("%02d", minuto)
+                                    minutoEntradaRemember = minutoFormatado
+
+                                    modelTimeJobItem.horaEntrada = horaEntradaRemember
+                                    modelTimeJobItem.minutoEntrada = minutoEntradaRemember
+                                }
+
+                            },//clickable
+
+                        tint = Color.Blue,// cor azul da borda
+                    )
+                },
+                readOnly = true,
+
+                )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            //hora de saida
+            OutlinedTextField(
+                textStyle = TextStyle(color = Color.Black),
+                modifier = Modifier
+                    .width(200.dp)
+                    .clickable {},
+                value = "$horaEntradaRemember : $minutoSalidaRemember",
+                onValueChange = { horaSalidaRemember = it },
+                label = { Text("Hora Salida") },
+                trailingIcon = {
+                    Icon(
+
+                        painter = painterResource(id = R.drawable.time),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(50.dp)
+
+                            .clickable {
+
+                                Relogio(context) { hora, minuto ->
+
+                                    horaSalidaRemember = "$hora"
+                                    minutoSalidaRemember = "$minuto"
+
+                                    val horaFormatado = String.format("%02d", hora)
+                                    horaSalidaRemember = horaFormatado
+
+                                    val minutoFormatado = String.format("%02d", minuto)
+                                    minutoSalidaRemember = minutoFormatado
+
+                                    modelTimeJobItem.horaSalida = horaSalidaRemember
+                                    modelTimeJobItem.minutoSalida = minutoSalidaRemember
+                                }
+
+                            },//clickable
+
+                        tint = Color.Blue,// cor azul da borda
+                    )
+                },
+                readOnly = true,
+
+                )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            //propinas
+            OutlinedTextField(textStyle = TextStyle(color = Color.Black),
+                modifier = Modifier
+                    .width(200.dp)
+                    .clickable {},
+                value = modelTimeJobItem.propinas,
+                onValueChange = { newPropinas ->
+                    modelTimeJob = modelTimeJobItem.copy(propinas = newPropinas)
+                },
+                label = { Text("Propinas") },
+                trailingIcon = {
+
+                })
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+
+                    // Extrai o mês da data
+                    val partesData = fechaRemember.split("/")
+                    if (partesData.size == 3) {
+                        val mes = partesData[1].toInt() // O mês está na segunda posição (índice 1)
+                        // Mapeia o número do mês para o nome da coleção
+                        val nomeMes = when (mes) {
+                            1 -> "Enero"
+                            2 -> "Febrero"
+                            3 -> "Marzo"
+                            4 -> "Abril"
+                            5 -> "Mayo"
+                            6 -> "Junio"
+                            7 -> "Julio"
+                            8 -> "Agosto"
+                            9 -> "Septiembre"
+                            10 -> "Octubre"
+                            11 -> "Noviembre"
+                            12 -> "Diciembre"
+                            else -> ""
+                        }
+                        // Atualizar o item no Firestore
+                        firestore.collection("nomeMes").document(modelTimeJobItem.id).update(
+                            mapOf(
+
+                                "fecha" to modelTimeJobItem.fecha,
+                                "horaEntrada" to modelTimeJobItem.horaEntrada,
+                                "minutoEntrada" to modelTimeJobItem.minutoEntrada,
+                                "horaSalida" to modelTimeJobItem.horaSalida,
+                                "minutoSaida" to modelTimeJobItem.minutoSalida,
+                                "propinas" to modelTimeJobItem.propinas,
+
+                                )
+
+                        ).addOnSuccessListener {
+                            Log.d("UpdateItemDetailScreen", "Item atualizado com sucesso")
+                        }.addOnFailureListener { e ->
+                            Log.e("UpdateItemDetailScreen", "Erro ao atualizar item", e)
+                        }
+
+                        Toast.makeText(context, "Atualizado com sucesso", Toast.LENGTH_SHORT).show()
+
+                        navController.navigate(ModelScreens.ListarTodosScreenObject.route)
+                    }
+                },
+            ) {
+                Text("Atualizar")
             }
-
-            if (modelSwitch.clienteSaindo) {
-
-                Icon(
-                    modifier = Modifier.padding(top = 40.dp, start = 30.dp),
-                    painter = painterResource(id = R.drawable.clientesalindo),
-                    contentDescription = "",
-                    tint = Color.Black
-                )
-            }
-
-            if (modelSwitch.clienteFijo) {
-
-                Icon(
-                    modifier = Modifier.padding(top = 80.dp),
-                    painter = painterResource(id = R.drawable.maleta),
-                    contentDescription = "",
-                    tint = Color.Black
-                )
-            }
-
-            if (modelSwitch.clienteEntrando) {
-
-                Icon(
-                    modifier = Modifier.padding(top = 80.dp, start = 32.dp),
-                    painter = painterResource(id = R.drawable.clienteentrando),
-                    contentDescription = "",
-                    tint = Color.Black
-                )
-            }
-
-            if (modelSwitch.trocaSabanas) {
-
-                Icon(
-                    modifier = Modifier.padding(top = 115.dp),
-                    painter = painterResource(id = R.drawable.sabanas),
-                    contentDescription = "",
-                    tint = Color.Black
-                )
-            }
-
-            if (modelSwitch.mantenimiento) {
-
-                Icon(
-                    modifier = Modifier.padding(top = 115.dp, start = 32.dp),
-                    painter = painterResource(id = R.drawable.mantenimiento1),
-                    contentDescription = "",
-                    tint = Color.Black
-                )
-            }
-
-            if (modelSwitch.camas > 0) {
-
-                Icon(
-                    modifier = Modifier.padding(top = 150.dp),
-                    painter = painterResource(id = R.drawable.cama),
-                    contentDescription = "",
-                    tint = Color.Black
-                )
-
-
-                Text(
-                    text = "x" + modelSwitch.camas.toString(),
-                    modifier = Modifier
-                        .padding(top = 210.dp, start = 25.dp)
-                        .fillMaxWidth(),
-                    fontSize = 30.sp,
-                    fontFamily = FontFamily.Serif,
-                    style = MaterialTheme.typography.titleLarge
-                )
-            }
-
-            *//*
         }
     }
-    */
+}
 
+@Composable
+fun UpdateScreen3(navController: NavController, itemId: String) {
+
+    var fechaRemember by remember { mutableStateOf("") }
+    var horaEntradaRemember by remember { mutableStateOf("") }
+    var minutoEntradaRemember by remember { mutableStateOf("") }
+    var horaSalidaRemember by remember { mutableStateOf("") }
+    var minutoSalidaRemember by remember { mutableStateOf("") }
+    var propinasRemember by remember { mutableStateOf("") }
+    val firestore = FirebaseFirestore.getInstance()
+    var modelTimeJob by remember { mutableStateOf<ModelTimeJob?>(null) }
+
+    // Carregar o item específico do Firestore
+    LaunchedEffect(itemId) {
+        val document = firestore.collection("Enero").document(itemId).get().await()
+
+        modelTimeJob = ModelTimeJob(
+            id = document.id,
+            fecha = document.getString("fecha") ?: "",
+            horaEntrada = document.getString("horaEntrada") ?: "",
+            minutoEntrada = document.getString("minutoEntrada") ?: "",
+            horaSalida = document.getString("horaSalida") ?: "",
+            minutoSalida = document.getString("minutoSalida") ?: "",
+            propinas = document.getString("propinas") ?: ""
+        )
+
+        Log.d("UpdateItemDetailScreen", "Item carregado: $modelTimeJob")
+    }
+
+    val context = LocalContext.current
+
+    modelTimeJob?.let { modelTimeJobItem ->
+
+        fechaRemember = modelTimeJobItem.fecha
+        horaEntradaRemember = modelTimeJobItem.horaEntrada
+        minutoEntradaRemember = modelTimeJobItem.minutoEntrada
+        horaSalidaRemember = modelTimeJobItem.horaSalida
+        minutoSalidaRemember = modelTimeJobItem.minutoSalida
+        propinasRemember = modelTimeJobItem.propinas
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                "Atualizar",
+                style = MaterialTheme.typography.headlineMedium,
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            //fecha
+            OutlinedTextField(
+                textStyle = TextStyle(color = Color.Black),
+                modifier = Modifier.width(200.dp),
+                value = fechaRemember,
+                onValueChange = { fechaRemember = it },
+                label = { Text("Fecha") },
+                trailingIcon = {
+
+                    Icon(
+
+                        imageVector = Icons.Default.DateRange,//icone
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(50.dp)
+
+                            .clickable {
+
+                                val dia: Int
+                                val mes: Int
+                                val ano: Int
+                                val dataAtual = Calendar.getInstance()
+                                dia = dataAtual.get(Calendar.DAY_OF_MONTH)
+                                mes = dataAtual.get(Calendar.MONTH)
+                                ano = dataAtual.get(Calendar.YEAR)
+                                dataAtual.time = Date()
+
+                                val datePickerDialog = android.app.DatePickerDialog(
+                                    context, { _: DatePicker, ano: Int, mes: Int, dia: Int ->
+                                        fechaRemember = "$dia/${mes + 1}/$ano"
+
+                                        val fechaFormatada =
+                                            String.format("%02d/%02d/%02d", dia, mes + 1, ano)
+
+                                        fechaRemember = fechaFormatada
+
+                                        modelTimeJobItem.fecha = fechaRemember
+
+                                    }, ano, mes, dia
+                                )
+
+                                datePickerDialog.show()
+
+                            },//clickable
+
+                        tint = Color.Blue,// cor azul da borda
+                    )
+                },
+                readOnly = true,
+
+                )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            //hora de entrada
+            OutlinedTextField(
+                textStyle = TextStyle(color = Color.Black),
+                modifier = Modifier
+                    .width(200.dp)
+                    .clickable {},
+                value = "$horaEntradaRemember : $minutoEntradaRemember",
+                onValueChange = { horaEntradaRemember = it },
+                label = { Text("Hora Entrada") },
+                trailingIcon = {
+                    Icon(
+
+                        painter = painterResource(id = R.drawable.time),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(50.dp)
+
+                            .clickable {
+
+                                Relogio(context) { hora, minuto ->
+
+                                    horaEntradaRemember = "$hora"
+                                    minutoEntradaRemember = "$minuto"
+
+                                    val horaFormatado = String.format("%02d", hora)
+                                    horaEntradaRemember = horaFormatado
+
+                                    val minutoFormatado = String.format("%02d", minuto)
+                                    minutoEntradaRemember = minutoFormatado
+
+                                    modelTimeJobItem.horaEntrada = horaEntradaRemember
+                                    modelTimeJobItem.minutoEntrada = minutoEntradaRemember
+                                }
+
+                            },//clickable
+
+                        tint = Color.Blue,// cor azul da borda
+                    )
+                },
+                readOnly = true,
+
+                )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            //hora de saida
+            OutlinedTextField(
+                textStyle = TextStyle(color = Color.Black),
+                modifier = Modifier
+                    .width(200.dp)
+                    .clickable {},
+                value = "$horaEntradaRemember : $minutoSalidaRemember",
+                onValueChange = { horaSalidaRemember = it },
+                label = { Text("Hora Salida") },
+                trailingIcon = {
+                    Icon(
+
+                        painter = painterResource(id = R.drawable.time),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(50.dp)
+
+                            .clickable {
+
+                                Relogio(context) { hora, minuto ->
+
+                                    horaSalidaRemember = "$hora"
+                                    minutoSalidaRemember = "$minuto"
+
+                                    val horaFormatado = String.format("%02d", hora)
+                                    horaSalidaRemember = horaFormatado
+
+                                    val minutoFormatado = String.format("%02d", minuto)
+                                    minutoSalidaRemember = minutoFormatado
+
+                                    modelTimeJobItem.horaSalida = horaSalidaRemember
+                                    modelTimeJobItem.minutoSalida = minutoSalidaRemember
+                                }
+
+                            },//clickable
+
+                        tint = Color.Blue,// cor azul da borda
+                    )
+                },
+                readOnly = true,
+
+                )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            //propinas
+            OutlinedTextField(textStyle = TextStyle(color = Color.Black),
+                modifier = Modifier
+                    .width(200.dp)
+                    .clickable {},
+                value = modelTimeJobItem.propinas,
+                onValueChange = { newPropinas ->
+                    modelTimeJob = modelTimeJobItem.copy(propinas = newPropinas)
+                },
+                label = { Text("Propinas") },
+                trailingIcon = {
+
+                })
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    // Atualizar o item no Firestore
+                    firestore.collection("Enero").document(modelTimeJobItem.id).update(
+                        mapOf(
+
+                            "fecha" to modelTimeJobItem.fecha,
+                            "horaEntrada" to modelTimeJobItem.horaEntrada,
+                            "minutoEntrada" to modelTimeJobItem.minutoEntrada,
+                            "horaSalida" to modelTimeJobItem.horaSalida,
+                            "minutoSaida" to modelTimeJobItem.minutoSalida,
+                            "propinas" to modelTimeJobItem.propinas,
+
+                            )
+
+                    ).addOnSuccessListener {
+                        Log.d("UpdateItemDetailScreen", "Item atualizado com sucesso")
+                    }.addOnFailureListener { e ->
+                        Log.e("UpdateItemDetailScreen", "Erro ao atualizar item", e)
+                    }
+
+                    Toast.makeText(context, "Atualizado com sucesso", Toast.LENGTH_SHORT).show()
+
+                    navController.navigate(ModelScreens.MesesScreenObject.route)
+
+                },
+            ) {
+                Text("Atualizar")
+            }
+        }
+    }
+}
+
+@Composable
+fun DeleteItemDialog2(navController: NavController, itemId: String) {
+    val context = LocalContext.current
+    var showDialog by remember { mutableStateOf(true) }
+
+    if (showDialog) {
+        AlertDialog(onDismissRequest = { showDialog = false },
+            title = { Text(text = "Deletar Item") },
+            text = { Text("Tem certeza que deseja deletar este item?") },
+            confirmButton = {
+                Button(onClick = {
+                    FirebaseFirestore.getInstance().collection("TimeJob").document(itemId).delete()
+                        .addOnSuccessListener {
+                            Toast.makeText(
+                                context, "Item deletado com sucesso", Toast.LENGTH_SHORT
+                            ).show()
+
+                            navController.popBackStack()
+                        }.addOnFailureListener { e ->
+                            Toast.makeText(
+                                context, "Erro ao deletar item: ${e.message}", Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    showDialog = false
+                }) {
+                    Text("Deletar")
+                }
+            },
+            dismissButton = {
+                Button(onClick = {
+                    showDialog = false
+
+                    Toast.makeText(context, "Cancelado", Toast.LENGTH_SHORT).show()
+
+                    navController.popBackStack()
+
+                }) {
+
+                    Text("Cancelar")
+                }
+            })
+    }
+}

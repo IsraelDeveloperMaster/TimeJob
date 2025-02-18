@@ -24,6 +24,7 @@ sealed class ModelScreens(val route: String) {
     //rota select mes
     data object SelectMesScreenObject : ModelScreens("selectMesScreen")
 
+    //rota listar todos
     data object ListarTodosScreenObject : ModelScreens("listarTodosScreen")
 
 

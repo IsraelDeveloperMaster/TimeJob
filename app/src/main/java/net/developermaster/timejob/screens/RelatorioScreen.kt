@@ -56,14 +56,11 @@ import kotlin.time.toJavaDuration
 fun TopBarRelatorioScreen(navcontroller: NavController) {
 
     TopAppBar(modifier = Modifier.padding(10.dp), title = {
-
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack,
             contentDescription = "back",
             modifier = Modifier.clickable {
 
                 navcontroller.popBackStack()
-
             })
 
         Text(
@@ -80,14 +77,12 @@ fun TopBarRelatorioScreen(navcontroller: NavController) {
 @Composable
 fun RelatorioScreen(navcontroller: NavController) {
 
-    Scaffold(
-        Modifier
-            .fillMaxSize()
+    Scaffold(Modifier
+        .fillMaxSize()
+        .background(color = Color.Blue), topBar = {
 
-            .background(color = Color.Blue), topBar = {
-
-            TopBarRelatorioScreen(navcontroller)
-        },
+        TopBarRelatorioScreen(navcontroller)
+    },
 
         bottomBar = {
 /*            FloatingActionButton(
@@ -114,17 +109,14 @@ fun RelatorioScreen(navcontroller: NavController) {
 fun BodyRelatorioScreen(paddingValues: PaddingValues, navcontroller: NavController) {
 
     Relatorio()
-
 }
 
 @Composable
 fun Relatorio() {
 
     val context = LocalContext.current
-
     val listaResultadoRetornados = mutableListOf<String>()
     var variavelGlobalSomaHora = Duration.ZERO
-
     var dataInicioRemember by remember { mutableStateOf("") }
     var dataFimRemember by remember { mutableStateOf("") }
     var somaHorasRemember by remember { mutableStateOf("") }
@@ -158,14 +150,11 @@ fun Relatorio() {
                                 val year: Int
                                 val month: Int
                                 val day: Int
-
                                 val calendar = Calendar.getInstance()
                                 year = calendar.get(Calendar.YEAR)
                                 month = calendar.get(Calendar.MONTH)
                                 day = calendar.get(Calendar.DAY_OF_MONTH)
                                 calendar.time = Date()
-
-
                                 val datePickerDialog = DatePickerDialog(
                                     context, { _: DatePicker, year: Int, month: Int, day: Int ->
                                         dataInicioRemember = "$day/${month + 1}/$year"
@@ -209,14 +198,11 @@ fun Relatorio() {
                                 val year: Int
                                 val month: Int
                                 val day: Int
-
                                 val calendar = Calendar.getInstance()
                                 year = calendar.get(Calendar.YEAR)
                                 month = calendar.get(Calendar.MONTH)
                                 day = calendar.get(Calendar.DAY_OF_MONTH)
                                 calendar.time = Date()
-
-
                                 val datePickerDialog = DatePickerDialog(
                                     context, { _: DatePicker, year: Int, month: Int, day: Int ->
                                         dataFimRemember = "$day/$month/$year"
@@ -241,79 +227,76 @@ fun Relatorio() {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp), onClick = {
+        Button(modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp), onClick = {
 
-                val listaDeDadosRetornadas = FirebaseFirestore.getInstance().collection("TimeJob")
-                    .whereGreaterThanOrEqualTo("fecha", dataInicioRemember )
-                    .whereLessThanOrEqualTo("fecha", dataFimRemember )
+            val listaDeDadosRetornadas = FirebaseFirestore.getInstance().collection("Enero")
+                .whereGreaterThanOrEqualTo("fecha", dataInicioRemember)
+                .whereLessThanOrEqualTo("fecha", dataFimRemember)
 
 //                    .whereGreaterThanOrEqualTo("fecha", "04/01/2025")
 //                    .whereLessThanOrEqualTo("fecha", "05/01/2025")
 
-                listaDeDadosRetornadas.addSnapshotListener { dadosRetornados, _ ->
+            listaDeDadosRetornadas.addSnapshotListener { dadosRetornados, _ ->
 
-                    val listaRetornada = dadosRetornados?.documents//todo document
+                val listaRetornada = dadosRetornados?.documents//todo document
 
-                    listaRetornada?.forEach { documents ->
+                listaRetornada?.forEach { documents ->
 
-                        val dados = documents?.data
+                    val dados = documents?.data
 
-                        if (dados != null) {
+                    if (dados != null) {
 
 //                            val idRetornado = documents.id
-                            val fechaDadosRetornados = dados["fecha"]
-                            val horaEntradaRetornados = dados["horaEntrada"]
-                            val minutoEntradaRetornados = dados["minutoEntrada"]
-                            val horaSalidaRetornados = dados["horaSalida"]
-                            val minutoSalidaRetornados = dados["minutoSalida"]
-                            val propinasDadosRetornados = dados["propinas"]
+                        val fechaDadosRetornados = dados["fecha"]
+                        val horaEntradaRetornados = dados["horaEntrada"]
+                        val minutoEntradaRetornados = dados["minutoEntrada"]
+                        val horaSalidaRetornados = dados["horaSalida"]
+                        val minutoSalidaRetornados = dados["minutoSalida"]
+                        val propinasDadosRetornados = dados["propinas"]
 
-                            //calculo tempo
-                            val horaEntradaTime = LocalTime.of(
-                                horaEntradaRetornados.toString().toInt(),
-                                minutoEntradaRetornados.toString().toInt()
-                            )
-                            val horaSalidaTime = LocalTime.of(
-                                horaSalidaRetornados.toString().toInt(),
-                                minutoSalidaRetornados.toString().toInt()
-                            )
-                            val duracao = Duration.between(horaEntradaTime, horaSalidaTime)
-                            val horas = duracao.toHours()
-                            val minutos = duracao.toMinutes() % 60
-                            val resultadoCalculorHoraFormatado =
-                                String.format("%02d:%02d", horas, minutos)
+                        //calculo tempo
+                        val horaEntradaTime = LocalTime.of(
+                            horaEntradaRetornados.toString().toInt(),
+                            minutoEntradaRetornados.toString().toInt()
+                        )
+                        val horaSalidaTime = LocalTime.of(
+                            horaSalidaRetornados.toString().toInt(),
+                            minutoSalidaRetornados.toString().toInt()
+                        )
+                        val duracao = Duration.between(horaEntradaTime, horaSalidaTime)
+                        val horas = duracao.toHours()
+                        val minutos = duracao.toMinutes() % 60
+                        val resultadoCalculorHoraFormatado =
+                            String.format("%02d:%02d", horas, minutos)
 
-                            horas.toDuration(DurationUnit.HOURS)
-                            minutos.toDuration(DurationUnit.MINUTES)
+                        horas.toDuration(DurationUnit.HOURS)
+                        minutos.toDuration(DurationUnit.MINUTES)
 
-                            variavelGlobalSomaHora += horas.toDuration(DurationUnit.HOURS)
-                                .toJavaDuration() + minutos.toDuration(DurationUnit.MINUTES)
-                                .toJavaDuration()
+                        variavelGlobalSomaHora += horas.toDuration(DurationUnit.HOURS)
+                            .toJavaDuration() + minutos.toDuration(DurationUnit.MINUTES)
+                            .toJavaDuration()
 
+                        listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nHora de Entrada: $horaEntradaRetornados : $minutoEntradaRetornados \nHora de Salida: $horaSalidaRetornados : $minutoSalidaRetornados \nTotal de Horas: $resultadoCalculorHoraFormatado \nPropinas: €$propinasDadosRetornados")
 
-                            listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nHora de Entrada: $horaEntradaRetornados : $minutoEntradaRetornados \nHora de Salida: $horaSalidaRetornados : $minutoSalidaRetornados \nTotal de Horas: $resultadoCalculorHoraFormatado \nPropinas: €$propinasDadosRetornados")
+                        somaHorasRemember = variavelGlobalSomaHora.toString()
 
-                            somaHorasRemember = variavelGlobalSomaHora.toString()
+                        val contadorDiasTrabalhados = listaResultadoRetornados.count()
 
-                            val contadorDiasTrabalhados = listaResultadoRetornados.count()
-
-                            totalDiasTrabalhadosRemember = contadorDiasTrabalhados
+                        totalDiasTrabalhadosRemember = contadorDiasTrabalhados
 
 //                            totalPropinaRemember += propinasDadosRetornados.toString().toInt()
 
-                            //limpar campos
-                            dataInicioRemember = ""
-                            dataFimRemember = ""
+                        //limpar campos
+                        dataInicioRemember = ""
+                        dataFimRemember = ""
 
-                            Log.d("Contador", "Contador: $contadorDiasTrabalhados")
-
-                        }
+                        Log.d("Contador", "Contador: $contadorDiasTrabalhados")
                     }
                 }
             }
+        }
 
         ) {
             Text("Pesquisar")
@@ -353,9 +336,8 @@ fun Relatorio() {
         }
 
         //row resultado
-        Column (
-            modifier = Modifier,
-            verticalArrangement = Arrangement.Bottom
+        Column(
+            modifier = Modifier, verticalArrangement = Arrangement.Bottom
         ) {
 
             //total dias trabalhados
@@ -403,8 +385,7 @@ fun Relatorio() {
 
             //total horas
             OutlinedTextField(
-                modifier = Modifier
-                    .width(200.dp),
+                modifier = Modifier.width(200.dp),
                 value = somaHorasRemember,
                 onValueChange = { },
                 label = { Text("Total Horas") },
@@ -415,12 +396,10 @@ fun Relatorio() {
                         contentDescription = null,
                         modifier = Modifier.width(50.dp),
 
-
                         tint = Color.Blue,// cor azul da borda
                     )
                 },
                 readOnly = true,
-
                 )
         }
     }

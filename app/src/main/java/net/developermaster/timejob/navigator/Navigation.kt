@@ -7,7 +7,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import net.developermaster.timejob.screens.LoginScreen
 import net.developermaster.timejob.model.ModelScreens
 import net.developermaster.timejob.screens.AddScreen
 import net.developermaster.timejob.screens.DeleteItemDialog
@@ -17,7 +16,9 @@ import net.developermaster.timejob.screens.PropinaScreen
 import net.developermaster.timejob.screens.RelatorioScreen
 import net.developermaster.timejob.screens.SelectMesScreen
 import net.developermaster.timejob.screens.UpdateItemDetailScreen
+import net.developermaster.timejob.screens.UpdateItemDetailScreen2
 import net.developermaster.timejob.screens.UpdateScreen
+import net.developermaster.timejob.screens.UpdateScreen2
 
 @Composable
 fun NavigationNavController() {
@@ -27,37 +28,35 @@ fun NavigationNavController() {
 
     //navController rota inicial
     NavHost(
-        navController = navController,
-        startDestination = ModelScreens.MesesScreenObject.route
+        navController = navController, startDestination = ModelScreens.MesesScreenObject.route
 
     ) {
 
-        //////////////////////////////
-
+        //rota listar todos
         composable(ModelScreens.ListarTodosScreenObject.route) {
             ListarTodos(navController)
         }
 
+        //rota update item
         composable("updateItem/{itemId}") { backStackEntry ->
             val itemId = backStackEntry.arguments?.getString("itemId") ?: ""
-            UpdateItemDetailScreen(navController, itemId)
+            UpdateItemDetailScreen2(navController, itemId)
         }
 
+        //rota delete item
         composable("deleteItem/{itemId}") { backStackEntry ->
             val itemId = backStackEntry.arguments?.getString("itemId") ?: ""
             DeleteItemDialog(navController, itemId)
         }
 
-        //////////////////////
-
         //rota login
         composable(ModelScreens.LoginScreenObject.route) {
-            LoginScreen( navController)
+//            LoginScreen( navController)
         }
 
         //rota add
         composable(ModelScreens.AddScreenObject.route) {
-            AddScreen( navController)
+            AddScreen(navController)
         }
 
         //rota relatorio
@@ -65,13 +64,14 @@ fun NavigationNavController() {
             RelatorioScreen(navController)
         }
 
-        //rota relatorio propinas
+        //rota propinas
         composable(ModelScreens.PropinaScreenObject.route) {
             PropinaScreen(navController)
         }
 
         //rota meses
-        composable(ModelScreens.SelectMesScreenObject.route + "/{mes}",
+        composable(
+            ModelScreens.SelectMesScreenObject.route + "/{mes}",
             arguments = listOf(navArgument("mes") {
                 type = NavType.StringType
             })
@@ -84,17 +84,6 @@ fun NavigationNavController() {
         composable(ModelScreens.MesesScreenObject.route) {
             MesesScreen(navController)
         }
-
-/*
-        composable(ModelScreens.PlantaScreenObject.route + "/{planta}",
-            arguments = listOf(navArgument("planta") {
-                type = NavType.StringType
-            })
-
-        ) {
-            PlantaScreen(navController, it.arguments?.getString("planta") ?: "")
-        }
-        */
 
         //rota update
         composable(
@@ -111,11 +100,11 @@ fun NavigationNavController() {
                     nullable = true
                 },
 
-            )
+                )
 
         ) {
-            UpdateScreen( navController,
-
+            UpdateScreen(
+                navController,
                 idRetornado = it.arguments?.getString("idRetornado") ?: "",
                 fechaRetornada = it.arguments?.getString("fechaRetornada") ?: ""
             )

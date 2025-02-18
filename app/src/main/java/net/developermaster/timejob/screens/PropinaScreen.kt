@@ -2,7 +2,6 @@ package net.developermaster.timejob.screens
 
 import android.app.DatePickerDialog
 import android.icu.util.Calendar
-import android.util.Log
 import android.widget.DatePicker
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -31,25 +30,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.firebase.firestore.FirebaseFirestore
-import net.developermaster.timejob.R
-import net.developermaster.timejob.model.ModelScreens
 import java.time.Duration
-import java.time.LocalTime
 import java.util.Date
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
-import kotlin.time.toJavaDuration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,8 +50,7 @@ fun TopBarPropinaScreen(navcontroller: NavController) {
 
     TopAppBar(modifier = Modifier.padding(10.dp), title = {
 
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack,
             contentDescription = "back",
             modifier = Modifier.clickable {
 
@@ -80,14 +72,13 @@ fun TopBarPropinaScreen(navcontroller: NavController) {
 @Composable
 fun PropinaScreen(navcontroller: NavController) {
 
-    Scaffold(
-        Modifier
-            .fillMaxSize()
+    Scaffold(Modifier
+        .fillMaxSize()
 
-            .background(color = Color.Blue), topBar = {
+        .background(color = Color.Blue), topBar = {
 
-            TopBarPropinaScreen(navcontroller)
-        },
+        TopBarPropinaScreen(navcontroller)
+    },
 
         bottomBar = {
 /*            FloatingActionButton(
@@ -120,17 +111,13 @@ fun BodyPropinaScreen(paddingValues: PaddingValues, navcontroller: NavController
 @Composable
 fun RelatorioPropinas() {
 
+    Duration.ZERO
+
     val context = LocalContext.current
-
     val listaResultadoRetornados = mutableListOf<String>()
-    var variavelGlobalSomaHora = Duration.ZERO
-
     var dataInicioRemember by remember { mutableStateOf("") }
     var dataFimRemember by remember { mutableStateOf("") }
-    var somaHorasRemember by remember { mutableStateOf("") }
-    var totalPropinaRemember by remember { mutableStateOf(0) }
-    var totalDiasTrabalhadosRemember by remember { mutableStateOf(0) }
-
+    var totalPropinaRemember by remember { mutableIntStateOf(0) }
 
     Column(
         modifier = Modifier.padding(top = 120.dp), verticalArrangement = Arrangement.Center
@@ -159,13 +146,11 @@ fun RelatorioPropinas() {
                                 val year: Int
                                 val month: Int
                                 val day: Int
-
                                 val calendar = Calendar.getInstance()
                                 year = calendar.get(Calendar.YEAR)
                                 month = calendar.get(Calendar.MONTH)
                                 day = calendar.get(Calendar.DAY_OF_MONTH)
                                 calendar.time = Date()
-
 
                                 val datePickerDialog = DatePickerDialog(
                                     context, { _: DatePicker, year: Int, month: Int, day: Int ->
@@ -180,6 +165,8 @@ fun RelatorioPropinas() {
                                 )
 
                                 datePickerDialog.show()
+
+                                totalPropinaRemember = 0
 
                             },//clickable
 
@@ -210,13 +197,11 @@ fun RelatorioPropinas() {
                                 val year: Int
                                 val month: Int
                                 val day: Int
-
                                 val calendar = Calendar.getInstance()
                                 year = calendar.get(Calendar.YEAR)
                                 month = calendar.get(Calendar.MONTH)
                                 day = calendar.get(Calendar.DAY_OF_MONTH)
                                 calendar.time = Date()
-
 
                                 val datePickerDialog = DatePickerDialog(
                                     context, { _: DatePicker, year: Int, month: Int, day: Int ->
@@ -242,76 +227,45 @@ fun RelatorioPropinas() {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp), onClick = {
+        Button(modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp), onClick = {
 
-                val listaDeDadosRetornadas = FirebaseFirestore.getInstance().collection("TimeJob")
-                    .whereGreaterThanOrEqualTo("fecha", dataInicioRemember )
-                    .whereLessThanOrEqualTo("fecha", dataFimRemember )
+            val listaDeDadosRetornadas = FirebaseFirestore.getInstance().collection("Enero")
+                .whereGreaterThanOrEqualTo("fecha", dataInicioRemember)
+                .whereLessThanOrEqualTo("fecha", dataFimRemember)
 
 //                    .whereGreaterThanOrEqualTo("fecha", "04/01/2025")
 //                    .whereLessThanOrEqualTo("fecha", "05/01/2025")
 
-                listaDeDadosRetornadas.addSnapshotListener { dadosRetornados, _ ->
+            listaDeDadosRetornadas.addSnapshotListener { dadosRetornados, _ ->
 
-                    val listaRetornada = dadosRetornados?.documents//todo document
+                val listaRetornada = dadosRetornados?.documents//todo document
 
-                    listaRetornada?.forEach { documents ->
+                listaRetornada?.forEach { documents ->
 
-                        val dados = documents?.data
+                    val dados = documents?.data
 
-                        if (dados != null) {
+                    if (dados != null) {
 
-//                            val idRetornado = documents.id
-                            val fechaDadosRetornados = dados["fecha"]
-                            val horaEntradaRetornados = dados["horaEntrada"]
-                            val minutoEntradaRetornados = dados["minutoEntrada"]
-                            val horaSalidaRetornados = dados["horaSalida"]
-                            val minutoSalidaRetornados = dados["minutoSalida"]
-                            val propinasDadosRetornados = dados["propinas"]
+                        val fechaDadosRetornados = dados["fecha"]
+                        val horaEntradaRetornados = dados["horaEntrada"]
+                        val minutoEntradaRetornados = dados["minutoEntrada"]
+                        val horaSalidaRetornados = dados["horaSalida"]
+                        val minutoSalidaRetornados = dados["minutoSalida"]
+                        val propinasDadosRetornados = dados["propinas"]
 
-                            //calculo tempo
-                            val horaEntradaTime = LocalTime.of(
-                                horaEntradaRetornados.toString().toInt(),
-                                minutoEntradaRetornados.toString().toInt()
-                            )
-/*                            val horaSalidaTime = LocalTime.of(
-                                horaSalidaRetornados.toString().toInt(),
-                                minutoSalidaRetornados.toString().toInt()
-                            )
-                            val duracao = Duration.between(horaEntradaTime, horaSalidaTime)
-                            val horas = duracao.toHours()
-                            val minutos = duracao.toMinutes() % 60
-                            val resultadoCalculorHoraFormatado =
-                                String.format("%02d:%02d", horas, minutos)
+                        listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nHora de Entrada: $horaEntradaRetornados : $minutoEntradaRetornados \nHora de Salida: $horaSalidaRetornados : $minutoSalidaRetornados \nTotal de Horas: $ \nPropinas: €$propinasDadosRetornados")
 
-                            horas.toDuration(DurationUnit.HOURS)
-                            minutos.toDuration(DurationUnit.MINUTES)
+                        totalPropinaRemember += propinasDadosRetornados.toString().toInt()
 
-                            variavelGlobalSomaHora += horas.toDuration(DurationUnit.HOURS)
-                                .toJavaDuration() + minutos.toDuration(DurationUnit.MINUTES)
-                                .toJavaDuration()*/
-
-
-                            listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nHora de Entrada: $horaEntradaRetornados : $minutoEntradaRetornados \nHora de Salida: $horaSalidaRetornados : $minutoSalidaRetornados \nTotal de Horas: $ \nPropinas: €$propinasDadosRetornados")
-
-//                            somaHorasRemember = variavelGlobalSomaHora.toString()
-
-//                            val contadorDiasTrabalhados = listaResultadoRetornados.count()
-
-//                            totalDiasTrabalhadosRemember = contadorDiasTrabalhados
-
-                            totalPropinaRemember += propinasDadosRetornados.toString().toInt()
-
-                            //limpar campos
-                            dataInicioRemember = ""
-                            dataFimRemember = ""
-                        }
+                        //limpar campos
+                        dataInicioRemember = ""
+                        dataFimRemember = ""
                     }
                 }
             }
+        }
 
         ) {
             Text("Pesquisar")
@@ -351,29 +305,9 @@ fun RelatorioPropinas() {
         }
 
         //row resultado
-        Column (
-            modifier = Modifier,
-            verticalArrangement = Arrangement.Bottom
+        Column(
+            modifier = Modifier, verticalArrangement = Arrangement.Bottom
         ) {
-
-            //total dias trabalhados
-/*            OutlinedTextField(
-                modifier = Modifier.width(200.dp),
-                value = "$totalDiasTrabalhadosRemember dias",
-                onValueChange = { },
-                label = { Text("Dias Trabalhados") },
-                leadingIcon = {
-                    Icon(
-
-                        imageVector = Icons.Default.DateRange,//icone
-                        contentDescription = null,
-                        modifier = Modifier.width(50.dp),
-                        tint = Color.Blue,// cor azul da borda
-                    )
-                },
-                readOnly = true,
-
-                )*/
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -395,28 +329,6 @@ fun RelatorioPropinas() {
                 readOnly = true,
 
                 )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            //total horas
-/*            OutlinedTextField(
-                modifier = Modifier
-                    .width(200.dp),
-                value = somaHorasRemember,
-                onValueChange = { },
-                label = { Text("Total Horas") },
-                leadingIcon = {
-                    Icon(
-
-                        painter = painterResource(id = R.drawable.time),
-                        contentDescription = null,
-                        modifier = Modifier.width(50.dp),
-                        tint = Color.Blue,// cor azul da borda
-                    )
-                },
-                readOnly = true,
-
-                )*/
         }
     }
 }

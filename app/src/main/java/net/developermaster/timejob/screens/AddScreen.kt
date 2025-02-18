@@ -1,6 +1,5 @@
 package net.developermaster.timejob.screens
 
-import android.R.attr.label
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
@@ -37,12 +36,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.firebase.firestore.FirebaseFirestore
 import net.developermaster.timejob.R
-import net.developermaster.timejob.model.ModelScreens
 import net.developermaster.timejob.model.ModelTimeJob
 import java.util.Date
 
@@ -52,8 +49,7 @@ fun TopBarAddScreen(navcontroller: NavController) {
 
     TopAppBar(modifier = Modifier.padding(10.dp), title = {
 
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack,
             contentDescription = "back",
             modifier = Modifier.clickable {
 
@@ -74,14 +70,13 @@ fun TopBarAddScreen(navcontroller: NavController) {
 @Composable
 fun AddScreen(navcontroller: NavController) {
 
-    Scaffold(
-        Modifier
-            .fillMaxSize()
+    Scaffold(Modifier
+        .fillMaxSize()
 
-            .background(color = Color.Blue), topBar = {
+        .background(color = Color.Blue), topBar = {
 
-            TopBarAddScreen(navcontroller)
-        },
+        TopBarAddScreen(navcontroller)
+    },
 
         bottomBar = {}
 
@@ -102,15 +97,11 @@ fun AddItem(navcontroller: NavController) {
 
     //context local
     val context = LocalContext.current
-
     var fechaRemember by remember { mutableStateOf("") }
-
     var horaEntradaRemember by remember { mutableStateOf("") }
     var minutoEntradaRemember by remember { mutableStateOf("") }
-
     var horaSalidaRemember by remember { mutableStateOf("") }
     var minutoSalidaRemember by remember { mutableStateOf("") }
-
     var propinasRemember by remember { mutableStateOf("") }
 
     val modelTimeJob = ModelTimeJob(
@@ -130,8 +121,7 @@ fun AddItem(navcontroller: NavController) {
 
         //fecha
         OutlinedTextField(
-            modifier = Modifier
-                .width(200.dp),
+            modifier = Modifier.width(200.dp),
             value = fechaRemember,
             onValueChange = { fechaRemember = it },
             label = { Text("Fecha") },
@@ -149,13 +139,11 @@ fun AddItem(navcontroller: NavController) {
                             val dia: Int
                             val mes: Int
                             val ano: Int
-
                             val dataAtual = Calendar.getInstance()
                             dia = dataAtual.get(Calendar.DAY_OF_MONTH)
                             mes = dataAtual.get(Calendar.MONTH)
                             ano = dataAtual.get(Calendar.YEAR)
                             dataAtual.time = Date()
-
 
                             val datePickerDialog = DatePickerDialog(
                                 context, { _: DatePicker, ano: Int, mes: Int, dia: Int ->
@@ -228,8 +216,7 @@ fun AddItem(navcontroller: NavController) {
 
         //hora saida
         OutlinedTextField(
-            modifier = Modifier
-                .width(200.dp),
+            modifier = Modifier.width(200.dp),
             value = "$horaSalidaRemember:$minutoSalidaRemember",
             onValueChange = { horaSalidaRemember = it },
             label = { Text("Hora") },
@@ -272,8 +259,7 @@ fun AddItem(navcontroller: NavController) {
 
         //propinas
         OutlinedTextField(
-            modifier = Modifier
-                .width(200.dp),
+            modifier = Modifier.width(200.dp),
             value = "$propinasRemember",
             onValueChange = { propinasRemember = it },
             label = { Text("Propinas") },
@@ -284,49 +270,50 @@ fun AddItem(navcontroller: NavController) {
                 .fillMaxWidth()
                 .padding(16.dp),
             onClick = {
-
+                // Verifica se todos os campos estão preenchidos
                 if (propinasRemember.isEmpty() || fechaRemember.isEmpty() || horaEntradaRemember.isEmpty() || minutoEntradaRemember.isEmpty() || horaSalidaRemember.isEmpty() || minutoSalidaRemember.isEmpty()) {
-
                     Toast.makeText(context, "Preencha todos os campos", Toast.LENGTH_SHORT).show()
+                } else {
+                    // Extrai o mês da data
+                    val partesData = fechaRemember.split("/")
+                    if (partesData.size == 3) {
+                        val mes = partesData[1].toInt() // O mês está na segunda posição (índice 1)
 
-                }else{
-
-                    FirebaseFirestore.getInstance().collection("Febrero").document().set(modelTimeJob)
-                        .addOnSuccessListener {
-
-                            Log.d("firebase", "Salvo com sucesso")
-
-                        }.addOnFailureListener { erro ->
-
-                            Log.d("firebase", "Erro : ${erro.message}")
+                        // Mapeia o número do mês para o nome da coleção
+                        val nomeMes = when (mes) {
+                            1 -> "Enero"
+                            2 -> "Febrero"
+                            3 -> "Marzo"
+                            4 -> "Abril"
+                            5 -> "Mayo"
+                            6 -> "Junio"
+                            7 -> "Julio"
+                            8 -> "Agosto"
+                            9 -> "Septiembre"
+                            10 -> "Octubre"
+                            11 -> "Noviembre"
+                            12 -> "Diciembre"
+                            else -> ""
                         }
 
-                    Toast.makeText(context, "Salvo com sucesso", Toast.LENGTH_SHORT).show()
+                        // Salva no Firestore na coleção correspondente ao mês
+                        FirebaseFirestore.getInstance().collection(nomeMes).document()
+                            .set(modelTimeJob).addOnSuccessListener {
+                                Log.d("firebase", "Salvo com sucesso na coleção $nomeMes")
+                            }.addOnFailureListener { erro ->
+                                Log.d("firebase", "Erro : ${erro.message}")
+                            }
 
-                    navcontroller.popBackStack()
+                        Toast.makeText(context, "Salvo com sucesso", Toast.LENGTH_SHORT).show()
+                        navcontroller.popBackStack()
+                    } else {
+                        Toast.makeText(context, "Data inválida", Toast.LENGTH_SHORT).show()
+                    }
                 }
             },
-
         ) {
-
             Text("Salvar")
         }
-    }
-
-    fun RelogioAntigo() {
-        val calendar = Calendar.getInstance()
-        val mHour = calendar[Calendar.HOUR_OF_DAY]
-        val mMinute = calendar[Calendar.MINUTE]
-        calendar.time = Date()
-
-        val timePickerDialog = TimePickerDialog(
-            context, { _, hourOfDay, minute ->
-                horaEntradaRemember = "$hourOfDay"
-                minutoEntradaRemember = "$minute"
-            }, mHour, mMinute, true
-        )
-
-        timePickerDialog.show()
     }
 }
 
