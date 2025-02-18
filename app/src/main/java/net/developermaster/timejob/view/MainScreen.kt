@@ -1,4 +1,4 @@
-package net.developermaster.timejob.screens
+package net.developermaster.timejob.view
 
 import androidx.compose.foundation.background
 import androidx.navigation.NavController
@@ -19,21 +19,14 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import net.developermaster.timejob.model.ModelScreens
-import net.developermaster.timejob.model.ModelTimeJob
 
 @Composable
 private fun TopBar(paddingValues: PaddingValues, navcontroller: NavController) {
 }
 
 @Composable
-internal fun MesesScreen(navController: NavHostController) {
+internal fun MainScreen(navController: NavHostController) {
 
     Scaffold(Modifier.fillMaxSize(), bottomBar = {
         BottomAppBar(
@@ -50,7 +43,7 @@ internal fun MesesScreen(navController: NavHostController) {
                     Icon(Icons.Filled.Add, contentDescription = null)
                 }
                 //Float temporario
-                FloatingActionButton(modifier = Modifier.padding(start = 150.dp), onClick = {
+                FloatingActionButton(modifier = Modifier.padding(start = 148.dp), onClick = {
                     navController.navigate(ModelScreens.ListarTodosScreenObject.route)
                 }) {
                     Icon(Icons.Filled.Search, contentDescription = null)
@@ -67,9 +60,6 @@ internal fun MesesScreen(navController: NavHostController) {
 
         TopBar(paddingValues, navController)
 
-        val coroutineScopeRemember = rememberCoroutineScope()
-        var isRefreshingRemember by remember { mutableStateOf(false) }
-        var modelSwitchRememberPlantas by remember { mutableStateOf<List<ModelTimeJob>>(emptyList()) }
         val listaMeses by remember {
             mutableStateOf(
                 listOf(
@@ -89,64 +79,17 @@ internal fun MesesScreen(navController: NavHostController) {
             )
         }
 
-        // Função para simular uma atualização de dados
-        fun FuncaoQueAtualizaTela() {
-            coroutineScopeRemember.launch {
-                isRefreshingRemember = true
-                delay(2000) // Simula o carregamento de dados
-
-                isRefreshingRemember = false
-            }
-        }
-
         MaterialTheme {
-
-            SwipeRefresh(
-
-                state = rememberSwipeRefreshState(isRefreshingRemember),
-                onRefresh = { FuncaoQueAtualizaTela() }, // Chama a função de atualização
-                modifier = Modifier.fillMaxSize(),
-                swipeEnabled = true,
-                indicatorAlignment = Alignment.TopCenter,
-                indicatorPadding = PaddingValues(top = 50.dp)
-
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2), // ➕ Fixed 3 columns
+                contentPadding = PaddingValues(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(8.dp)
             ) {
 
-                LaunchedEffect(Unit) {
+                items(listaMeses) { item ->
 
-                    val inicioJaneiro = "01/01/2025" // Altere para o ano desejado
-                    val fimJaneiro = "31/01/2025" // O primeiro dia de fevereiro
-
-                    val querySnapshot = FirebaseFirestore.getInstance().collection("TimeJob")
-                        .whereGreaterThanOrEqualTo("fecha", inicioJaneiro)
-                        .whereLessThan("fecha", fimJaneiro).get().await()
-
-                    modelSwitchRememberPlantas = querySnapshot.documents.map { document ->
-
-                        ModelTimeJob(
-
-                            id = document.id,
-                            fecha = document.getString("fecha") ?: "",
-                            horaEntrada = document.getString("horaEntrada") ?: "",
-                            minutoEntrada = document.getString("minutoEntrada") ?: "",
-                            horaSalida = document.getString("horaSalida") ?: "",
-                            minutoSalida = document.getString("minutoSalida") ?: "",
-                            propinas = document.getString("propinas") ?: "",
-                        )
-                    }
-                }
-
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2), // ➕ Fixed 3 columns
-                    contentPadding = PaddingValues(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.padding(8.dp)
-                ) {
-
-                    items(listaMeses) { item ->
-
-                        ItemBox(mes = item, navController = navController)
-                    }
+                    ItemBox(mes = item, navController = navController)
                 }
             }
         }

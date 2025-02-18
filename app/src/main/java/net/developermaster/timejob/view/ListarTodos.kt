@@ -1,7 +1,5 @@
-package net.developermaster.timejob.screens
+package net.developermaster.timejob.view
 
-import android.R.attr.label
-import android.R.attr.onClick
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
@@ -40,13 +38,12 @@ import net.developermaster.timejob.model.ModelTimeJob
 import net.developermaster.timejob.model.ModelScreens
 import java.util.Date
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBarListarTodosScreen(paddingValues: PaddingValues, navcontroller: NavController) {
 }
 
 @Composable
-fun ListarTodos(navController: NavController) {
+internal fun ListarTodos(navController: NavController) {
 
     MaterialTheme {
 
@@ -138,7 +135,7 @@ fun ListarTodos(navController: NavController) {
                 items(modelTimeJobs) { item ->
 
                     ItemBox(
-                        modelTimeJob = item, onItemClick = { clickedItem ->
+                        modelTimeJob = item, onItemClick = {
 
                         }, navController = navController
                     )
@@ -149,9 +146,7 @@ fun ListarTodos(navController: NavController) {
 }
 
 @Composable
-fun ItemBox(
-    navController: NavController, modelTimeJob: ModelTimeJob, onItemClick: (ModelTimeJob) -> Unit
-) {
+fun ItemBox(navController: NavController, modelTimeJob: ModelTimeJob, onItemClick: (ModelTimeJob) -> Unit ) {
 
     Box(
         modifier = Modifier
@@ -200,7 +195,6 @@ fun ItemBox(
 
                                 navController.navigate("deleteItem/${modelTimeJob.id}")
 
-
                             },//clickable
 
                         tint = Color.Blue,// cor azul da borda
@@ -214,7 +208,7 @@ fun ItemBox(
 }
 
 @Composable
-fun UpdateItemDetailScreen(navController: NavController, itemId: String) {
+fun UpdateScreen(navController: NavController, itemId: String) {
 
     var fechaRemember by remember { mutableStateOf("") }
     var horaEntradaRemember by remember { mutableStateOf("") }
@@ -351,7 +345,7 @@ fun UpdateItemDetailScreen(navController: NavController, itemId: String) {
 
                             .clickable {
 
-                                Relogio(context) { hora, minuto ->
+                                relogio(context) { hora, minuto ->
 
                                     horaEntradaRemember = "$hora"
                                     minutoEntradaRemember = "$minuto"
@@ -396,7 +390,7 @@ fun UpdateItemDetailScreen(navController: NavController, itemId: String) {
 
                             .clickable {
 
-                                Relogio(context) { hora, minuto ->
+                                relogio(context) { hora, minuto ->
 
                                     horaSalidaRemember = "$hora"
                                     minutoSalidaRemember = "$minuto"
@@ -519,7 +513,7 @@ fun DeleteItemDialog(navController: NavController, itemId: String) {
     }
 }
 
-fun RelogioListarTodos(context: Context, onTimeSet: (Int, Int) -> Unit) {
+fun relogioListarTodos(context: Context, onTimeSet: (Int, Int) -> Unit) {
     val calendar = Calendar.getInstance()
     val mHour = calendar[Calendar.HOUR_OF_DAY]
     val mMinute = calendar[Calendar.MINUTE]

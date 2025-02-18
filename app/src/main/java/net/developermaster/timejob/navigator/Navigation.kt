@@ -1,6 +1,5 @@
-package net.developermaster.navigationnavcontrollerjetpackcompose.navigator
+package net.developermaster.timejob.navigator
 
-import android.R.attr.type
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -8,17 +7,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import net.developermaster.timejob.model.ModelScreens
-import net.developermaster.timejob.screens.AddScreen
-import net.developermaster.timejob.screens.DeleteItemDialog
-import net.developermaster.timejob.screens.ListarTodos
-import net.developermaster.timejob.screens.MesesScreen
-import net.developermaster.timejob.screens.PropinaScreen
-import net.developermaster.timejob.screens.RelatorioScreen
-import net.developermaster.timejob.screens.SelectMesScreen
-import net.developermaster.timejob.screens.UpdateItemDetailScreen
-import net.developermaster.timejob.screens.UpdateItemDetailScreen2
-import net.developermaster.timejob.screens.UpdateScreen
-import net.developermaster.timejob.screens.UpdateScreen2
+import net.developermaster.timejob.view.AddScreen
+import net.developermaster.timejob.view.DeleteItem
+import net.developermaster.timejob.view.ListarTodos
+import net.developermaster.timejob.view.MainScreen
+import net.developermaster.timejob.view.RelatorioScreen
+import net.developermaster.timejob.view.PropinaScreen
+import net.developermaster.timejob.view.SelectMesScreen
+import net.developermaster.timejob.view.UpdateItemDetailScreen2
 
 @Composable
 fun NavigationNavController() {
@@ -28,30 +24,18 @@ fun NavigationNavController() {
 
     //navController rota inicial
     NavHost(
-        navController = navController, startDestination = ModelScreens.MesesScreenObject.route
+        navController = navController, startDestination = ModelScreens.MainScreenObject.route
 
     ) {
+
+        //rota main
+        composable(ModelScreens.MainScreenObject.route) {
+            MainScreen(navController)
+        }
 
         //rota listar todos
         composable(ModelScreens.ListarTodosScreenObject.route) {
             ListarTodos(navController)
-        }
-
-        //rota update item
-        composable("updateItem/{itemId}") { backStackEntry ->
-            val itemId = backStackEntry.arguments?.getString("itemId") ?: ""
-            UpdateItemDetailScreen2(navController, itemId)
-        }
-
-        //rota delete item
-        composable("deleteItem/{itemId}") { backStackEntry ->
-            val itemId = backStackEntry.arguments?.getString("itemId") ?: ""
-            DeleteItemDialog(navController, itemId)
-        }
-
-        //rota login
-        composable(ModelScreens.LoginScreenObject.route) {
-//            LoginScreen( navController)
         }
 
         //rota add
@@ -60,13 +44,33 @@ fun NavigationNavController() {
         }
 
         //rota relatorio
-        composable(ModelScreens.RelatorioScreenObject.route) {
-            RelatorioScreen(navController)
+        composable(
+            ModelScreens.RelatorioScreenObject.route + "/{itemMes}",
+            arguments = listOf(navArgument("itemMes") {
+                type = NavType.StringType
+            })
+
+        ) {
+            RelatorioScreen(
+                navController,
+                // argumentos 1
+                it.arguments?.getString("itemMes") ?: ""
+            )
         }
 
         //rota propinas
-        composable(ModelScreens.PropinaScreenObject.route) {
-            PropinaScreen(navController)
+        composable(
+            ModelScreens.PropinaScreenObject.route + "/{itemMes}",
+            arguments = listOf(navArgument("itemMes") {
+                type = NavType.StringType
+            })
+
+        ) {
+            PropinaScreen(
+                navController,
+                // argumentos 1
+                it.arguments?.getString("itemMes") ?: ""
+            )
         }
 
         //rota meses
@@ -77,36 +81,42 @@ fun NavigationNavController() {
             })
 
         ) {
-            SelectMesScreen(navController, it.arguments?.getString("mes") ?: "")
-        }
-
-        //rota select mes
-        composable(ModelScreens.MesesScreenObject.route) {
-            MesesScreen(navController)
+            SelectMesScreen(
+                navController, it.arguments?.getString("mes") ?: ""
+            )
         }
 
         //rota update
-        composable(
-            ModelScreens.UpdateScreenObject.route + "/{idRetornado}/{fechaRetornada}",
-            arguments = listOf(
-
-                navArgument("idRetornado") {
-                    type = NavType.StringType
-                    nullable = true
-                },
-
-                navArgument("fechaRetornada") {
-                    type = NavType.StringType
-                    nullable = true
-                },
-
-                )
-
+        composable(ModelScreens.UpdateScreenObject.route + "/{itemId}/{itemMes}",
+            arguments = listOf(navArgument("itemId") {
+                type = NavType.StringType
+            }, navArgument("itemMes") {
+                type = NavType.StringType
+            })
         ) {
-            UpdateScreen(
+            UpdateItemDetailScreen2(
                 navController,
-                idRetornado = it.arguments?.getString("idRetornado") ?: "",
-                fechaRetornada = it.arguments?.getString("fechaRetornada") ?: ""
+                // argumentos 1
+                it.arguments?.getString("itemId") ?: "",
+                // argumentos 2
+                it.arguments?.getString("itemMes") ?: ""
+            )
+        }
+
+        //rota delete
+        composable(ModelScreens.DeleteScreenObject.route + "/{itemId}/{itemMes}",
+            arguments = listOf(navArgument("itemId") {
+                type = NavType.StringType
+            }, navArgument("itemMes") {
+                type = NavType.StringType
+            })
+        ) {
+            DeleteItem(
+                navController,
+                // argumentos 1
+                it.arguments?.getString("itemId") ?: "",
+                // argumentos 2
+                it.arguments?.getString("itemMes") ?: ""
             )
         }
     }
