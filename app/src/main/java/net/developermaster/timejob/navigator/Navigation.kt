@@ -11,8 +11,8 @@ import net.developermaster.timejob.view.AddScreen
 import net.developermaster.timejob.view.DeleteItem
 import net.developermaster.timejob.view.ListarTodos
 import net.developermaster.timejob.view.MainScreen
-import net.developermaster.timejob.view.PropinaScreen
 import net.developermaster.timejob.view.RelatorioScreen
+import net.developermaster.timejob.view.PropinaScreen
 import net.developermaster.timejob.view.SelectMesScreen
 import net.developermaster.timejob.view.UpdateItemDetailScreen2
 
@@ -44,13 +44,33 @@ fun NavigationNavController() {
         }
 
         //rota relatorio
-        composable(ModelScreens.RelatorioScreenObject.route) {
-            RelatorioScreen(navController)
+        composable(
+            ModelScreens.RelatorioScreenObject.route + "/{itemMes}",
+            arguments = listOf(navArgument("itemMes") {
+                type = NavType.StringType
+            })
+
+        ) {
+            RelatorioScreen(
+                navController,
+                // argumentos 1
+                it.arguments?.getString("itemMes") ?: ""
+            )
         }
 
         //rota propinas
-        composable(ModelScreens.PropinaScreenObject.route) {
-            PropinaScreen(navController)
+        composable(
+            ModelScreens.PropinaScreenObject.route + "/{itemMes}",
+            arguments = listOf(navArgument("itemMes") {
+                type = NavType.StringType
+            })
+
+        ) {
+            PropinaScreen(
+                navController,
+                // argumentos 1
+                it.arguments?.getString("itemMes") ?: ""
+            )
         }
 
         //rota meses
@@ -61,13 +81,14 @@ fun NavigationNavController() {
             })
 
         ) {
-            SelectMesScreen(navController, it.arguments?.getString("mes") ?: "")
+            SelectMesScreen(
+                navController, it.arguments?.getString("mes") ?: ""
+            )
         }
 
         //rota update
         composable(ModelScreens.UpdateScreenObject.route + "/{itemId}/{itemMes}",
-            arguments = listOf(
-                navArgument("itemId") {
+            arguments = listOf(navArgument("itemId") {
                 type = NavType.StringType
             }, navArgument("itemMes") {
                 type = NavType.StringType
@@ -84,12 +105,11 @@ fun NavigationNavController() {
 
         //rota delete
         composable(ModelScreens.DeleteScreenObject.route + "/{itemId}/{itemMes}",
-            arguments = listOf(
-                navArgument("itemId") {
-                    type = NavType.StringType
-                }, navArgument("itemMes") {
-                    type = NavType.StringType
-                })
+            arguments = listOf(navArgument("itemId") {
+                type = NavType.StringType
+            }, navArgument("itemMes") {
+                type = NavType.StringType
+            })
         ) {
             DeleteItem(
                 navController,

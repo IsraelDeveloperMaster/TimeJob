@@ -224,8 +224,7 @@ fun AddItem(navcontroller: NavController) {
             value = if (horaSalidaRemember.isEmpty() && minutoSalidaRemember.isEmpty()) {
                 "" // Exibe uma string vazia se ambos os valores estiverem vazios
             } else {
-                "$horaSalidaRemember${if (minutoSalidaRemember.isNotEmpty()) ":$minutoSalidaRemember" else ""}"
-            },
+                "$horaSalidaRemember${if (minutoSalidaRemember.isNotEmpty()) ":$minutoSalidaRemember" else ""}"},
             onValueChange = { horaSalidaRemember = it },
             label = { Text("Hora") },
             trailingIcon = {
@@ -275,8 +274,14 @@ fun AddItem(navcontroller: NavController) {
 
         Button(
             modifier = Modifier
+                .align(androidx.compose.ui.Alignment.CenterHorizontally)
                 .fillMaxWidth()
                 .padding(16.dp),
+            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                containerColor = Color.Blue,
+                contentColor = Color.White
+            ),
+
             onClick = {
                 // Verifica se todos os campos estão preenchidos
                 if (propinasRemember.isEmpty() || fechaRemember.isEmpty() || horaEntradaRemember.isEmpty() || minutoEntradaRemember.isEmpty() || horaSalidaRemember.isEmpty() || minutoSalidaRemember.isEmpty()) {

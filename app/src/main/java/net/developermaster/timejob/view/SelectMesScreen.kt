@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -44,6 +45,7 @@ import java.time.LocalTime
 import java.util.Date
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
+import kotlin.time.toJavaDuration
 
 @Composable
 private fun TopBar(paddingValues: PaddingValues, navcontroller: NavController) {
@@ -62,7 +64,9 @@ internal fun SelectMesScreen(navController: NavHostController, mes: String) {
             floatingActionButton = {
                 //propinas
                 FloatingActionButton(modifier = Modifier.padding(start = 155.dp), onClick = {
-                    navController.navigate(ModelScreens.PropinaScreenObject.route)
+
+                    navController.navigate(ModelScreens.PropinaScreenObject.route + "/$mes")
+
                 }) {
                     Icon(Icons.Filled.Favorite, contentDescription = null)
                 }
@@ -105,20 +109,19 @@ internal fun SelectMesScreen(navController: NavHostController, mes: String) {
 
                 /////////////////////////////
 
-                LaunchedEffect(mes) {
-                    // Carregar dados do Firestore com base no mês
-                    val queryMes = FirebaseFirestore.getInstance().collection(mes).orderBy("fecha").get().await()
-                    modelSwitchRememberPlantas = queryMes.documents.map { document ->
-                        ModelTimeJob(
-                            id = document.id,
-                            fecha = document.getString("fecha") ?: "",
-                            horaEntrada = document.getString("horaEntrada") ?: "",
-                            minutoEntrada = document.getString("minutoEntrada") ?: "",
-                            horaSalida = document.getString("horaSalida") ?: "",
-                            minutoSalida = document.getString("minutoSalida") ?: "",
-                            propinas = document.getString("propinas") ?: "",
-                        )
-                    }
+                // Carregar dados do Firestore com base no mês
+                val queryMes =
+                    FirebaseFirestore.getInstance().collection(mes).orderBy("fecha").get().await()
+                modelSwitchRememberPlantas = queryMes.documents.map { document ->
+                    ModelTimeJob(
+                        id = document.id,
+                        fecha = document.getString("fecha") ?: "",
+                        horaEntrada = document.getString("horaEntrada") ?: "",
+                        minutoEntrada = document.getString("minutoEntrada") ?: "",
+                        horaSalida = document.getString("horaSalida") ?: "",
+                        minutoSalida = document.getString("minutoSalida") ?: "",
+                        propinas = document.getString("propinas") ?: "",
+                    )
                 }
 
                 isRefreshingRemember = false
@@ -140,7 +143,9 @@ internal fun SelectMesScreen(navController: NavHostController, mes: String) {
 
                 LaunchedEffect(mes) {
                     // Carregar dados do Firestore com base no mês
-                    val queryMes = FirebaseFirestore.getInstance().collection(mes).orderBy("fecha").get().await()
+                    val queryMes =
+                        FirebaseFirestore.getInstance().collection(mes).orderBy("fecha").get()
+                            .await()
                     modelSwitchRememberPlantas = queryMes.documents.map { document ->
                         ModelTimeJob(
                             id = document.id,
@@ -594,5 +599,530 @@ fun DeleteItem(navController: NavController, itemId: String, itemMes: String) {
                     Text("Cancelar")
                 }
             })
+    }
+}
+
+@Composable
+fun PropinaScreen(navController: NavHostController, itemMes: String) {
+
+    Duration.ZERO
+
+    val context = LocalContext.current
+    val listaResultadoRetornados = mutableListOf<String>()
+    var dataInicioRemember by remember { mutableStateOf("") }
+    var dataFimRemember by remember { mutableStateOf("") }
+    var totalPropinaRemember by remember { mutableIntStateOf(0) }
+
+    MaterialThemeScreen {
+
+        Column(
+            modifier = Modifier, verticalArrangement = Arrangement.Center
+        ) {
+
+            Row(
+                modifier = Modifier, horizontalArrangement = Arrangement.Center
+            ) {
+
+                //hora inicial
+                OutlinedTextField(
+                    modifier = Modifier.width(200.dp),
+                    value = dataInicioRemember,
+                    onValueChange = { dataInicioRemember = it },
+                    label = { Text("Fecha Inicial") },
+                    trailingIcon = {
+                        Icon(
+
+                            imageVector = Icons.Default.DateRange,//icone
+                            contentDescription = null,
+                            modifier = Modifier
+                                .width(50.dp)
+
+                                .clickable {
+
+                                    val year: Int
+                                    val month: Int
+                                    val day: Int
+                                    val calendar = Calendar.getInstance()
+                                    year = calendar.get(Calendar.YEAR)
+                                    month = calendar.get(Calendar.MONTH)
+                                    day = calendar.get(Calendar.DAY_OF_MONTH)
+                                    calendar.time = Date()
+
+                                    val datePickerDialog = android.app.DatePickerDialog(
+                                        context, { _: DatePicker, year: Int, month: Int, day: Int ->
+                                            dataInicioRemember = "$day/${month + 1}/$year"
+
+                                            val fechaFormatada = String.format(
+                                                "%02d/%02d/%02d", day, month + 1, year
+                                            )
+
+                                            dataInicioRemember = fechaFormatada
+
+                                        }, year, month, day
+                                    )
+
+                                    datePickerDialog.show()
+
+                                    totalPropinaRemember = 0
+
+                                },//clickable
+
+                            tint = Color.Blue,// cor azul da borda
+                        )
+                    },
+                    readOnly = true,
+
+                    )
+
+                //hora final
+                OutlinedTextField(
+                    modifier = Modifier
+                        .width(200.dp)
+                        .padding(start = 8.dp),
+                    value = dataFimRemember,
+                    onValueChange = { dataFimRemember = it },
+                    label = { Text("Fecha Final") },
+                    trailingIcon = {
+                        Icon(
+
+                            imageVector = Icons.Default.DateRange,//icone
+                            contentDescription = null,
+                            modifier = Modifier
+                                .width(50.dp)
+                                .clickable {
+
+                                    val year: Int
+                                    val month: Int
+                                    val day: Int
+                                    val calendar = Calendar.getInstance()
+                                    year = calendar.get(Calendar.YEAR)
+                                    month = calendar.get(Calendar.MONTH)
+                                    day = calendar.get(Calendar.DAY_OF_MONTH)
+                                    calendar.time = Date()
+
+                                    val datePickerDialog = android.app.DatePickerDialog(
+                                        context, { _: DatePicker, year: Int, month: Int, day: Int ->
+                                            dataFimRemember = "$day/$month/$year"
+
+                                            val fechaFormatada = String.format(
+                                                "%02d/%02d/%02d", day, month + 1, year
+                                            )
+
+                                            dataFimRemember = fechaFormatada
+
+                                        }, year, month, day
+                                    )
+
+                                    datePickerDialog.show()
+
+                                },//clickable
+                            tint = Color.Blue,// cor azul da borda
+                        )
+                    },
+                    readOnly = true,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Button(modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .fillMaxWidth()
+                .padding(16.dp),
+                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                    containerColor = Color.Blue, contentColor = Color.White
+                ),
+                onClick = {
+
+                    // Limpa a lista de resultados e o total antes de buscar novos dados
+                    listaResultadoRetornados.clear()
+                    totalPropinaRemember = 0
+
+                    val listaDeDadosRetornadas = FirebaseFirestore.getInstance().collection(itemMes)
+
+                        .whereGreaterThanOrEqualTo("fecha", dataInicioRemember)
+                        .whereLessThanOrEqualTo("fecha", dataFimRemember)
+
+//                    .whereGreaterThanOrEqualTo("fecha", "04/01/2025")
+//                    .whereLessThanOrEqualTo("fecha", "05/01/2025")
+
+                    listaDeDadosRetornadas.addSnapshotListener { dadosRetornados, _ ->
+
+                        val listaRetornada = dadosRetornados?.documents//todo document
+
+                        listaRetornada?.forEach { documents ->
+
+                            val dados = documents?.data
+
+                            if (dados != null) {
+
+                                val fechaDadosRetornados = dados["fecha"]
+                                val propinasDadosRetornados = dados["propinas"]
+
+                                // Adiciona a string formatada à lista de resultados
+                                listaResultadoRetornados.add("Fecha: $fechaDadosRetornados \nPropinas: €$propinasDadosRetornados")
+
+
+                                // Acumula o total de propinas
+                                totalPropinaRemember += (propinasDadosRetornados.toString()
+                                    .toIntOrNull() ?: 0)
+
+                                //limpar campos
+                                dataInicioRemember = ""
+                                dataFimRemember = ""
+                            }
+                        }
+                    }
+                }
+
+            ) {
+                Text("Pesquisar")
+            }
+
+            Column(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+            ) {
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                listaResultadoRetornados.forEach { lista ->
+
+                    OutlinedTextField(
+                        value = lista,
+                        textStyle = TextStyle(color = Color.Red),
+                        onValueChange = { },
+                        label = { Text("") },
+                        trailingIcon = {
+
+                        },
+                        readOnly = true,
+                    )
+                }
+            }
+
+            //row resultado
+            Column(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+            ) {
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                //total propinas
+                OutlinedTextField(
+                    modifier = Modifier.width(200.dp),
+
+                    value = if (totalPropinaRemember == 0) {
+                        "" // Exibe uma string vazia se ambos os valores estiverem vazios
+                    } else {
+                        "$totalPropinaRemember €"
+                    },
+
+                    onValueChange = { },
+                    label = { Text("Total Propinas") },
+                    leadingIcon = {
+                        Icon(
+
+                            imageVector = Icons.Default.Favorite,//icone
+                            contentDescription = null,
+                            modifier = Modifier.width(50.dp),
+                            tint = Color.Blue,// cor azul da borda
+                        )
+                    },
+                    readOnly = true,
+
+                    )
+            }
+
+            Spacer(modifier = Modifier.height(300.dp))
+        }
+    }
+}
+
+@Composable
+fun RelatorioScreen(navController: NavHostController, itemMes: String) {
+
+    val context = LocalContext.current
+    val listaResultadoRetornados = mutableListOf<String>()
+    var variavelGlobalSomaHora = Duration.ZERO
+    var dataInicioRemember by remember { mutableStateOf("") }
+    var dataFimRemember by remember { mutableStateOf("") }
+    var somaHorasRemember by remember { mutableStateOf("") }
+    var totalDiasTrabalhadosRemember by remember { mutableIntStateOf(0) }
+
+    MaterialThemeScreen {
+
+        Column(
+            modifier = Modifier.padding(top = 120.dp), verticalArrangement = Arrangement.Center
+        ) {
+
+            Row(
+                modifier = Modifier, horizontalArrangement = Arrangement.Center
+            ) {
+
+                //hora inicial
+                OutlinedTextField(
+                    modifier = Modifier.width(200.dp),
+                    value = dataInicioRemember,
+                    onValueChange = { dataInicioRemember = it },
+                    label = { Text("Fecha Inicial") },
+                    trailingIcon = {
+                        Icon(
+
+                            imageVector = Icons.Default.DateRange,//icone
+                            contentDescription = null,
+                            modifier = Modifier
+                                .width(50.dp)
+
+                                .clickable {
+
+                                    val year: Int
+                                    val month: Int
+                                    val day: Int
+                                    val calendar = Calendar.getInstance()
+                                    year = calendar.get(Calendar.YEAR)
+                                    month = calendar.get(Calendar.MONTH)
+                                    day = calendar.get(Calendar.DAY_OF_MONTH)
+                                    calendar.time = Date()
+                                    val datePickerDialog = android.app.DatePickerDialog(
+                                        context, { _: DatePicker, year: Int, month: Int, day: Int ->
+                                            dataInicioRemember = "$day/${month + 1}/$year"
+
+                                            val fechaFormatada = String.format(
+                                                "%02d/%02d/%02d", day, month + 1, year
+                                            )
+
+                                            dataInicioRemember = fechaFormatada
+
+                                        }, year, month, day
+                                    )
+
+                                    datePickerDialog.show()
+
+                                },//clickable
+
+                            tint = Color.Blue,// cor azul da borda
+                        )
+                    },
+                    readOnly = true,
+
+                    )
+
+                //hora final
+                OutlinedTextField(
+                    modifier = Modifier
+                        .width(200.dp)
+                        .padding(start = 8.dp),
+                    value = dataFimRemember,
+                    onValueChange = { dataFimRemember = it },
+                    label = { Text("Fecha Final") },
+                    trailingIcon = {
+                        Icon(
+
+                            imageVector = Icons.Default.DateRange,//icone
+                            contentDescription = null,
+                            modifier = Modifier
+                                .width(50.dp)
+                                .clickable {
+
+                                    val year: Int
+                                    val month: Int
+                                    val day: Int
+                                    val calendar = Calendar.getInstance()
+                                    year = calendar.get(Calendar.YEAR)
+                                    month = calendar.get(Calendar.MONTH)
+                                    day = calendar.get(Calendar.DAY_OF_MONTH)
+                                    calendar.time = Date()
+                                    val datePickerDialog = android.app.DatePickerDialog(
+                                        context, { _: DatePicker, year: Int, month: Int, day: Int ->
+                                            dataFimRemember = "$day/$month/$year"
+
+                                            val fechaFormatada = String.format(
+                                                "%02d/%02d/%02d", day, month + 1, year
+                                            )
+
+                                            dataFimRemember = fechaFormatada
+
+                                        }, year, month, day
+                                    )
+
+                                    datePickerDialog.show()
+
+                                },//clickable
+                            tint = Color.Blue,// cor azul da borda
+                        )
+                    },
+                    readOnly = true,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Button(modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .fillMaxWidth()
+                .padding(16.dp),
+                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                    containerColor = Color.Blue, contentColor = Color.White
+                ),
+                onClick = {
+                    // Limpar as variáveis antes de começar a nova pesquisa
+                    listaResultadoRetornados.clear()
+                    variavelGlobalSomaHora = Duration.ZERO
+                    totalDiasTrabalhadosRemember = 0
+
+                    val listaDeDadosRetornadas = FirebaseFirestore.getInstance().collection(itemMes)
+                        .whereGreaterThanOrEqualTo("fecha", dataInicioRemember)
+                        .whereLessThanOrEqualTo("fecha", dataFimRemember)
+
+//                    .whereGreaterThanOrEqualTo("fecha", "04/01/2025")
+//                    .whereLessThanOrEqualTo("fecha", "05/01/2025")
+
+                    listaDeDadosRetornadas.addSnapshotListener { dadosRetornados, _ ->
+
+                        val listaRetornada = dadosRetornados?.documents//todo document
+
+                        listaRetornada?.forEach { documents ->
+
+                            val dados = documents?.data
+
+                            if (dados != null) {
+
+                                val fechaDadosRetornados = dados["fecha"]
+                                val horaEntradaRetornados = dados["horaEntrada"]
+                                val minutoEntradaRetornados = dados["minutoEntrada"]
+                                val horaSalidaRetornados = dados["horaSalida"]
+                                val minutoSalidaRetornados = dados["minutoSalida"]
+                                val propinasDadosRetornados = dados["propinas"]
+
+                                //calculo tempo
+                                val horaEntradaTime = LocalTime.of(
+                                    horaEntradaRetornados.toString().toInt(),
+                                    minutoEntradaRetornados.toString().toInt()
+                                )
+                                val horaSalidaTime = LocalTime.of(
+                                    horaSalidaRetornados.toString().toInt(),
+                                    minutoSalidaRetornados.toString().toInt()
+                                )
+                                val duracao = Duration.between(horaEntradaTime, horaSalidaTime)
+                                val horas = duracao.toHours()
+                                val minutos = duracao.toMinutes() % 60
+                                val resultadoCalculorHoraFormatado =
+                                    String.format("%02d:%02d", horas, minutos)
+
+                                horas.toDuration(DurationUnit.HOURS)
+                                minutos.toDuration(DurationUnit.MINUTES)
+
+                                variavelGlobalSomaHora += horas.toDuration(DurationUnit.HOURS)
+                                    .toJavaDuration() + minutos.toDuration(DurationUnit.MINUTES)
+                                    .toJavaDuration()
+
+                                listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nHora de Entrada: $horaEntradaRetornados : $minutoEntradaRetornados \nHora de Salida: $horaSalidaRetornados : $minutoSalidaRetornados \nTotal de Horas: $resultadoCalculorHoraFormatado \nPropinas: €$propinasDadosRetornados")
+
+                                somaHorasRemember = variavelGlobalSomaHora.toString()
+
+                                val contadorDiasTrabalhados = listaResultadoRetornados.count()
+
+                                totalDiasTrabalhadosRemember = contadorDiasTrabalhados
+
+                                //limpar campos
+                                dataInicioRemember = ""
+                                dataFimRemember = ""
+
+                                Log.d("Contador", "Contador: $contadorDiasTrabalhados")
+                            }
+                        }
+                    }
+                }
+
+            ) {
+                Text("Pesquisar")
+            }
+
+            Column(
+                modifier = Modifier.padding(top = 1.dp),
+            ) {
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                listaResultadoRetornados.forEach { lista ->
+
+                    OutlinedTextField(
+                        value = lista,
+                        textStyle = TextStyle(color = Color.Red),
+                        onValueChange = { },
+                        label = { Text("") },
+                        modifier = Modifier.fillMaxWidth(),
+                        trailingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Create,//icone
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .width(50.dp)
+                                    .clickable {
+                                        Toast.makeText(
+                                            context, "Clicou no icone", Toast.LENGTH_SHORT
+                                        ).show()
+                                    },//clickable
+                                tint = Color.Blue,// cor azul da borda
+                            )
+                        },
+                        readOnly = true,
+                    )
+                }
+            }
+
+            //row resultado
+            Column(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+            ) {
+
+                //total dias trabalhados
+                OutlinedTextField(
+                    modifier = Modifier.width(200.dp),
+//                value = "$totalDiasTrabalhadosRemember dias",
+
+                    value = if (totalDiasTrabalhadosRemember == 0) {
+                        "" // Exibe uma string vazia se ambos os valores estiverem vazios
+                    } else {
+                        "$totalDiasTrabalhadosRemember"
+                    },
+
+                    onValueChange = { },
+                    label = { Text("Dias Trabalhados") },
+                    leadingIcon = {
+                        Icon(
+
+                            imageVector = Icons.Default.DateRange,//icone
+                            contentDescription = null,
+                            modifier = Modifier.width(50.dp),
+                            tint = Color.Blue,// cor azul da borda
+                        )
+                    },
+                    readOnly = true,
+
+                    )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                //total horas
+                OutlinedTextField(
+                    modifier = Modifier.width(200.dp),
+                    value = somaHorasRemember,
+                    onValueChange = { },
+                    label = { Text("Total Horas") },
+                    leadingIcon = {
+                        Icon(
+
+                            painter = painterResource(id = R.drawable.time),
+                            contentDescription = null,
+                            modifier = Modifier.width(50.dp),
+
+                            tint = Color.Blue,// cor azul da borda
+                        )
+                    },
+                    readOnly = true,
+                )
+            }
+        }
     }
 }
