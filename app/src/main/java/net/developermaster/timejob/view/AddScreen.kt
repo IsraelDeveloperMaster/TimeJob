@@ -1,9 +1,10 @@
-package net.developermaster.timejob.screens
+package net.developermaster.timejob.view
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.icu.util.Calendar
+import android.text.Layout.Alignment
 import android.util.Log
 import android.widget.DatePicker
 import android.widget.Toast
@@ -56,19 +57,15 @@ fun TopBarAddScreen(navcontroller: NavController) {
                 navcontroller.popBackStack()
             })
 
-        Text(
-            modifier = Modifier.padding(start = 120.dp), text = "Salvar"
-        )
+        Text(modifier = Modifier
+            .padding(start = 120.dp), text = "Salvar")
     }, actions = {
 
-/*        Icon(
-            imageVector = Icons.Default.Menu, contentDescription = "Menu"
-        )*/
     })
 }
 
 @Composable
-fun AddScreen(navcontroller: NavController) {
+internal fun AddScreen(navcontroller: NavController) {
 
     Scaffold(Modifier
         .fillMaxSize()
@@ -103,6 +100,7 @@ fun AddItem(navcontroller: NavController) {
     var horaSalidaRemember by remember { mutableStateOf("") }
     var minutoSalidaRemember by remember { mutableStateOf("") }
     var propinasRemember by remember { mutableStateOf("") }
+    val doisPontos = ":"
 
     val modelTimeJob = ModelTimeJob(
         fecha = fechaRemember,
@@ -177,7 +175,13 @@ fun AddItem(navcontroller: NavController) {
             modifier = Modifier
                 .width(200.dp)
                 .clickable {},
-            value = "$horaEntradaRemember : $minutoEntradaRemember",
+
+            value = if (horaEntradaRemember.isEmpty() && minutoEntradaRemember.isEmpty()) {
+                "" // Exibe uma string vazia se ambos os valores estiverem vazios
+            } else {
+                "$horaEntradaRemember${if (minutoEntradaRemember.isNotEmpty()) ":$minutoEntradaRemember" else ""}"
+            },
+
             onValueChange = { horaEntradaRemember = it },
             label = { Text("Hora") },
             trailingIcon = {
@@ -190,7 +194,7 @@ fun AddItem(navcontroller: NavController) {
 
                         .clickable {
 
-                            Relogio(context) { hour, minute ->
+                            relogio(context) { hour, minute ->
                                 horaEntradaRemember = "$hour"
                                 minutoEntradaRemember = "$minute"
 
@@ -217,7 +221,11 @@ fun AddItem(navcontroller: NavController) {
         //hora saida
         OutlinedTextField(
             modifier = Modifier.width(200.dp),
-            value = "$horaSalidaRemember:$minutoSalidaRemember",
+            value = if (horaSalidaRemember.isEmpty() && minutoSalidaRemember.isEmpty()) {
+                "" // Exibe uma string vazia se ambos os valores estiverem vazios
+            } else {
+                "$horaSalidaRemember${if (minutoSalidaRemember.isNotEmpty()) ":$minutoSalidaRemember" else ""}"
+            },
             onValueChange = { horaSalidaRemember = it },
             label = { Text("Hora") },
             trailingIcon = {
@@ -229,7 +237,7 @@ fun AddItem(navcontroller: NavController) {
 
                         .clickable {
 
-                            Relogio(context) { hour, minute ->
+                            relogio(context) { hour, minute ->
                                 horaSalidaRemember = "$hour"
                                 minutoSalidaRemember = "$minute"
 
@@ -260,7 +268,7 @@ fun AddItem(navcontroller: NavController) {
         //propinas
         OutlinedTextField(
             modifier = Modifier.width(200.dp),
-            value = "$propinasRemember",
+            value = propinasRemember,
             onValueChange = { propinasRemember = it },
             label = { Text("Propinas") },
         )
@@ -317,7 +325,7 @@ fun AddItem(navcontroller: NavController) {
     }
 }
 
-fun Relogio(context: Context, onTimeSet: (Int, Int) -> Unit) {
+fun relogio(context: Context, onTimeSet: (Int, Int) -> Unit) {
     val calendar = Calendar.getInstance()
     val mHour = calendar[Calendar.HOUR_OF_DAY]
     val mMinute = calendar[Calendar.MINUTE]
