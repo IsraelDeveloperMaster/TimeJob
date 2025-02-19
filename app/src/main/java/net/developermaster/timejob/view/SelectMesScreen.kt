@@ -886,18 +886,30 @@ fun PropinaScreen(navController: NavHostController, itemMes: String) {
                     )
             }
 
+            Spacer(modifier = Modifier.height(16.dp))
+
             // Exibir resultados em uma LazyColumn
-            LazyColumn(
-            ) {
-                items(listaResultadoRetornados) { resultado ->
-                    OutlinedTextField(
-                        value = resultado,
-                        textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
-                        onValueChange = { },
-                        label = { Text("") },
-                        modifier = Modifier.fillMaxWidth(),
-                        readOnly = true,
-                    )
+            if (listaResultadoRetornados.isEmpty()) {
+                Text(
+                    text = "Nenhum resultado encontrado.",
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            } else {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(listaResultadoRetornados) { resultado ->
+                        OutlinedTextField(
+                            value = resultado,
+                            textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
+                            onValueChange = { },
+                            label = { Text("") },
+                            modifier = Modifier.fillMaxWidth(),
+                            readOnly = true,
+                        )
+                    }
                 }
             }
 
@@ -1265,19 +1277,30 @@ fun RelatorioScreen(navController: NavHostController, itemMes: String) {
                 )
             }
 
+            Spacer(modifier = Modifier.height(16.dp))
+
             // Exibir resultados em uma LazyColumn
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(listaResultadoRetornados) { resultado ->
-                    OutlinedTextField(
-                        value = resultado,
-                        textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
-                        onValueChange = { },
-                        label = { Text("") },
-                        modifier = Modifier.fillMaxWidth(),
-                        readOnly = true,
-                    )
+            if (listaResultadoRetornados.isEmpty()) {
+                Text(
+                    text = "Nenhum resultado encontrado.",
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            } else {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(listaResultadoRetornados) { resultado ->
+                        OutlinedTextField(
+                            value = resultado,
+                            textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
+                            onValueChange = { },
+                            label = { Text("") },
+                            modifier = Modifier.fillMaxWidth(),
+                            readOnly = true,
+                        )
+                    }
                 }
             }
 
