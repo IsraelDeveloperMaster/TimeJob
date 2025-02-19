@@ -534,7 +534,13 @@ fun UpdateScreen(navController: NavController, itemId: String, itemMes: String) 
                     },
                     label = { Text("Propinas") },
                     trailingIcon = {
-
+                        Icon(
+                            Icons.Filled.Favorite,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .width(50.dp),
+                            tint = Color.Blue,// cor azul da borda
+                        )
                     }
                 )
 
@@ -943,7 +949,7 @@ fun DetalheScreen(navController: NavController, itemId: String, itemMes: String)
         notasRemember = modelTimeJobItem.notas
 
         resultado =
-            "Fecha: $fechaRemember \n\nHora Entrada: $horaEntradaRemember:$minutoEntradaRemember \n\nHora Salida: $horaSalidaRemember:$minutoSalidaRemember \n\nPropina: €$propinasRemember \n\n\n             Notas: \n\n$notasRemember"
+            "$fechaRemember \n\nEntrada: $horaEntradaRemember:$minutoEntradaRemember \n\nSalida: $horaSalidaRemember:$minutoSalidaRemember \n\nPropina: €$propinasRemember \n\n\n             Notas: \n\n$notasRemember"
 
         MaterialThemeScreen {
 
