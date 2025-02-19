@@ -280,6 +280,15 @@ fun AddItem(navcontroller: NavController) {
             value = propinasRemember,
             onValueChange = { propinasRemember = it },
             label = { Text("Propinas") },
+            trailingIcon = {
+                Icon(
+                    Icons.Filled.Favorite,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .width(50.dp),
+                    tint = Color.Blue,// cor azul da borda
+                )
+            }
         )
 
         Spacer(modifier = Modifier.height(20.dp))
