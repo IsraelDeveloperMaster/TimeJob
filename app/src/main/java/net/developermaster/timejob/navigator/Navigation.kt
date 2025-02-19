@@ -25,7 +25,7 @@ fun NavigationNavController() {
 
     //navController rota inicial
     NavHost(
-        navController = navController, startDestination = ModelScreens.UpdateScreenObject.route
+        navController = navController, startDestination = ModelScreens.MainScreenObject.route
 
     ) {
 

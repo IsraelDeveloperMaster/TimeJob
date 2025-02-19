@@ -121,7 +121,8 @@ internal fun ListarTodos(navController: NavController) {
                         minutoEntrada = document.getString("minutoEntrada") ?: "",
                         horaSalida = document.getString("horaSalida") ?: "",
                         minutoSalida = document.getString("minutoSalida") ?: "",
-                        propinas = document.getString("propinas") ?: ""
+                        propinas = document.getString("propinas") ?: "",
+                        notas = document.getString("nota") ?: ""
                     )
                 }
             }
@@ -134,10 +135,7 @@ internal fun ListarTodos(navController: NavController) {
 
                 items(modelTimeJobs) { item ->
 
-                    ItemBox(
-                        modelTimeJob = item, onItemClick = {
-
-                        }, navController = navController
+                    ItemBox(modelTimeJob = item, navController = navController
                     )
                 }
             }
@@ -146,7 +144,7 @@ internal fun ListarTodos(navController: NavController) {
 }
 
 @Composable
-fun ItemBox(navController: NavController, modelTimeJob: ModelTimeJob, onItemClick: (ModelTimeJob) -> Unit ) {
+fun ItemBox(navController: NavController, modelTimeJob: ModelTimeJob) {
 
     Box(
         modifier = Modifier
@@ -231,7 +229,8 @@ fun UpdateScreen(navController: NavController, itemId: String) {
             minutoEntrada = document.getString("minutoEntrada") ?: "",
             horaSalida = document.getString("horaSalida") ?: "",
             minutoSalida = document.getString("minutoSalida") ?: "",
-            propinas = document.getString("propinas") ?: ""
+            propinas = document.getString("propinas") ?: "",
+            notas = document.getString("nota") ?: ""
         )
 
         Log.d("UpdateItemDetailScreen", "Item carregado: $modelTimeJob")

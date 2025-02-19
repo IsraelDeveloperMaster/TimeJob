@@ -20,10 +20,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -37,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.firebase.firestore.FirebaseFirestore
@@ -100,7 +105,7 @@ fun AddItem(navcontroller: NavController) {
     var horaSalidaRemember by remember { mutableStateOf("") }
     var minutoSalidaRemember by remember { mutableStateOf("") }
     var propinasRemember by remember { mutableStateOf("") }
-    val doisPontos = ":"
+    var notasRemember by remember { mutableStateOf("") }
 
     val modelTimeJob = ModelTimeJob(
         fecha = fechaRemember,
@@ -109,6 +114,7 @@ fun AddItem(navcontroller: NavController) {
         horaSalida = horaSalidaRemember,
         minutoSalida = minutoSalidaRemember,
         propinas = propinasRemember,
+        notas = notasRemember
     )
 
     Column(horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
@@ -120,6 +126,7 @@ fun AddItem(navcontroller: NavController) {
         //fecha
         OutlinedTextField(
             modifier = Modifier.width(200.dp),
+            textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
             value = fechaRemember,
             onValueChange = { fechaRemember = it },
             label = { Text("Fecha") },
@@ -175,6 +182,7 @@ fun AddItem(navcontroller: NavController) {
             modifier = Modifier
                 .width(200.dp)
                 .clickable {},
+            textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
 
             value = if (horaEntradaRemember.isEmpty() && minutoEntradaRemember.isEmpty()) {
                 "" // Exibe uma string vazia se ambos os valores estiverem vazios
@@ -221,6 +229,7 @@ fun AddItem(navcontroller: NavController) {
         //hora saida
         OutlinedTextField(
             modifier = Modifier.width(200.dp),
+            textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
             value = if (horaSalidaRemember.isEmpty() && minutoSalidaRemember.isEmpty()) {
                 "" // Exibe uma string vazia se ambos os valores estiverem vazios
             } else {
@@ -267,17 +276,41 @@ fun AddItem(navcontroller: NavController) {
         //propinas
         OutlinedTextField(
             modifier = Modifier.width(200.dp),
+            textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
             value = propinasRemember,
             onValueChange = { propinasRemember = it },
             label = { Text("Propinas") },
         )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Text(text = "Notas")
+
+        //Notas
+        OutlinedTextField(
+            modifier = Modifier.width(200.dp),
+            textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
+            value = notasRemember,
+            onValueChange = { notasRemember = it },
+            label = { Text("Notas") },
+            trailingIcon = {
+                Icon(
+                    Icons.Filled.Create,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .width(50.dp),
+                    tint = Color.Blue,// cor azul da borda
+                )
+            },
+
+            )
 
         Button(
             modifier = Modifier
                 .align(androidx.compose.ui.Alignment.CenterHorizontally)
                 .fillMaxWidth()
                 .padding(16.dp),
-            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+            colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Blue,
                 contentColor = Color.White
             ),
