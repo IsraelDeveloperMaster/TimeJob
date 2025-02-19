@@ -293,7 +293,6 @@ fun UpdateScreen(navController: NavController, itemId: String, itemMes: String) 
     var horaSalidaRemember by remember { mutableStateOf("") }
     var minutoSalidaRemember by remember { mutableStateOf("") }
     var propinasRemember by remember { mutableStateOf("") }
-
     val firestore = FirebaseFirestore.getInstance()
     var modelTimeJob by remember { mutableStateOf<ModelTimeJob?>(null) }
 
@@ -325,238 +324,244 @@ fun UpdateScreen(navController: NavController, itemId: String, itemMes: String) 
         minutoSalidaRemember = modelTimeJobItem.minutoSalida
         propinasRemember = modelTimeJobItem.propinas
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+        MaterialThemeScreen {
 
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                "Atualizar",
-                style = MaterialTheme.typography.headlineMedium,
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            //fecha
-            OutlinedTextField(
-                textStyle = TextStyle(color = Color.Black),
-                modifier = Modifier.width(200.dp),
-                value = fechaRemember,
-                onValueChange = { fechaRemember = it },
-                label = { Text("Fecha") },
-                trailingIcon = {
-
-                    Icon(
-
-                        imageVector = Icons.Default.DateRange,//icone
-                        contentDescription = null,
-                        modifier = Modifier
-                            .width(50.dp)
-
-                            .clickable {
-
-                                val dia: Int
-                                val mes: Int
-                                val ano: Int
-
-                                val dataAtual = Calendar.getInstance()
-                                dia = dataAtual.get(Calendar.DAY_OF_MONTH)
-                                mes = dataAtual.get(Calendar.MONTH)
-                                ano = dataAtual.get(Calendar.YEAR)
-                                dataAtual.time = Date()
-
-
-                                val datePickerDialog = android.app.DatePickerDialog(
-                                    context, { _: DatePicker, ano: Int, mes: Int, dia: Int ->
-                                        fechaRemember = "$dia/${mes + 1}/$ano"
-
-                                        val fechaFormatada =
-                                            String.format("%02d/%02d/%02d", dia, mes + 1, ano)
-
-                                        fechaRemember = fechaFormatada
-
-                                        modelTimeJobItem.fecha = fechaRemember
-
-                                    }, ano, mes, dia
-                                )
-
-                                datePickerDialog.show()
-
-                            },//clickable
-
-                        tint = Color.Blue,// cor azul da borda
-                    )
-                },
-                readOnly = true,
-
-                )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            //hora de entrada
-            OutlinedTextField(
-                textStyle = TextStyle(color = Color.Black),
                 modifier = Modifier
-                    .width(200.dp)
-                    .clickable {},
-                value = "$horaEntradaRemember : $minutoEntradaRemember",
-                onValueChange = { horaEntradaRemember = it },
-                label = { Text("Hora Entrada") },
-                trailingIcon = {
-                    Icon(
-
-                        painter = painterResource(id = R.drawable.time),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .width(50.dp)
-
-                            .clickable {
-
-                                relogio(context) { hora, minuto ->
-
-                                    horaEntradaRemember = "$hora"
-                                    minutoEntradaRemember = "$minuto"
-
-                                    val horaFormatado = String.format("%02d", hora)
-                                    horaEntradaRemember = horaFormatado
-
-                                    val minutoFormatado = String.format("%02d", minuto)
-                                    minutoEntradaRemember = minutoFormatado
-
-                                    modelTimeJobItem.horaEntrada = horaEntradaRemember
-                                    modelTimeJobItem.minutoEntrada = minutoEntradaRemember
-                                }
-
-                            },//clickable
-
-                        tint = Color.Blue,// cor azul da borda
-                    )
-                },
-                readOnly = true,
-
-                )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            //hora de saida
-            OutlinedTextField(
-                textStyle = TextStyle(color = Color.Black),
-                modifier = Modifier
-                    .width(200.dp)
-                    .clickable {},
-                value = "$horaEntradaRemember : $minutoSalidaRemember",
-                onValueChange = { horaSalidaRemember = it },
-                label = { Text("Hora Salida") },
-                trailingIcon = {
-                    Icon(
-
-                        painter = painterResource(id = R.drawable.time),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .width(50.dp)
-
-                            .clickable {
-
-                                relogio(context) { hora, minuto ->
-
-                                    horaSalidaRemember = "$hora"
-                                    minutoSalidaRemember = "$minuto"
-
-                                    val horaFormatado = String.format("%02d", hora)
-                                    horaSalidaRemember = horaFormatado
-
-                                    val minutoFormatado = String.format("%02d", minuto)
-                                    minutoSalidaRemember = minutoFormatado
-
-                                    modelTimeJobItem.horaSalida = horaSalidaRemember
-                                    modelTimeJobItem.minutoSalida = minutoSalidaRemember
-                                }
-
-                            },//clickable
-
-                        tint = Color.Blue,// cor azul da borda
-                    )
-                },
-                readOnly = true,
-
-                )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            //propinas
-            OutlinedTextField(textStyle = TextStyle(color = Color.Black),
-                modifier = Modifier
-                    .width(200.dp)
-                    .clickable {},
-                value = modelTimeJobItem.propinas,
-                onValueChange = { newPropinas ->
-                    modelTimeJob = modelTimeJobItem.copy(propinas = newPropinas)
-                },
-                label = { Text("Propinas") },
-                trailingIcon = {
-
-                })
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
-
-                    // Extrai o mês da data
-                    val partesData = fechaRemember.split("/")
-                    if (partesData.size == 3) {
-                        val mes = partesData[1].toInt() // O mês está na segunda posição (índice 1)
-                        // Mapeia o número do mês para o nome da coleção
-                        val nomeMes = when (mes) {
-                            1 -> "Enero"
-                            2 -> "Febrero"
-                            3 -> "Marzo"
-                            4 -> "Abril"
-                            5 -> "Mayo"
-                            6 -> "Junio"
-                            7 -> "Julio"
-                            8 -> "Agosto"
-                            9 -> "Septiembre"
-                            10 -> "Octubre"
-                            11 -> "Noviembre"
-                            12 -> "Diciembre"
-                            else -> ""
-                        }
-                        // Atualizar o item no Firestore
-                        firestore.collection(nomeMes).document(modelTimeJobItem.id).update(
-                            mapOf(
-
-                                "fecha" to modelTimeJobItem.fecha,
-                                "horaEntrada" to modelTimeJobItem.horaEntrada,
-                                "minutoEntrada" to modelTimeJobItem.minutoEntrada,
-                                "horaSalida" to modelTimeJobItem.horaSalida,
-                                "minutoSaida" to modelTimeJobItem.minutoSalida,
-                                "propinas" to modelTimeJobItem.propinas,
-
-                                )
-
-                        ).addOnSuccessListener {
-                            Log.d("UpdateItemDetailScreen", "Item atualizado com sucesso")
-                        }.addOnFailureListener { e ->
-                            Log.e("UpdateItemDetailScreen", "Erro ao atualizar item", e.cause)
-                        }
-
-                        Toast.makeText(context, "Atualizado com sucesso", Toast.LENGTH_SHORT).show()
-
-                        // Navegar de volta à tela anterior
-                        navController.navigate(ModelScreens.MainScreenObject.route)
-                    }
-                },
+                    .fillMaxSize()
+                    .padding(16.dp)
             ) {
-                Text("Atualizar")
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    "Atualizar",
+                    style = MaterialTheme.typography.headlineMedium,
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                //fecha
+                OutlinedTextField(
+                    textStyle = TextStyle(color = Color.Black),
+                    modifier = Modifier.width(200.dp),
+                    value = fechaRemember,
+                    onValueChange = { fechaRemember = it },
+                    label = { Text("Fecha") },
+                    trailingIcon = {
+
+                        Icon(
+
+                            imageVector = Icons.Default.DateRange,//icone
+                            contentDescription = null,
+                            modifier = Modifier
+                                .width(50.dp)
+
+                                .clickable {
+
+                                    val dia: Int
+                                    val mes: Int
+                                    val ano: Int
+
+                                    val dataAtual = Calendar.getInstance()
+                                    dia = dataAtual.get(Calendar.DAY_OF_MONTH)
+                                    mes = dataAtual.get(Calendar.MONTH)
+                                    ano = dataAtual.get(Calendar.YEAR)
+                                    dataAtual.time = Date()
+
+
+                                    val datePickerDialog = android.app.DatePickerDialog(
+                                        context, { _: DatePicker, ano: Int, mes: Int, dia: Int ->
+                                            fechaRemember = "$dia/${mes + 1}/$ano"
+
+                                            val fechaFormatada =
+                                                String.format("%02d/%02d/%02d", dia, mes + 1, ano)
+
+                                            fechaRemember = fechaFormatada
+
+                                            modelTimeJobItem.fecha = fechaRemember
+
+                                        }, ano, mes, dia
+                                    )
+
+                                    datePickerDialog.show()
+
+                                },//clickable
+
+                            tint = Color.Blue,// cor azul da borda
+                        )
+                    },
+                    readOnly = true,
+
+                    )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                //hora de entrada
+                OutlinedTextField(
+                    textStyle = TextStyle(color = Color.Black),
+                    modifier = Modifier
+                        .width(200.dp)
+                        .clickable {},
+                    value = "$horaEntradaRemember : $minutoEntradaRemember",
+                    onValueChange = { horaEntradaRemember = it },
+                    label = { Text("Hora Entrada") },
+                    trailingIcon = {
+                        Icon(
+
+                            painter = painterResource(id = R.drawable.time),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .width(50.dp)
+
+                                .clickable {
+
+                                    relogio(context) { hora, minuto ->
+
+                                        horaEntradaRemember = "$hora"
+                                        minutoEntradaRemember = "$minuto"
+
+                                        val horaFormatado = String.format("%02d", hora)
+                                        horaEntradaRemember = horaFormatado
+
+                                        val minutoFormatado = String.format("%02d", minuto)
+                                        minutoEntradaRemember = minutoFormatado
+
+                                        modelTimeJobItem.horaEntrada = horaEntradaRemember
+                                        modelTimeJobItem.minutoEntrada = minutoEntradaRemember
+                                    }
+
+                                },//clickable
+
+                            tint = Color.Blue,// cor azul da borda
+                        )
+                    },
+                    readOnly = true,
+
+                    )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                //hora de saida
+                OutlinedTextField(
+                    textStyle = TextStyle(color = Color.Black),
+                    modifier = Modifier
+                        .width(200.dp)
+                        .clickable {},
+                    value = "$horaEntradaRemember : $minutoSalidaRemember",
+                    onValueChange = { horaSalidaRemember = it },
+                    label = { Text("Hora Salida") },
+                    trailingIcon = {
+                        Icon(
+
+                            painter = painterResource(id = R.drawable.time),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .width(50.dp)
+
+                                .clickable {
+
+                                    relogio(context) { hora, minuto ->
+
+                                        horaSalidaRemember = "$hora"
+                                        minutoSalidaRemember = "$minuto"
+
+                                        val horaFormatado = String.format("%02d", hora)
+                                        horaSalidaRemember = horaFormatado
+
+                                        val minutoFormatado = String.format("%02d", minuto)
+                                        minutoSalidaRemember = minutoFormatado
+
+                                        modelTimeJobItem.horaSalida = horaSalidaRemember
+                                        modelTimeJobItem.minutoSalida = minutoSalidaRemember
+                                    }
+
+                                },//clickable
+
+                            tint = Color.Blue,// cor azul da borda
+                        )
+                    },
+                    readOnly = true,
+
+                    )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                //propinas
+                OutlinedTextField(textStyle = TextStyle(color = Color.Black),
+                    modifier = Modifier
+                        .width(200.dp)
+                        .clickable {},
+                    value = modelTimeJobItem.propinas,
+                    onValueChange = { newPropinas ->
+                        modelTimeJob = modelTimeJobItem.copy(propinas = newPropinas)
+                    },
+                    label = { Text("Propinas") },
+                    trailingIcon = {
+
+                    })
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+
+                        // Extrai o mês da data
+                        val partesData = fechaRemember.split("/")
+                        if (partesData.size == 3) {
+                            val mes =
+                                partesData[1].toInt() // O mês está na segunda posição (índice 1)
+                            // Mapeia o número do mês para o nome da coleção
+                            val nomeMes = when (mes) {
+                                1 -> "Enero"
+                                2 -> "Febrero"
+                                3 -> "Marzo"
+                                4 -> "Abril"
+                                5 -> "Mayo"
+                                6 -> "Junio"
+                                7 -> "Julio"
+                                8 -> "Agosto"
+                                9 -> "Septiembre"
+                                10 -> "Octubre"
+                                11 -> "Noviembre"
+                                12 -> "Diciembre"
+                                else -> ""
+                            }
+                            // Atualizar o item no Firestore
+                            firestore.collection(nomeMes).document(modelTimeJobItem.id).update(
+                                mapOf(
+
+                                    "fecha" to modelTimeJobItem.fecha,
+                                    "horaEntrada" to modelTimeJobItem.horaEntrada,
+                                    "minutoEntrada" to modelTimeJobItem.minutoEntrada,
+                                    "horaSalida" to modelTimeJobItem.horaSalida,
+                                    "minutoSaida" to modelTimeJobItem.minutoSalida,
+                                    "propinas" to modelTimeJobItem.propinas,
+
+                                    )
+
+                            ).addOnSuccessListener {
+                                Log.d("UpdateItemDetailScreen", "Item atualizado com sucesso")
+                            }.addOnFailureListener { e ->
+                                Log.e("UpdateItemDetailScreen", "Erro ao atualizar item", e.cause)
+                            }
+
+                            Toast.makeText(context, "Atualizado com sucesso", Toast.LENGTH_SHORT)
+                                .show()
+
+                            // Navegar de volta à tela anterior
+                            navController.navigate(ModelScreens.MainScreenObject.route)
+                        }
+                    },
+                ) {
+                    Text("Atualizar")
+                }
             }
+
         }
     }
 }
@@ -854,7 +859,8 @@ fun RelatorioScreen(navController: NavHostController, itemMes: String) {
 
     MaterialThemeScreen {
 
-        Column(verticalArrangement = Arrangement.Center
+        Column(
+            verticalArrangement = Arrangement.Center
         ) {
 
             Row(
@@ -962,79 +968,77 @@ fun RelatorioScreen(navController: NavHostController, itemMes: String) {
             Button(modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .fillMaxWidth()
-                .padding(16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Blue, contentColor = Color.White
-                ),
-                onClick = {
-                    // Limpar as variáveis antes de começar a nova pesquisa
-                    listaResultadoRetornados.clear()
-                    variavelGlobalSomaHora = Duration.ZERO
-                    totalDiasTrabalhadosRemember = 0
+                .padding(16.dp), colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Blue, contentColor = Color.White
+            ), onClick = {
+                // Limpar as variáveis antes de começar a nova pesquisa
+                listaResultadoRetornados.clear()
+                variavelGlobalSomaHora = Duration.ZERO
+                totalDiasTrabalhadosRemember = 0
 
-                    val listaDeDadosRetornadas = FirebaseFirestore.getInstance().collection(itemMes)
-                        .whereGreaterThanOrEqualTo("fecha", dataInicioRemember)
-                        .whereLessThanOrEqualTo("fecha", dataFimRemember)
+                val listaDeDadosRetornadas = FirebaseFirestore.getInstance().collection(itemMes)
+                    .whereGreaterThanOrEqualTo("fecha", dataInicioRemember)
+                    .whereLessThanOrEqualTo("fecha", dataFimRemember)
 
 //                    .whereGreaterThanOrEqualTo("fecha", "04/01/2025")
 //                    .whereLessThanOrEqualTo("fecha", "05/01/2025")
 
-                    listaDeDadosRetornadas.addSnapshotListener { dadosRetornados, _ ->
+                listaDeDadosRetornadas.addSnapshotListener { dadosRetornados, _ ->
 
-                        val listaRetornada = dadosRetornados?.documents//todo document
+                    val listaRetornada = dadosRetornados?.documents//todo document
 
-                        listaRetornada?.forEach { documents ->
+                    listaRetornada?.forEach { documents ->
 
-                            val dados = documents?.data
+                        val dados = documents?.data
 
-                            if (dados != null) {
+                        if (dados != null) {
 
-                                val fechaDadosRetornados = dados["fecha"]
-                                val horaEntradaRetornados = dados["horaEntrada"]
-                                val minutoEntradaRetornados = dados["minutoEntrada"]
-                                val horaSalidaRetornados = dados["horaSalida"]
-                                val minutoSalidaRetornados = dados["minutoSalida"]
-                                val propinasDadosRetornados = dados["propinas"]
+                            val fechaDadosRetornados = dados["fecha"]
+                            val horaEntradaRetornados = dados["horaEntrada"]
+                            val minutoEntradaRetornados = dados["minutoEntrada"]
+                            val horaSalidaRetornados = dados["horaSalida"]
+                            val minutoSalidaRetornados = dados["minutoSalida"]
+                            val propinasDadosRetornados = dados["propinas"]
 
-                                //calculo tempo
-                                val horaEntradaTime = LocalTime.of(
-                                    horaEntradaRetornados.toString().toInt(),
-                                    minutoEntradaRetornados.toString().toInt()
-                                )
-                                val horaSalidaTime = LocalTime.of(
-                                    horaSalidaRetornados.toString().toInt(),
-                                    minutoSalidaRetornados.toString().toInt()
-                                )
-                                val duracao = Duration.between(horaEntradaTime, horaSalidaTime)
-                                val horas = duracao.toHours()
-                                val minutos = duracao.toMinutes() % 60
-                                val resultadoCalculorHoraFormatado =
-                                    String.format("%02d:%02d", horas, minutos)
+                            //calculo tempo
+                            val horaEntradaTime = LocalTime.of(
+                                horaEntradaRetornados.toString().toInt(),
+                                minutoEntradaRetornados.toString().toInt()
+                            )
+                            val horaSalidaTime = LocalTime.of(
+                                horaSalidaRetornados.toString().toInt(),
+                                minutoSalidaRetornados.toString().toInt()
+                            )
+                            val duracao = Duration.between(horaEntradaTime, horaSalidaTime)
+                            val horas = duracao.toHours()
+                            val minutos = duracao.toMinutes() % 60
+                            val resultadoCalculorHoraFormatado =
+                                String.format("%02d:%02d", horas, minutos)
 
-                                horas.toDuration(DurationUnit.HOURS)
-                                minutos.toDuration(DurationUnit.MINUTES)
+                            horas.toDuration(DurationUnit.HOURS)
+                            minutos.toDuration(DurationUnit.MINUTES)
 
-                                variavelGlobalSomaHora += horas.toDuration(DurationUnit.HOURS)
-                                    .toJavaDuration() + minutos.toDuration(DurationUnit.MINUTES)
-                                    .toJavaDuration()
+                            variavelGlobalSomaHora += horas.toDuration(DurationUnit.HOURS)
+                                .toJavaDuration() + minutos.toDuration(DurationUnit.MINUTES)
+                                .toJavaDuration()
 
-                                listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nTotal de Horas: $resultadoCalculorHoraFormatado")
+                            listaResultadoRetornados += ("Fecha: $fechaDadosRetornados \nTotal de Horas: $resultadoCalculorHoraFormatado")
 
-                                somaHorasRemember = variavelGlobalSomaHora.toString()
+                            somaHorasRemember = variavelGlobalSomaHora.toString()
 
-                                val contadorDiasTrabalhados = listaResultadoRetornados.count()
+                            val contadorDiasTrabalhados = listaResultadoRetornados.count()
 
-                                totalDiasTrabalhadosRemember = contadorDiasTrabalhados
+                            totalDiasTrabalhadosRemember = contadorDiasTrabalhados
 
-                                //limpar campos
-                                dataInicioRemember = ""
-                                dataFimRemember = ""
+                            //limpar campos
+                            dataInicioRemember = ""
+                            dataFimRemember = ""
 
-                                Log.d("Contador", "Contador: $contadorDiasTrabalhados")
-                            }
+                            Log.d("Contador", "Contador: $contadorDiasTrabalhados")
                         }
                     }
                 }
+            }
 
             ) {
                 Text("Pesquisar")
@@ -1129,9 +1133,10 @@ fun DetalheScreen(navController: NavController, itemId: String, itemMes: String)
     var horaSalidaRemember by remember { mutableStateOf("") }
     var minutoSalidaRemember by remember { mutableStateOf("") }
     var propinasRemember by remember { mutableStateOf("") }
-
     val firestore = FirebaseFirestore.getInstance()
     var modelTimeJob by remember { mutableStateOf<ModelTimeJob?>(null) }
+    var resultado by remember { mutableStateOf("") }
+    val listaResultadoRetornados = mutableListOf<String>()
 
     // Carregar o item específico do Firestore
     LaunchedEffect(Unit) {
@@ -1161,237 +1166,245 @@ fun DetalheScreen(navController: NavController, itemId: String, itemMes: String)
         minutoSalidaRemember = modelTimeJobItem.minutoSalida
         propinasRemember = modelTimeJobItem.propinas
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+        resultado =
+            "Fecha: $fechaRemember \nHora de Entrada: $horaEntradaRemember : $minutoEntradaRemember \nHora de Salida: $horaSalidaRemember : $minutoSalidaRemember \nTotal de Horas:  \nPropinas: €$propinasRemember"
 
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
+        MaterialThemeScreen {
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
 
-            Text(
-                "Atualizar",
-                style = MaterialTheme.typography.headlineMedium,
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            //fecha
-            OutlinedTextField(
-                textStyle = TextStyle(color = Color.Black),
-                modifier = Modifier.width(200.dp),
-                value = fechaRemember,
-                onValueChange = { fechaRemember = it },
-                label = { Text("Fecha") },
-                trailingIcon = {
-
-                    Icon(
-
-                        imageVector = Icons.Default.DateRange,//icone
-                        contentDescription = null,
-                        modifier = Modifier
-                            .width(50.dp)
-
-                            .clickable {
-
-                                val dia: Int
-                                val mes: Int
-                                val ano: Int
-
-                                val dataAtual = Calendar.getInstance()
-                                dia = dataAtual.get(Calendar.DAY_OF_MONTH)
-                                mes = dataAtual.get(Calendar.MONTH)
-                                ano = dataAtual.get(Calendar.YEAR)
-                                dataAtual.time = Date()
-
-
-                                val datePickerDialog = android.app.DatePickerDialog(
-                                    context, { _: DatePicker, ano: Int, mes: Int, dia: Int ->
-                                        fechaRemember = "$dia/${mes + 1}/$ano"
-
-                                        val fechaFormatada =
-                                            String.format("%02d/%02d/%02d", dia, mes + 1, ano)
-
-                                        fechaRemember = fechaFormatada
-
-                                        modelTimeJobItem.fecha = fechaRemember
-
-                                    }, ano, mes, dia
-                                )
-
-                                datePickerDialog.show()
-
-                            },//clickable
-
-                        tint = Color.Blue,// cor azul da borda
-                    )
-                },
-                readOnly = true,
-
-                )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            //hora de entrada
-            OutlinedTextField(
-                textStyle = TextStyle(color = Color.Black),
                 modifier = Modifier
-                    .width(200.dp)
-                    .clickable {},
-                value = "$horaEntradaRemember : $minutoEntradaRemember",
-                onValueChange = { horaEntradaRemember = it },
-                label = { Text("Hora Entrada") },
-                trailingIcon = {
-                    Icon(
-
-                        painter = painterResource(id = R.drawable.time),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .width(50.dp)
-
-                            .clickable {
-
-                                relogio(context) { hora, minuto ->
-
-                                    horaEntradaRemember = "$hora"
-                                    minutoEntradaRemember = "$minuto"
-
-                                    val horaFormatado = String.format("%02d", hora)
-                                    horaEntradaRemember = horaFormatado
-
-                                    val minutoFormatado = String.format("%02d", minuto)
-                                    minutoEntradaRemember = minutoFormatado
-
-                                    modelTimeJobItem.horaEntrada = horaEntradaRemember
-                                    modelTimeJobItem.minutoEntrada = minutoEntradaRemember
-                                }
-
-                            },//clickable
-
-                        tint = Color.Blue,// cor azul da borda
-                    )
-                },
-                readOnly = true,
-
-                )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            //hora de saida
-            OutlinedTextField(
-                textStyle = TextStyle(color = Color.Black),
-                modifier = Modifier
-                    .width(200.dp)
-                    .clickable {},
-                value = "$horaEntradaRemember : $minutoSalidaRemember",
-                onValueChange = { horaSalidaRemember = it },
-                label = { Text("Hora Salida") },
-                trailingIcon = {
-                    Icon(
-
-                        painter = painterResource(id = R.drawable.time),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .width(50.dp)
-
-                            .clickable {
-
-                                relogio(context) { hora, minuto ->
-
-                                    horaSalidaRemember = "$hora"
-                                    minutoSalidaRemember = "$minuto"
-
-                                    val horaFormatado = String.format("%02d", hora)
-                                    horaSalidaRemember = horaFormatado
-
-                                    val minutoFormatado = String.format("%02d", minuto)
-                                    minutoSalidaRemember = minutoFormatado
-
-                                    modelTimeJobItem.horaSalida = horaSalidaRemember
-                                    modelTimeJobItem.minutoSalida = minutoSalidaRemember
-                                }
-
-                            },//clickable
-
-                        tint = Color.Blue,// cor azul da borda
-                    )
-                },
-                readOnly = true,
-
-                )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            //propinas
-            OutlinedTextField(textStyle = TextStyle(color = Color.Black),
-                modifier = Modifier
-                    .width(200.dp)
-                    .clickable {},
-                value = modelTimeJobItem.propinas,
-                onValueChange = { newPropinas ->
-                    modelTimeJob = modelTimeJobItem.copy(propinas = newPropinas)
-                },
-                label = { Text("Propinas") },
-                trailingIcon = {
-
-                })
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
-
-                    // Extrai o mês da data
-                    val partesData = fechaRemember.split("/")
-                    if (partesData.size == 3) {
-                        val mes = partesData[1].toInt() // O mês está na segunda posição (índice 1)
-                        // Mapeia o número do mês para o nome da coleção
-                        val nomeMes = when (mes) {
-                            1 -> "Enero"
-                            2 -> "Febrero"
-                            3 -> "Marzo"
-                            4 -> "Abril"
-                            5 -> "Mayo"
-                            6 -> "Junio"
-                            7 -> "Julio"
-                            8 -> "Agosto"
-                            9 -> "Septiembre"
-                            10 -> "Octubre"
-                            11 -> "Noviembre"
-                            12 -> "Diciembre"
-                            else -> ""
-                        }
-                        // Atualizar o item no Firestore
-                        firestore.collection(nomeMes).document(modelTimeJobItem.id).update(
-                            mapOf(
-
-                                "fecha" to modelTimeJobItem.fecha,
-                                "horaEntrada" to modelTimeJobItem.horaEntrada,
-                                "minutoEntrada" to modelTimeJobItem.minutoEntrada,
-                                "horaSalida" to modelTimeJobItem.horaSalida,
-                                "minutoSaida" to modelTimeJobItem.minutoSalida,
-                                "propinas" to modelTimeJobItem.propinas,
-
-                                )
-
-                        ).addOnSuccessListener {
-                            Log.d("UpdateItemDetailScreen", "Item atualizado com sucesso")
-                        }.addOnFailureListener { e ->
-                            Log.e("UpdateItemDetailScreen", "Erro ao atualizar item", e.cause)
-                        }
-
-                        Toast.makeText(context, "Atualizado com sucesso", Toast.LENGTH_SHORT).show()
-
-                        // Navegar de volta à tela anterior
-                        navController.navigate(ModelScreens.MainScreenObject.route)
-                    }
-                },
+                    .fillMaxSize()
+                    .padding(16.dp)
             ) {
-                Text("Atualizar")
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    "Atualizar",
+                    style = MaterialTheme.typography.headlineMedium,
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                //fecha
+                OutlinedTextField(
+                    textStyle = TextStyle(color = Color.Black),
+                    modifier = Modifier.width(200.dp),
+                    value = fechaRemember,
+                    onValueChange = { fechaRemember = it },
+                    label = { Text("Fecha") },
+                    trailingIcon = {
+
+                        Icon(
+
+                            imageVector = Icons.Default.DateRange,//icone
+                            contentDescription = null,
+                            modifier = Modifier
+                                .width(50.dp)
+
+                                .clickable {
+
+                                    val dia: Int
+                                    val mes: Int
+                                    val ano: Int
+
+                                    val dataAtual = Calendar.getInstance()
+                                    dia = dataAtual.get(Calendar.DAY_OF_MONTH)
+                                    mes = dataAtual.get(Calendar.MONTH)
+                                    ano = dataAtual.get(Calendar.YEAR)
+                                    dataAtual.time = Date()
+
+
+                                    val datePickerDialog = android.app.DatePickerDialog(
+                                        context, { _: DatePicker, ano: Int, mes: Int, dia: Int ->
+                                            fechaRemember = "$dia/${mes + 1}/$ano"
+
+                                            val fechaFormatada =
+                                                String.format("%02d/%02d/%02d", dia, mes + 1, ano)
+
+                                            fechaRemember = fechaFormatada
+
+                                            modelTimeJobItem.fecha = fechaRemember
+
+                                        }, ano, mes, dia
+                                    )
+
+                                    datePickerDialog.show()
+
+                                },//clickable
+
+                            tint = Color.Blue,// cor azul da borda
+                        )
+                    },
+                    readOnly = true,
+
+                    )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                //hora de entrada
+                OutlinedTextField(
+                    textStyle = TextStyle(color = Color.Black),
+                    modifier = Modifier
+                        .width(200.dp)
+                        .clickable {},
+                    value = resultado,
+                    onValueChange = { resultado = it },
+                    label = { Text("Hora Entrada") },
+                    trailingIcon = {
+                        Icon(
+
+                            painter = painterResource(id = R.drawable.time),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .width(50.dp)
+
+                                .clickable {
+
+                                    relogio(context) { hora, minuto ->
+
+                                        horaEntradaRemember = "$hora"
+                                        minutoEntradaRemember = "$minuto"
+
+                                        val horaFormatado = String.format("%02d", hora)
+                                        horaEntradaRemember = horaFormatado
+
+                                        val minutoFormatado = String.format("%02d", minuto)
+                                        minutoEntradaRemember = minutoFormatado
+
+                                        modelTimeJobItem.horaEntrada = horaEntradaRemember
+                                        modelTimeJobItem.minutoEntrada = minutoEntradaRemember
+                                    }
+
+                                },//clickable
+
+                            tint = Color.Blue,// cor azul da borda
+                        )
+                    },
+                    readOnly = true,
+
+                    )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                //hora de saida
+                OutlinedTextField(
+                    textStyle = TextStyle(color = Color.Black),
+                    modifier = Modifier
+                        .width(200.dp)
+                        .clickable {},
+                    value = "$horaEntradaRemember : $minutoSalidaRemember",
+                    onValueChange = { horaSalidaRemember = it },
+                    label = { Text("Hora Salida") },
+                    trailingIcon = {
+                        Icon(
+
+                            painter = painterResource(id = R.drawable.time),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .width(50.dp)
+
+                                .clickable {
+
+                                    relogio(context) { hora, minuto ->
+
+                                        horaSalidaRemember = "$hora"
+                                        minutoSalidaRemember = "$minuto"
+
+                                        val horaFormatado = String.format("%02d", hora)
+                                        horaSalidaRemember = horaFormatado
+
+                                        val minutoFormatado = String.format("%02d", minuto)
+                                        minutoSalidaRemember = minutoFormatado
+
+                                        modelTimeJobItem.horaSalida = horaSalidaRemember
+                                        modelTimeJobItem.minutoSalida = minutoSalidaRemember
+                                    }
+
+                                },//clickable
+
+                            tint = Color.Blue,// cor azul da borda
+                        )
+                    },
+                    readOnly = true,
+
+                    )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                //propinas
+                OutlinedTextField(textStyle = TextStyle(color = Color.Black),
+                    modifier = Modifier
+                        .width(200.dp)
+                        .clickable {},
+                    value = modelTimeJobItem.propinas,
+                    onValueChange = { newPropinas ->
+                        modelTimeJob = modelTimeJobItem.copy(propinas = newPropinas)
+                    },
+                    label = { Text("Propinas") },
+                    trailingIcon = {
+
+                    })
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+
+                        // Extrai o mês da data
+                        val partesData = fechaRemember.split("/")
+                        if (partesData.size == 3) {
+                            val mes =
+                                partesData[1].toInt() // O mês está na segunda posição (índice 1)
+                            // Mapeia o número do mês para o nome da coleção
+                            val nomeMes = when (mes) {
+                                1 -> "Enero"
+                                2 -> "Febrero"
+                                3 -> "Marzo"
+                                4 -> "Abril"
+                                5 -> "Mayo"
+                                6 -> "Junio"
+                                7 -> "Julio"
+                                8 -> "Agosto"
+                                9 -> "Septiembre"
+                                10 -> "Octubre"
+                                11 -> "Noviembre"
+                                12 -> "Diciembre"
+                                else -> ""
+                            }
+                            // Atualizar o item no Firestore
+                            firestore.collection(nomeMes).document(modelTimeJobItem.id).update(
+                                mapOf(
+
+                                    "fecha" to modelTimeJobItem.fecha,
+                                    "horaEntrada" to modelTimeJobItem.horaEntrada,
+                                    "minutoEntrada" to modelTimeJobItem.minutoEntrada,
+                                    "horaSalida" to modelTimeJobItem.horaSalida,
+                                    "minutoSaida" to modelTimeJobItem.minutoSalida,
+                                    "propinas" to modelTimeJobItem.propinas,
+
+                                    )
+
+                            ).addOnSuccessListener {
+                                Log.d("UpdateItemDetailScreen", "Item atualizado com sucesso")
+                            }.addOnFailureListener { e ->
+                                Log.e("UpdateItemDetailScreen", "Erro ao atualizar item", e.cause)
+                            }
+
+                            Toast.makeText(context, "Atualizado com sucesso", Toast.LENGTH_SHORT)
+                                .show()
+
+                            // Navegar de volta à tela anterior
+                            navController.navigate(ModelScreens.MainScreenObject.route)
+                        }
+                    },
+                ) {
+                    Text("Atualizar")
+                }
             }
         }
     }

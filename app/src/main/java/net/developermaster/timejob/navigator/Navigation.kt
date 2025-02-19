@@ -9,6 +9,7 @@ import androidx.navigation.navArgument
 import net.developermaster.timejob.model.ModelScreens
 import net.developermaster.timejob.view.AddScreen
 import net.developermaster.timejob.view.DeleteItem
+import net.developermaster.timejob.view.DetalheScreen
 import net.developermaster.timejob.view.ListarTodos
 import net.developermaster.timejob.view.MainScreen
 import net.developermaster.timejob.view.RelatorioScreen
@@ -24,7 +25,7 @@ fun NavigationNavController() {
 
     //navController rota inicial
     NavHost(
-        navController = navController, startDestination = ModelScreens.MainScreenObject.route
+        navController = navController, startDestination = ModelScreens.UpdateScreenObject.route
 
     ) {
 
@@ -129,13 +130,13 @@ fun NavigationNavController() {
                 type = NavType.StringType
             })
         ) {
-/*            DetalheScreen(
+            DetalheScreen(
                 navController,
                 // argumentos 1
                 it.arguments?.getString("itemId") ?: "",
                 // argumentos 2
                 it.arguments?.getString("itemMes") ?: ""
-            )*/
+            )
         }
 
     }
