@@ -134,10 +134,7 @@ internal fun ListarTodos(navController: NavController) {
 
                 items(modelTimeJobs) { item ->
 
-                    ItemBox(
-                        modelTimeJob = item, onItemClick = {
-
-                        }, navController = navController
+                    ItemBox(modelTimeJob = item, navController = navController
                     )
                 }
             }
@@ -146,7 +143,7 @@ internal fun ListarTodos(navController: NavController) {
 }
 
 @Composable
-fun ItemBox(navController: NavController, modelTimeJob: ModelTimeJob, onItemClick: (ModelTimeJob) -> Unit ) {
+fun ItemBox(navController: NavController, modelTimeJob: ModelTimeJob) {
 
     Box(
         modifier = Modifier
