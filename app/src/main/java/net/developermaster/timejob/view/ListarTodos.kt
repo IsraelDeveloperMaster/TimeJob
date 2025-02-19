@@ -121,7 +121,8 @@ internal fun ListarTodos(navController: NavController) {
                         minutoEntrada = document.getString("minutoEntrada") ?: "",
                         horaSalida = document.getString("horaSalida") ?: "",
                         minutoSalida = document.getString("minutoSalida") ?: "",
-                        propinas = document.getString("propinas") ?: ""
+                        propinas = document.getString("propinas") ?: "",
+                        notas = document.getString("nota") ?: ""
                     )
                 }
             }
@@ -228,7 +229,8 @@ fun UpdateScreen(navController: NavController, itemId: String) {
             minutoEntrada = document.getString("minutoEntrada") ?: "",
             horaSalida = document.getString("horaSalida") ?: "",
             minutoSalida = document.getString("minutoSalida") ?: "",
-            propinas = document.getString("propinas") ?: ""
+            propinas = document.getString("propinas") ?: "",
+            notas = document.getString("nota") ?: ""
         )
 
         Log.d("UpdateItemDetailScreen", "Item carregado: $modelTimeJob")

@@ -9,6 +9,6 @@ data class ModelTimeJob(
     var horaSalida: String,
     var minutoSalida: String,
     val propinas: String,
-    val notas: String = "",
+    var notas: String
 
 )

@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -29,6 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -122,6 +124,7 @@ internal fun SelectMesScreen(navController: NavHostController, mes: String) {
                         horaSalida = document.getString("horaSalida") ?: "",
                         minutoSalida = document.getString("minutoSalida") ?: "",
                         propinas = document.getString("propinas") ?: "",
+                        notas = document.getString("nota") ?: ""
                     )
                 }
 
@@ -156,6 +159,7 @@ internal fun SelectMesScreen(navController: NavHostController, mes: String) {
                             horaSalida = document.getString("horaSalida") ?: "",
                             minutoSalida = document.getString("minutoSalida") ?: "",
                             propinas = document.getString("propinas") ?: "",
+                            notas = document.getString("nota") ?: ""
                         )
                     }
                 }
@@ -295,6 +299,7 @@ fun UpdateScreen(navController: NavController, itemId: String, itemMes: String) 
     var horaSalidaRemember by remember { mutableStateOf("") }
     var minutoSalidaRemember by remember { mutableStateOf("") }
     var propinasRemember by remember { mutableStateOf("") }
+    var notasRemember by remember { mutableStateOf("") }
     val firestore = FirebaseFirestore.getInstance()
     var modelTimeJob by remember { mutableStateOf<ModelTimeJob?>(null) }
 
@@ -309,7 +314,8 @@ fun UpdateScreen(navController: NavController, itemId: String, itemMes: String) 
             minutoEntrada = document.getString("minutoEntrada") ?: "",
             horaSalida = document.getString("horaSalida") ?: "",
             minutoSalida = document.getString("minutoSalida") ?: "",
-            propinas = document.getString("propinas") ?: ""
+            propinas = document.getString("propinas") ?: "",
+            notas = document.getString("notas") ?: ""
         )
 
         Log.d("UpdateItemDetailScreen", "Item carregado: $modelTimeJob")
@@ -325,6 +331,7 @@ fun UpdateScreen(navController: NavController, itemId: String, itemMes: String) 
         horaSalidaRemember = modelTimeJobItem.horaSalida
         minutoSalidaRemember = modelTimeJobItem.minutoSalida
         propinasRemember = modelTimeJobItem.propinas
+        notasRemember = modelTimeJobItem.notas
 
         MaterialThemeScreen {
 
@@ -504,7 +511,30 @@ fun UpdateScreen(navController: NavController, itemId: String, itemMes: String) 
                     label = { Text("Propinas") },
                     trailingIcon = {
 
-                    })
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                //Notas
+                OutlinedTextField(
+                    modifier = Modifier.width(200.dp),
+                    textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
+                    value = modelTimeJobItem.notas,
+                    onValueChange = { newNotas ->
+                        modelTimeJob = modelTimeJobItem.copy(notas = newNotas)
+                    },
+                    label = { Text("Notas") },
+                    trailingIcon = {
+                        Icon(
+                            Icons.Filled.Create,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .width(50.dp),
+                            tint = Color.Blue,// cor azul da borda
+                        )
+                    }
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -543,8 +573,9 @@ fun UpdateScreen(navController: NavController, itemId: String, itemMes: String) 
                                     "horaSalida" to modelTimeJobItem.horaSalida,
                                     "minutoSaida" to modelTimeJobItem.minutoSalida,
                                     "propinas" to modelTimeJobItem.propinas,
+                                    "notas" to modelTimeJobItem.notas
 
-                                    )
+                                )
 
                             ).addOnSuccessListener {
                                 Log.d("UpdateItemDetailScreen", "Item atualizado com sucesso")
@@ -563,7 +594,6 @@ fun UpdateScreen(navController: NavController, itemId: String, itemMes: String) 
                     Text("Atualizar")
                 }
             }
-
         }
     }
 }
