@@ -14,7 +14,7 @@ import net.developermaster.timejob.view.MainScreen
 import net.developermaster.timejob.view.RelatorioScreen
 import net.developermaster.timejob.view.PropinaScreen
 import net.developermaster.timejob.view.SelectMesScreen
-import net.developermaster.timejob.view.UpdateItemDetailScreen2
+import net.developermaster.timejob.view.UpdateScreen
 
 @Composable
 fun NavigationNavController() {
@@ -94,7 +94,7 @@ fun NavigationNavController() {
                 type = NavType.StringType
             })
         ) {
-            UpdateItemDetailScreen2(
+            UpdateScreen(
                 navController,
                 // argumentos 1
                 it.arguments?.getString("itemId") ?: "",
@@ -119,5 +119,24 @@ fun NavigationNavController() {
                 it.arguments?.getString("itemMes") ?: ""
             )
         }
+
+        //rota detalhe
+        composable(ModelScreens.DetalheScreenObject.route + "/{itemId}/{itemMes}",
+            arguments = listOf(
+                navArgument("itemId") {
+                type = NavType.StringType
+            }, navArgument("itemMes") {
+                type = NavType.StringType
+            })
+        ) {
+/*            DetalheScreen(
+                navController,
+                // argumentos 1
+                it.arguments?.getString("itemId") ?: "",
+                // argumentos 2
+                it.arguments?.getString("itemMes") ?: ""
+            )*/
+        }
+
     }
 }
