@@ -3,8 +3,8 @@ package net.developermaster.timejob.model
 
 sealed class ModelScreens(val route: String) {
 
-    //rota login
-    data object LoginScreenObject : ModelScreens("loginScreen")
+    //rota detalhe
+    data object DetalheScreenObject : ModelScreens("detalheScreen")
 
     //rota add
     data object AddScreenObject : ModelScreens("addScreen")
