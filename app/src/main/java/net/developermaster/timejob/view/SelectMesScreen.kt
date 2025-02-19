@@ -12,8 +12,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
@@ -57,35 +60,60 @@ private fun TopBar(paddingValues: PaddingValues, navcontroller: NavController) {
 @Composable
 internal fun SelectMesScreen(navController: NavHostController, mes: String) {
 
-    Scaffold(Modifier.fillMaxSize(), bottomBar = {
-        BottomAppBar(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            actions = {
+    // Estado para controlar a visibilidade da BottomAppBar
+    var isBottomAppBarVisible by remember { mutableStateOf(true) }
 
-            },
+    // Estado da lista
+    val listState = rememberLazyGridState()
 
-            floatingActionButton = {
-                //propinas
-                FloatingActionButton(modifier = Modifier.padding(start = 155.dp), onClick = {
+    // Monitorar a rolagem da lista
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.firstVisibleItemIndex }
+            .collect { index ->
+                // Se o índice do primeiro item visível for maior que 0, esconda a BottomAppBar
+                isBottomAppBarVisible = index == 0
+            }
+    }
 
-                    navController.navigate(ModelScreens.PropinaScreenObject.route + "/$mes")
+    // Adicionando um listener para a rolagem
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.isScrollInProgress }
+            .collect { isScrolling ->
+                // Se a lista estiver rolando para cima, esconda a BottomAppBar
+                isBottomAppBarVisible = !isScrolling
+            }
+    }
 
-                }) {
-                    Icon(Icons.Filled.Favorite, contentDescription = null)
-                }
+    Scaffold(
+        Modifier.fillMaxSize(),
+        bottomBar = {
+            if (isBottomAppBarVisible) {
+                BottomAppBar(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    actions = {
+                        // Ações da BottomAppBar
+                    },
+                    floatingActionButton = {
+                        //propinas
+                        FloatingActionButton(modifier = Modifier.padding(start = 155.dp), onClick = {
 
-                //pesquisa
-                FloatingActionButton(onClick = {
-                    navController.navigate(ModelScreens.RelatorioScreenObject.route + "/$mes")
-                }) {
-                    Icon(Icons.Filled.Search, contentDescription = null)
-                }
-            },
-        )
-    },
+                            navController.navigate(ModelScreens.PropinaScreenObject.route + "/$mes")
 
+                        }) {
+                            Icon(Icons.Filled.Favorite, contentDescription = null)
+                        }
+
+                        //pesquisa
+                        FloatingActionButton(onClick = {
+                            navController.navigate(ModelScreens.RelatorioScreenObject.route + "/$mes")
+                        }) {
+                            Icon(Icons.Filled.Search, contentDescription = null)
+                        }
+                    },
+                )
+            }
+        },
         topBar = {
-
             TopBar(
                 paddingValues = PaddingValues(), navcontroller = navController
             )
@@ -98,8 +126,6 @@ internal fun SelectMesScreen(navController: NavHostController, mes: String) {
         val coroutineScopeRemember = rememberCoroutineScope()
         var isRefreshingRemember by remember { mutableStateOf(false) }
         var modelSwitchRememberPlantas by remember { mutableStateOf<List<ModelTimeJob>>(emptyList()) }
-        var inicioMesRemember by remember { mutableStateOf("") }
-        var fimMesRemember by remember { mutableStateOf("") }
 
         // Função para simular uma atualização de dados
         fun funcaoQueAtualizaTela() {
@@ -135,7 +161,6 @@ internal fun SelectMesScreen(navController: NavHostController, mes: String) {
         MaterialTheme {
 
             SwipeRefresh(
-
                 state = rememberSwipeRefreshState(isRefreshingRemember),
                 onRefresh = { funcaoQueAtualizaTela() }, // Chama a função de atualização
                 modifier = Modifier.fillMaxSize(),
@@ -165,7 +190,8 @@ internal fun SelectMesScreen(navController: NavHostController, mes: String) {
                 }
 
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(2), // ➕ Fixed 3 columns
+                    state = listState, //estado da lista
+                    columns = GridCells.Fixed(2),
                     contentPadding = PaddingValues(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.padding(8.dp)
@@ -183,9 +209,7 @@ internal fun SelectMesScreen(navController: NavHostController, mes: String) {
 
 @Composable
 private fun ItemBox(
-    navController: NavController, modelTimeJob: ModelTimeJob, mes: String
-
-) {
+    navController: NavController, modelTimeJob: ModelTimeJob, mes: String) {
 
     Box(
 
@@ -950,7 +974,20 @@ fun DetalheScreen(navController: NavController, itemId: String, itemMes: String)
                     value = resultado,
                     onValueChange = { resultado = it },
                     label = { },
-                    trailingIcon = {},
+                    trailingIcon = {
+                        Icon(
+                            modifier = Modifier
+                                .clickable {
+
+                                    navController.navigate(ModelScreens.UpdateScreenObject.route + "/${itemId}/${itemMes}")
+
+                                }
+                                .width(50.dp),
+                            imageVector = Icons.Default.Edit,//icone
+                            contentDescription = null,
+                            tint = Color.Blue,// cor azul da borda
+                        )
+                    },
                     readOnly = true,
                 )
 
